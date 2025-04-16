@@ -9,7 +9,6 @@ SRC = parser.c \
 	  tokenize/ft_token_add_back.c \
 	  tokenize/ft_token_delone.c \
 	  tokenize/ft_token_clear.c \
-	  tokenize/ft_token_size.c \
 	  tokenize/ft_synax_error_free.c \
 	  tokenize/ft_print_tokens.c \
 
