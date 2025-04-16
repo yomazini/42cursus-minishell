@@ -1,5 +1,5 @@
 SRC = parser.c \
-      tokenize/ft_tokenize.c \
+	  tokenize/ft_tokenize.c \
 	  tokenize/ft_split_tokens.c \
 	  tokenize/ft_isspace.c \
 	  tokenize/ft_strncpy.c \
@@ -15,11 +15,13 @@ SRC = parser.c \
 
 
 OBJS = $(SRC:.c=.o)
+READLINE_LIB_DIR = $(shell brew --prefix readline)/lib
+READLINE_INC_DIR = $(shell brew --prefix readline)/include
 
 NAME = parsi
 CC = cc 
-CFLAGS = -Wall -Wextra -Werror -I/mnt/homes/eel-garo/Desktop/readline/include 
-LDFLAG = -L/mnt/homes/eel-garo/Desktop/readline/lib -lreadline -lncurses
+CFLAGS = -Wall -Wextra -Werror -I$(READLINE_INC_DIR) 
+LDFLAG = -L$(READLINE_LIB_DIR) -lreadline -lncurses
 RM = rm -rf
 
 all: $(NAME)
