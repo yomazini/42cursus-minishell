@@ -1,6 +1,7 @@
 SRC = parser.c \
 	  tokenize/ft_tokenize.c \
 	  tokenize/ft_split_tokens.c \
+	  tokenize/ft_utils_split.c \
 	  tokenize/ft_isspace.c \
 	  tokenize/ft_strncpy.c \
 	  tokenize/ft_strlen.c \
@@ -10,6 +11,7 @@ SRC = parser.c \
 	  tokenize/ft_token_delone.c \
 	  tokenize/ft_token_clear.c \
 	  tokenize/ft_synax_error_free.c \
+	  tokenize/ft_utils_error.c \
 	  tokenize/ft_print_tokens.c \
 
 
