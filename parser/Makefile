@@ -1,5 +1,5 @@
 SRC = parser.c \
-	  tokenize/ft_tokenize.c \
+	  tokenize/tokenizer.c \
 	  tokenize/ft_split_tokens.c \
 	  tokenize/ft_utils_split.c \
 	  tokenize/ft_isspace.c \
