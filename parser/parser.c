@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:54 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/04/18 17:34:14 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/04/19 11:57:16 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ int	main(int ac, char **av, char **env)
 			if (token_list_head)
 				ft_print_token_list(token_list_head);
 		}
-		
 		free(line);
 		ft_token_clear(&token_list_head);
 		token_list_head = NULL;

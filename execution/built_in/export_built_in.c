@@ -6,10 +6,10 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:06:26 by ymazini           #+#    #+#             */
-/*   Updated: 2025/04/15 16:12:41 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/04/19 14:30:35 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
 
-int ft_export(t_data *data, t_cmd *cmd);
+int ft_export(t_cmd *cmd, t_data *data);

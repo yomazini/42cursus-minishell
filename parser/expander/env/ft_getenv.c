@@ -37,17 +37,17 @@ static char	**ft_split_env(char *env_line)
 		return (NULL);
 	return (sp_env);
 }
-// static void	ft_print_env(t_env *head)
-// {
-// 	t_env *curr;
+static void	ft_print_env(t_env *head)
+{
+	t_env *curr;
 
-// 	curr = head;
-// 	while(curr)
-// 	{
-// 		printf("%s=%s-->%d\n", curr->name, curr->value, curr->flag_env);
-// 		curr = curr->next;
-// 	}
-// }
+	curr = head;
+	while(curr)
+	{
+		printf("%s=%s-->%d\n", curr->name, curr->value, curr->flag_env);
+		curr = curr->next;
+	}
+}
 
 int ft_flag_env(char *env_line)
 {
@@ -82,7 +82,6 @@ t_env	*ft_getenv(char **env)
 		free(sp_env);
 		i++;
 	}
-	// ft_print_env(head);
+	ft_print_env(head);
 	return (head);
 }
-

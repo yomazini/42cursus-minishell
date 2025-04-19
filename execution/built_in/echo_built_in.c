@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:46:19 by ymazini           #+#    #+#             */
-/*   Updated: 2025/04/15 22:31:03 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/04/19 14:00:46 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,15 +32,15 @@ int	get_printing_start_index(t_cmd *cmd)
 	int	i;
 
 	i = 1;
-	while (cmd->arguments[i])
+	while (cmd->argv[i])
 	{
-		if (ft_is_only_whitespace(cmd->arguments[i])
-			|| ft_check_n_flag(cmd->arguments[i]))
+		if (ft_is_only_whitespace(cmd->argv[i])
+			|| ft_check_n_flag(cmd->argv[i]))
 			i++;
 		else
 			break ;
 	}
-	if (cmd->arguments[i] == NULL)
+	if (cmd->argv[i] == NULL)
 		return (i);
 	return (i);
 }
@@ -51,12 +51,12 @@ void	prepare_echo(t_cmd *cmd, int *print_newline_flag, int *start_index)
 
 	i = 1;
 	*print_newline_flag = TRUE;
-	while (cmd->arguments[i])
+	while (cmd->argv[i])
 	{
-		if (ft_check_n_flag(cmd->arguments[i])
-			|| ft_is_only_whitespace(cmd->arguments[i]))
+		if (ft_check_n_flag(cmd->argv[i])
+			|| ft_is_only_whitespace(cmd->argv[i]))
 		{
-			if (ft_check_n_flag(cmd->arguments[i]))
+			if (ft_check_n_flag(cmd->argv[i]))
 				*print_newline_flag = FALSE;
 			i++;
 		}
@@ -66,13 +66,13 @@ void	prepare_echo(t_cmd *cmd, int *print_newline_flag, int *start_index)
 	*start_index = get_printing_start_index(cmd);
 }
 
-int	ft_echo(t_data *data, t_cmd *cmd)
+int	ft_echo(t_cmd *cmd, t_data *data)
 {
 	int	flag_print_newline;
 	int	start_index;
 	int	i;
 
-	if (!cmd || !cmd->arguments || !cmd->arguments[0])
+	if (!cmd || !cmd->argv || !cmd->argv[0])
 	{
 		ft_putchar_fd('\n', STDOUT_FILENO);
 		data->last_exit_status = EXIT_SUCCESS;
@@ -80,10 +80,10 @@ int	ft_echo(t_data *data, t_cmd *cmd)
 	}
 	prepare_echo(cmd, &flag_print_newline, &start_index);
 	i = start_index;
-	while (cmd->arguments[i])
+	while (cmd->argv[i])
 	{
-		ft_putstr_fd(cmd->arguments[i], STDOUT_FILENO);
-		if (cmd->arguments[i + 1] != NULL)
+		ft_putstr_fd(cmd->argv[i], STDOUT_FILENO);
+		if (cmd->argv[i + 1] != NULL)
 			ft_putchar_fd(' ', STDOUT_FILENO);
 		i++;
 	}
