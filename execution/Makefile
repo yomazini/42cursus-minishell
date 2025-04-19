@@ -3,7 +3,7 @@ READLINE_LIB_DIR = $(shell brew --prefix readline)/lib
 READLINE_INC_DIR = $(shell brew --prefix readline)/include
 
 NAME = minishell_exec_test
-CC = cc
+CC = cc 
 #CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g3
 CFLAGS = -fsanitize=address -g3
 
