@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   ft_isspace.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:17:21 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/04/16 15:17:22 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/04/16 15:46:34 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int ft_isspace(int c)
+#include "../parser.h"
+
+int	ft_isspace(int c)
 {
-    return (c == ' ' || c == '\t' || c == '\n'|| c == '\f' || c == '\r' || c == '\v');
+	return (c == ' ' || c == '\t' || c == '\n'
+		|| c == '\f' || c == '\r' || c == '\v');
 }
