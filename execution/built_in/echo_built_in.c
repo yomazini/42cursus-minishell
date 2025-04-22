@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:46:19 by ymazini           #+#    #+#             */
-/*   Updated: 2025/04/19 14:00:46 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/04/21 16:22:45 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,7 @@ int	get_printing_start_index(t_cmd *cmd)
 	i = 1;
 	while (cmd->argv[i])
 	{
-		if (ft_is_only_whitespace(cmd->argv[i])
-			|| ft_check_n_flag(cmd->argv[i]))
+		if (ft_is_only_whitespace(cmd->argv[i]) || ft_check_n_flag(cmd->argv[i]))
 			i++;
 		else
 			break ;
@@ -53,8 +52,7 @@ void	prepare_echo(t_cmd *cmd, int *print_newline_flag, int *start_index)
 	*print_newline_flag = TRUE;
 	while (cmd->argv[i])
 	{
-		if (ft_check_n_flag(cmd->argv[i])
-			|| ft_is_only_whitespace(cmd->argv[i]))
+		if (ft_check_n_flag(cmd->argv[i]) || ft_is_only_whitespace(cmd->argv[i]))
 		{
 			if (ft_check_n_flag(cmd->argv[i]))
 				*print_newline_flag = FALSE;

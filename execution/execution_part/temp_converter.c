@@ -6,9 +6,13 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 14:02:10 by ymazini           #+#    #+#             */
-/*   Updated: 2025/04/19 14:03:28 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/04/22 14:48:36 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+
+//   ----->>>>>>  JUST TEMPS  <<<<<----
+
 
 // TODO: this is temp file; untill mehdi give me the ready t_cmd struct; {only one and simple command --> {NO pipe and No Redirect } }
 
@@ -62,34 +66,34 @@ static char	**create_argv_from_simple_tokens(t_token *token_list, int word_count
 
 // Creates a single t_cmd from a token list *IF* it's simple
 // Returns NULL if list contains pipes/redirects or on error
-t_cmd	*convert_simple_tokens_to_cmd(t_token *token_list)
-{
-	t_cmd	*new_cmd = NULL;
-	int		word_count = 0;
+// t_cmd	*convert_simple_tokens_to_cmd(t_token *token_list)
+// {
+// 	t_cmd	*new_cmd = NULL;
+// 	int		word_count = 0;
 
-	if (!token_list)
-		return (NULL);
+// 	if (!token_list)
+// 		return (NULL);
 
-	// Create the command struct instance
-	new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
-	if (!new_cmd)
-		return (NULL);
+// 	// Create the command struct instance
+// 	new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
+// 	if (!new_cmd)
+// 		return (NULL);
 
-	// Initialize fields for a single command node
-	new_cmd->redirections = NULL; // No redirection handling in this simple version
-	new_cmd->next = NULL;         // No pipe handling in this simple version
+// 	// Initialize fields for a single command node
+// 	new_cmd->redirections = NULL; // No redirection handling in this simple version
+// 	new_cmd->next = NULL;         // No pipe handling in this simple version
 
-	// Create the argv array
-	word_count = count_word_tokens_simple(token_list);
-	new_cmd->argv = create_argv_from_simple_tokens(token_list, word_count);
-	if (!new_cmd->argv)
-	{
-		free(new_cmd); // Cleanup if argv allocation fails
-		return (NULL);
-	}
+// 	// Create the argv array
+// 	word_count = count_word_tokens_simple(token_list);
+// 	new_cmd->argv = create_argv_from_simple_tokens(token_list, word_count);
+// 	if (!new_cmd->argv)
+// 	{
+// 		free(new_cmd); // Cleanup if argv allocation fails
+// 		return (NULL);
+// 	}
 
-	return (new_cmd);
-}
+// 	return (new_cmd);
+// }
 
 // Frees the t_cmd struct created by the simple converter
 void	free_cmd_struct(t_cmd *cmd)

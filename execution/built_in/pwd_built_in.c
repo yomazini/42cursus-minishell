@@ -6,16 +6,22 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 15:10:19 by ymazini           #+#    #+#             */
-/*   Updated: 2025/04/15 22:04:05 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/04/21 15:39:43 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
 
-int	ft_pwd(t_data *data)
+int	ft_pwd(t_cmd *cmd ,t_data *data)
 {
 	char	*pwd;
 
+	if (cmd->argv[1])
+	{
+		ft_putstr_fd("pwd: too many arguments\n",STDERR_FILENO);
+		data->last_exit_status = EXIT_FAILURE;
+		return(data->last_exit_status);
+	}
 	pwd = NULL;
 	pwd = getcwd(NULL, 0);
 	if (!pwd)

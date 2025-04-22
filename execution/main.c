@@ -6,177 +6,146 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:45:09 by ymazini           #+#    #+#             */
-/*   Updated: 2025/04/19 16:00:06 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/04/21 15:31:46 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec_header.h"
- 
-//TODO: this is for testing my execution part
- 
-// int main(int ac, char **av, char **env)
-// {
-// 	(void)ac;
-// 	(void)av;
-// 	t_data data; 
-// 	data.envp = env;
-// 	data.last_exit_status = EXIT_SUCCESS;
-// 	char *line = NULL;
-// 	char **args = NULL;
-// 	int status;
-// 	while(TRUE)
-// 	{
-// 		line = readline(">testing built_in:");
-// 		if (!line)
-// 		{
-// 			printf("exit\n");
-// 			break;
-// 		}	
-// 		if (line[0])
-// 			add_history(line);
-// 		args = ft_split(line,' ');
-// 		if (!args)
-// 		{
-// 			perror("ft_split failed:");
-// 			data.last_exit_status = EXIT_FAILURE;
-// 			free(line);
-// 			continue; 
-// 		}	
-// 		if (args[0])
-// 		{
-// 			t_cmd test_cmd;
-// 			test_cmd.argv = args;
-// 			status = execute_built_ins( &test_cmd , &data);
-// 			if (status != -1 )
-// 				printf("\nbuilt_in was executed with %d\n", data.last_exit_status);
-// 			else
-// 			{
-// 				printf("minishell test: command not found: %s\n", args[0]);
-// 				data.last_exit_status = 127;
-// 			}
-// 		}
-// 		else
-// 			data.last_exit_status = EXIT_SUCCESS;
-// 		free_arr(args);	
-// 		args = NULL;
-// 		free(line);
-// 		line = NULL;
-// 	}
-// 	return (data.last_exit_status);
-// }
+#include "exec_header.h" 
 
-// TODO: this is for Combine Exec and Parse
-
-// Helper to check if a token list represents a simple, single builtin command
-// Returns TRUE if simple builtin, FALSE otherwise
 int	is_simple_builtin_command(t_token *token_list)
 {
-	t_token *current;
-	char	*cmd_name;
+    t_token	*current;
+    char	*cmd_name;
 
-	if (!token_list || token_list->type != TOKEN_WORD)
-		return (FALSE); // Must start with a command word
-
-	cmd_name = token_list->value;
-	current = token_list->next;
-
-	// Check for pipes or redirections anywhere in the list
-	while (current)
-	{
-		if (current->type == TOKEN_PIPE ||
-			current->type == TOKEN_REDIR_IN ||
-			current->type == TOKEN_REDIR_OUT ||
-			current->type == TOKEN_REDIR_APPEND ||
-			current->type == TOKEN_REDIR_HEREDOC)
-		{
-			return (FALSE); // Contains pipe or redirection, not simple
-		}
+    if (!token_list || token_list->type != TOKEN_WORD)
+        return (FALSE);
+    cmd_name = token_list->value;
+    current = token_list->next;
+    while (current) { // Check for pipes/redirects
+        if (current->type != TOKEN_WORD) 
+			return (FALSE);
 		current = current->next;
-	}
-
-	// Check if the first word is a known builtin
-	if ((ft_strncmp(cmd_name, "pwd", 4) == 0) ||
-		(ft_strncmp(cmd_name, "echo", 5) == 0) ||
-		(ft_strncmp(cmd_name, "exit", 5) == 0))
-		// Add other builtins here (env, cd, export, unset) if ready
-	{
-		return (TRUE);
-	}
-
-	return (FALSE); // Not a simple builtin
+    }
+    if ((ft_strncmp(cmd_name, "pwd", 4) == 0) ||
+        (ft_strncmp(cmd_name, "echo", 5) == 0) ||
+        (ft_strncmp(cmd_name, "env", 4) == 0) || 
+        (ft_strncmp(cmd_name, "cd", 3) == 0) ||
+        (ft_strncmp(cmd_name, "unset", 6) == 0) ||
+        (ft_strncmp(cmd_name, "export", 7) == 0) ||
+        (ft_strncmp(cmd_name, "exit", 5) == 0))
+        return (TRUE);
+    return (FALSE);
 }
 
-int main(int ac, char **av, char **env)
+static char	**create_argv_from_simple_tokens(t_token *token_list)
 {
-	(void)ac;
-	(void)av;
-	t_data data;
-	data.envp = env; // Keep using envp for now
-	data.last_exit_status = EXIT_SUCCESS;
-	char *line = NULL;
-	t_token *token_list = NULL;
-	t_cmd   *command = NULL;
-	int status_code; // To store return from builtins if needed
+    int		count = 0;
+    t_token	*curr = token_list;
+    char	**argv_array;
+    int		i = 0;
 
-	while (TRUE)
+    while (curr && curr->type == TOKEN_WORD) 
 	{
-		line = readline("\001\033[1;36m\002>minishell$ \001\033[1;34m\002:\001\033[0m\002 ");
-		if (!line)
-		{
-			printf("exit\n"); // Handle Ctrl+D
-			break;
-		}
-		if (line[0])
-			add_history(line);
-		// 1. Tokenize (Mehdi's part)
-		// Assume ft_tokenize handles basic syntax errors and returns NULL
-		token_list = ft_tokenize(line);
-		if (token_list)
-		{
-			// 2. Check if it's a simple builtin we can execute
-			if (is_simple_builtin_command(token_list))
-			{
-				// 3. Convert simple tokens to t_cmd struct (Your temporary bridge)
-				command = convert_simple_tokens_to_cmd(token_list);
-				if (command)
-				{
-					// 4. Execute the builtin
-					status_code = execute_built_ins(command, &data);
-                    // execute_built_ins's return is the status. ft_exit won't return here.
-                    // data.last_exit_status is updated inside the builtins.
-                    if (ft_strncmp(command->argv[0], "exit", 5) != 0 || command->argv[1] != NULL)
-                         printf("[Builtin %s finished with status: %d]\n", \
-                                 command->argv[0], data.last_exit_status);
-					free_cmd_struct(command); // Free the temporary cmd struct
-					command = NULL;
-				}
-				else
-				{
-					perror("Failed to convert tokens to command");
-					data.last_exit_status = EXIT_FAILURE;
-				}
-			}
-			else // Not a simple builtin (has pipes/redirects or isn't pwd/echo/exit)
-			{
-				printf("--> Complex command or not a builtin, printing tokens:\n");
-				ft_print_token_list(token_list); // Use Mehdi's print function
-				// Decide on a default status? Or wait for executor? Let's set 0 for now.
-				// data.last_exit_status = 0;
-			}
-			// 5. Clean up token list from tokenizer
-			ft_token_clear(&token_list);
-			token_list = NULL;
-		}
-		else // Tokenizer returned NULL (e.g., syntax error)
-		{
-			data.last_exit_status = 2; // Common syntax error status
-			printf("[Syntax Error or Tokenization Failed]\n");
-		}
+        count++;
+        curr = curr->next;
+    }
+    argv_array = (char **)malloc(sizeof(char *) * (count + 1));
+    if (!argv_array) 
+		return (NULL);
+    curr = token_list;
+    while (curr && curr->type == TOKEN_WORD && i < count) {
+        argv_array[i] = ft_strdup(curr->value);
+        if (!argv_array[i]) 
+			return (free_arr(argv_array), NULL);
+        i++;
+        curr = curr->next;
+    }
+    argv_array[i] = NULL;
+    return (argv_array);
+}
 
-		// 6. Clean up readline buffer
-		free(line);
-		line = NULL;
-	}
-	// rl_clear_history(); // Optional
-	return (data.last_exit_status);
+t_cmd	*convert_simple_tokens_to_cmd(t_token *token_list)
+{
+    t_cmd	*new_cmd;
+
+    if (!token_list) 
+		return (NULL);
+    new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
+    if (!new_cmd) 
+		return (NULL);
+    new_cmd->redirections = NULL;
+    new_cmd->next = NULL;
+    new_cmd->argv = create_argv_from_simple_tokens(token_list);
+    if (!new_cmd->argv) 
+		return (free(new_cmd), NULL);
+    return (new_cmd);
+}
+
+int	main(int ac, char **av, char **env)
+{
+    (void)ac;
+    (void)av;
+    t_data	data;
+    char	*line;
+    t_token	*token_list;
+    t_cmd	*command;
+    int		status;
+
+    line = NULL;
+    token_list = NULL;
+    command = NULL;
+    data.last_exit_status = EXIT_SUCCESS;
+    data.env_list = ft_getenv(env);
+    while (TRUE)
+    {
+        line = readline("\001\033[1;36m\002>minishell$ \001\033[1;34m\002:\001\033[0m\002 ");
+        if (!line)
+        {
+            printf("exit\n");
+            break ;
+        }
+        if (line[0])
+            add_history(line);
+         token_list = ft_tokenize(line);
+        if (token_list)
+        {
+            if (is_simple_builtin_command(token_list))
+            {
+                command = convert_simple_tokens_to_cmd(token_list);
+                if (command)
+                {
+                    status = execute_built_ins(command, &data);
+                     if (command->argv && command->argv[0] &&
+                        (ft_strncmp(command->argv[0], "exit", 5) != 0 || status != -1))
+                     {
+                        printf("[Builtin %s finished with status: %d]\n", \
+                                command->argv[0], data.last_exit_status);
+                     }
+                    free_cmd_struct(command);
+                    command = NULL;
+                }
+                else // Conversion failed
+                {
+                    perror("Failed to convert tokens to command");
+                    data.last_exit_status = EXIT_FAILURE;
+                }
+            }
+            else
+            {
+                printf("--> Complex command or not a simple builtin, printing tokens:\n");
+                ft_print_token_list(token_list);
+            }
+            ft_token_clear(&token_list);
+            token_list = NULL;
+        }
+        else
+        {
+            data.last_exit_status = 2;
+            printf("[Syntax Error or Tokenization Failed]\n");
+        }
+        free(line);
+        line = NULL;
+    }
+    ft_tenv_clear(&data.env_list);
+    return (data.last_exit_status);
 }

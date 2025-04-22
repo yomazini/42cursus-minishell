@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/04/19 13:57:14 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/04/22 14:48:49 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,15 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <stdbool.h>
+# include <errno.h>
 
 #include "../parser/parser.h"
 
 struct s_cmd;
 
-// Redirection structure
 typedef struct s_redir
 {
-	t_token_type	type;       // Type of redirection
+	t_token_type	type;
 	char			*filename;  // Filename or Delimiter (quote-removed by parser)
 	int				heredoc_fd; // FD for heredoc input (set later in exec)
 	bool			expand_heredoc; // Flag for heredoc expansion
@@ -59,20 +59,23 @@ typedef struct s_cmd
 
 typedef struct s_data
 {
-	char	**envp;
+	// char	**envp;
+	t_env *env_list;
 	int		last_exit_status;
 }	t_data;
 
 int		execute_built_ins(t_cmd *cmd, t_data *data); // Use cmd->argv internally
-int		ft_pwd(t_data *data);
+int		ft_pwd(t_cmd *cmd,t_data *data);
 int		ft_echo(t_cmd *cmd, t_data *data); // Use cmd->argv internally
 int		ft_exit(t_cmd *cmd, t_data *data); // Use cmd->argv internally
-int		ft_env(t_data *data);
+int		ft_env(t_cmd *cmd ,t_data *data);
 // Signatures for cd/export/unset need checking if they use cmd
 int		ft_cd(t_cmd *cmd, t_data *data);
 int		ft_export(t_cmd *cmd, t_data *data); // Changed signature
 int		ft_unset(t_cmd *cmd, t_data *data); // Changed signature
 
+
+int	ft_is_valid_identifier(const char *name);
 
 int		ft_is_only_whitespace(char *str);
 void	free_arr(char **arr);
@@ -84,6 +87,9 @@ t_cmd	*convert_simple_tokens_to_cmd(t_token *token_list);
 void	free_cmd_struct(t_cmd *cmd);
 int		is_simple_builtin_command(t_token *token_list); // Helper for main
 
+
+
+int ft_list_setenv(t_env **env_list_head, const char *name, const char *value);
 
 
 #endif
