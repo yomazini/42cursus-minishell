@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/04/19 11:11:56 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/04/23 13:01:30 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <readline/history.h>
 # include <stdbool.h>
 # include <errno.h> //! MBLater
+# include <string.h> //^ for strcmp make your's
 
 typedef enum s_token_type
 {
@@ -46,6 +47,7 @@ typedef struct s_env
 	struct s_env *next;
 }	t_env;
 
+
 //libft
 int		ft_isspace(int c);
 int		ft_isquot(int c);
@@ -57,6 +59,7 @@ int		ft_isoperater(int c);
 int		ft_isdouble_op(const char *line, int k);
 char	**free_all(char **tkn_array, int i);
 char	*ft_alloc_token(int token_len, int j, const char *line);
+void	ft_advance_word_token(const char *line, int *i);
 // ft_utils_error.c
 int		quote_error(const char *line);
 int		pipe_error(const char *line);
@@ -69,9 +72,25 @@ t_token	*ft_token_new(char *value, t_token_type type);
 void	ft_token_add_back(t_token **token_list, t_token *new_node);
 void	ft_token_delone(t_token *node);
 void	ft_token_clear(t_token **token_list);
-int		ft_token_size(t_token *head); // might need later
 void	ft_print_token_list(t_token *head); // just for printing
 int		ft_synax_error_free(const char *line);
+
+// expander Part
+void	ft_expander(t_token **token, t_env *env);
+char	*ft_strjoined(char const *string, char const *str);
+int		ft_strcmp(const char *alpha, const char *bita);
+char	*ft_substr(char const *s, unsigned int start, size_t len);
+void	ft_clean_up(t_token **token);
+int		ft_isdouble_quote(char *word);
+int 	ft_isexpandable(t_token *current);
+int		ft_isbign_variable(char c);
+int 	ft_ispt_variable(char c);
+int		ft_peakahead(char c);
+char	*ft_build_variable_name(const char *string, int *i, int peak);
+char	*ft_isvariablet_exist(t_env *env_list, char *variable_name);
+void	ft_expand(t_token **token_ptr, t_env *env);
+int		ft_isdigit(int c);
+
 
 //	expander/env
 t_env	*ft_getenv(char **env);

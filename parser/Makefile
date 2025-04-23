@@ -13,7 +13,17 @@ SRC = parser.c \
 	  tokenize/ft_synax_error_free.c \
 	  tokenize/ft_utils_error.c \
 	  tokenize/ft_print_tokens.c \
-	expander/env/ft_getenv.c \
+	  expander/expander.c \
+	  expander/ft_isdigit.c \
+	  expander/ft_strcmp.c \
+	  expander/ft_strjoined.c \
+	  expander/ft_substr.c \
+	  expander/ft_clean_up.c \
+	  expander/ft_expand_tools.c \
+	  expander/ft_build_variable_name.c \
+	  expander/ft_isvariablet_exist.c \
+	  expander/ft_exec_exp.c \
+	  expander/env/ft_getenv.c \
 	  expander/env/ft_tenv_new.c \
 	  expander/env/ft_tenv_add_back.c \
 	  expander/env/ft_tenv_last.c \
@@ -24,35 +34,38 @@ SRC = parser.c \
 	  expander/env/ft_strnstr.c \
 
 
+
 OBJS = $(SRC:.c=.o)
-READLINE_LIB_DIR = $(shell brew --prefix readline)/lib
-READLINE_INC_DIR = $(shell brew --prefix readline)/include
 
 NAME = parsi
-CC = cc 
-CFLAGS = -Wall -Wextra -Werror -I$(READLINE_INC_DIR) 
-LDFLAG = -L$(READLINE_LIB_DIR) -lreadline -lncurses
+CC = cc
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address
+LDFLAG = -lreadline -lncurses
 RM = rm -rf
 
 all: $(NAME)
 
 $(NAME): $(OBJS) parser.h
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(LDFLAG)
-
+	@echo "Linking $(NAME) ..."
+	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(LDFLAG)
+	@echo "parsi Successfully built."
 
 %.o:%.c parser.h
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	${RM} ${OBJS}
+	@${RM} ${OBJS}
+	@echo "Object files cleaned"
 
 fclean: clean
-	${RM} ${NAME}
+	@${RM} ${NAME}
+	@echo "Excutable $(NAME) cleaned."
 
 re: fclean all
+	@echo "Rebuilt $(NAME)."
 
 run:
-	@$(MAKE) all
-	@$(MAKE) clean
+	@$(MAKE) --no-print-directory all
+	@$(MAKE) --no-print-directory clean
 	@echo "Build complete, object files cleand."
 	

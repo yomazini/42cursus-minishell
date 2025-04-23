@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:17:32 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/04/16 18:16:15 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/04/23 12:58:33 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,7 @@ static void	skip_token(const char *line, int *i)
 			(*i)++;
 	}
 	else
-		while (line[*i] && !ft_isspace(line[*i])
-			&& !ft_isquot(line[*i]) && !ft_isoperater(line[*i]))
-			(*i)++;
+	ft_advance_word_token(line, i);
 }
 
 static size_t	ft_cnt_tokens(const char *line)
@@ -76,9 +74,7 @@ static char	*extract_token(const char *line, int *k)
 	else if (ft_isoperater(line[j]))
 		*k += 1 + ft_isdouble_op(line, j);
 	else
-		while (line[*k] && !ft_isspace(line[*k])
-			&& !ft_isquot(line[*k]) && !ft_isoperater(line[*k]))
-			(*k)++;
+		ft_advance_word_token(line, k);
 	token_len = *k - j;
 	if (token_len <= 0)
 		token_len = 0;
