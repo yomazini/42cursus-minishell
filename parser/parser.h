@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/04/23 13:01:30 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/04/29 16:17:00 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,22 @@ typedef struct s_env
 }	t_env;
 
 
+typedef struct s_exp_result
+{
+	char *res_str;
+	int	chars_consumed;
+	int	peak;
+} t_exp_res;
+
+
+typedef struct s_proc
+{
+	char	*to_proc;
+	char	quote_char;
+	int		last_pos;
+}	t_proc;
+
+
 //libft
 int		ft_isspace(int c);
 int		ft_isquot(int c);
@@ -86,7 +102,7 @@ int 	ft_isexpandable(t_token *current);
 int		ft_isbign_variable(char c);
 int 	ft_ispt_variable(char c);
 int		ft_peakahead(char c);
-char	*ft_build_variable_name(const char *string, int *i, int peak);
+char	*ft_build_variable_name(const char *orign, int peak, int *index);
 char	*ft_isvariablet_exist(t_env *env_list, char *variable_name);
 void	ft_expand(t_token **token_ptr, t_env *env);
 int		ft_isdigit(int c);

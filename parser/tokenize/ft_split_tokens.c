@@ -6,98 +6,104 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:17:32 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/04/23 12:58:33 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/04/29 16:14:21 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../parser.h"
 
-static void	skip_token(const char *line, int *i)
+static size_t ft_get_token_len(const char *line, int *k)
 {
-	char	quote;
+    int start = *k;
+    char quote;
 
-	if (ft_isquot(line[*i]))
-	{
-		quote = line[*i];
-		(*i)++;
-		while (line[*i] && line[*i] != quote)
-			(*i)++;
-		if (line[*i] == quote)
-			(*i)++;
-	}
-	else if (ft_isoperater(line[*i]))
-	{
-		if (ft_isdouble_op(line, *i))
-			*i += 2;
-		else
-			(*i)++;
-	}
-	else
-	ft_advance_word_token(line, i);
+    if (ft_isoperater(line[*k]))
+    {
+        *k += 1 + ft_isdouble_op(line, *k);
+        return (*k - start);
+    }
+    while (line[*k])
+    {
+        if (ft_isquot(line[*k]))
+        {
+            quote = line[*k];
+            (*k)++;
+            while (line[*k] && line[*k] != quote)
+                (*k)++; 
+            if (line[*k] == quote)
+                (*k)++;
+        }
+        else if (ft_isoperater(line[*k]) || ft_isspace(line[*k]))
+            break;
+        else
+            (*k)++;
+    }
+    return (*k - start);
 }
 
-static size_t	ft_cnt_tokens(const char *line)
+
+static size_t	ft_count_tokens_revised(const char *line)
 {
-	int		index;
+	int		k;
 	size_t	cnt_tokens;
+    size_t  len;
 
-	index = 0;
-	cnt_tokens = 0;
-	while (line[index])
-	{
-		while (line[index] && ft_isspace(line[index]))
-			index++;
-		if (line[index])
-		{
-			cnt_tokens++;
-			skip_token(line, &index);
-		}
-	}
-	return (cnt_tokens);
-}
-
-static char	*extract_token(const char *line, int *k)
-{
-	int		j;
-	int		token_len;
-	char	quote_char;
-
-	j = *k;
-	if (ft_isquot(line[j]))
-	{
-		quote_char = line[(*k)++];
-		while (line[*k] && line[*k] != quote_char)
-			(*k)++;
-		if (line[*k] == quote_char)
-			(*k)++;
-	}
-	else if (ft_isoperater(line[j]))
-		*k += 1 + ft_isdouble_op(line, j);
-	else
-		ft_advance_word_token(line, k);
-	token_len = *k - j;
-	if (token_len <= 0)
-		token_len = 0;
-	return (ft_alloc_token(token_len, j, line));
-}
-
-static char	**filltkn_array(char **token_array, const char *line)
-{
-	int	i;
-	int	k;
-
-	i = 0;
 	k = 0;
+	cnt_tokens = 0;
 	while (line[k])
 	{
 		while (line[k] && ft_isspace(line[k]))
 			k++;
 		if (line[k])
 		{
-			token_array[i] = extract_token(line, &k);
-			if (!token_array[i])
-				free_all(token_array, i - 1);
-			i++;
+            len = ft_get_token_len(line, &k);
+            if (len > 0) 
+			    cnt_tokens++;
+		}
+	}
+	return (cnt_tokens);
+}
+
+char	*ft_alloc_token(int token_len, int start_index, const char *line)
+{
+	char	*token_str;
+
+	if (token_len <= 0) 
+        return ft_strdup("");
+
+	token_str = malloc(sizeof(char) * (token_len + 1));
+	if (!token_str)
+		return (NULL);
+	ft_strncpy(token_str, &line[start_index], token_len);
+	token_str[token_len] = '\0';
+	return (token_str);
+}
+
+
+static char	**filltkn_array_revised(char **token_array, const char *line)
+{
+	int	i;
+	int	k;
+    int token_start;
+    size_t token_len;
+
+	i = 0;
+	k = 0;
+	while (line[k])
+	{
+		while (line[k] && ft_isspace(line[k])) 
+			k++;
+		if (line[k])
+		{
+            token_start = k;
+            token_len = ft_get_token_len(line, &k);
+            if (token_len > 0)
+            {
+			    token_array[i] = ft_alloc_token(token_len, token_start, line);
+			    if (!token_array[i])
+				    return (free_all(token_array, i));
+			    i++;
+            }
 		}
 	}
 	token_array[i] = NULL;
@@ -109,11 +115,13 @@ char	**ft_split_tokens(const char *line)
 	size_t	cnt;
 	char	**tkn_array;
 
-	cnt = ft_cnt_tokens(line);
+    if (!line) return NULL;
+	cnt = ft_count_tokens_revised(line);
 	tkn_array = malloc(sizeof(char *) * (cnt + 1));
 	if (!tkn_array)
 		return (NULL);
-	if (!filltkn_array(tkn_array, line))
+	if (!filltkn_array_revised(tkn_array, line))
 		return (NULL);
 	return (tkn_array);
 }
+

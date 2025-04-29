@@ -1,110 +1,120 @@
 #include "../parser.h"
 
-char	*ft_append_segment(char *curr_new, const char *orig_token, int last_pos, int curr_i)
+char	*append_single_char(char *new_str,char c)
 {
-	char	*segment;
 	char	*temp;
-	int		len;
-	len = curr_i - last_pos;
-	if (len <= 0)
-		return (curr_new);  // Nothing to append, return original
-	segment = ft_substr(orig_token, last_pos, len);
-	if (!segment)
-		return (free(curr_new), NULL);
-	temp = ft_strjoined(curr_new, segment);
-	return (free(curr_new), free(segment), temp);
+	char	signel_char_string[2];
+
+	signel_char_string[0] = c;
+	signel_char_string[1] = '\0';
+	temp = ft_strjoined(new_str, signel_char_string);
+	free(new_str);
+	new_str = temp;
+	return (new_str);
 }
 
-char	*ft_append_env_value(char *curr_new, const char *orig_token, int *i_ptr, t_env *env)
+char	*ft_append_vt(char *new_str, const char *orign, t_env *env, int *i, int peak)
 {
 	char	*var_name;
 	char	*var_value;
 	char	*temp;
-	int		peak;
 
-	if (ft_isdigit(orig_token[*i_ptr + 1]))
-		peak = 3;
-	else 
-		peak = 1;
-	var_name = ft_build_variable_name(&orig_token[*i_ptr + 1], i_ptr, peak);
+	var_name = ft_build_variable_name(orign, peak, i);
 	if (!var_name)
-		return (curr_new);
+		return (new_str);
 	var_value = ft_isvariablet_exist(env, var_name);
-	if (var_value)
-	{
-		temp = ft_strjoined(curr_new, var_value);
-		return (free(curr_new), free(var_name), temp);
-	}
+	if (!var_value)
+		return (free(var_name), new_str);
+	temp = ft_strjoined(new_str, var_value);
+	if (!temp)
+		return (new_str);
+	free(new_str);
+	new_str = temp;
 	free(var_name);
-	return (curr_new);
+	return (new_str);
 }
-char *ft_precess_exp(char *curr_new, const char *orig_token, int *i_ptr, t_env *env)
-{
-	int		peak;
-	char	*result_str;
 
-	peak = ft_peakahead(orig_token[*i_ptr + 1]);
-	result_str = curr_new;
-	if (peak == 1 || peak == 3)
-		result_str = ft_append_env_value(result_str, orig_token, i_ptr, env);
-	else if (peak == 2)
+char	*ft_expenv(char *new_str, const char *orign, t_env *env, int *i)
+{
+	int	peak;
+
+	peak = ft_peakahead(orign[1]);
+	if (peak == -1)
 	{
-		// $?
-		// *i_ptr += 2;
+		new_str = append_single_char(new_str, orign[0]);
+		(*i)++;
+	}
+	else if (peak == 1 || peak == 2)
+	{
+		new_str = ft_append_vt(new_str, orign, env, i, peak);
+		if (!new_str)
+			return (NULL);
+	}
+	else if (peak == 3)
+	{
+		// new_str = ft_append_exit_status();
+		//!__________FOR: $!
 	}
 	else if (peak == 4)
-		*i_ptr += 2;
-	else
-	{
-		result_str = ft_append_segment(result_str, orig_token, *i_ptr, 1);
-		*i_ptr += 1;
-	}
-	return (result_str);
+		*i += 2;
+	return (new_str);
+
 }
-char	*ft_build_expanded_string(const char *orig_token, t_env *env)
+char *ft_build_expanded_string(const char *orign, t_env *env)
 {
 	int		i;
-	int		last_pos;
-	char	*new_string;
+	char	quote_char;
+	char	*new_str;
+	const char *process;
 
+	new_str = ft_strdup("");
 	i = 0;
-	last_pos = 0;
-	new_string = ft_strdup("");
-	if (!new_string)
-		return (NULL);
-	while (orig_token[i])
+	quote_char = '\0';
+	while (orign && orign[i])
 	{
-		if (orig_token[i] == '$' && orig_token[i + 1])
+		if (orign[i] == '$' && !quote_char && ft_isquot(orign[i + 1]))
+			i++;
+		if (orign[i] && ft_isquot(orign[i]) && !quote_char)
 		{
-			new_string = ft_append_segment(new_string, orig_token, last_pos, i);
-			if (!new_string)
-				return (NULL);
-			new_string = ft_precess_exp(new_string, orig_token, &i, env);
-			if (!new_string)
-				return (NULL);
-			last_pos = i;
-			continue;
+			quote_char = orign[i];
+			new_str = append_single_char(new_str, orign[i++]);
 		}
-		i++;
+		else if (orign[i] && quote_char && orign[i] == quote_char)
+		{
+			quote_char = '\0';
+			new_str = append_single_char(new_str, orign[i++]);
+		}
+		else if (orign[i] == '$' && orign[i + 1] && (quote_char == '\"' || !quote_char))
+		{
+			process = &orign[i];
+			new_str = ft_expenv(new_str, process, env, &i);
+		}
+		else if (orign[i])
+			new_str = append_single_char(new_str, orign[i++]);
 	}
-	return (ft_append_segment(new_string, orig_token, last_pos, i));	
+	return (new_str);
 }
 
-void	ft_expand(t_token **token_ptr, t_env *env)
+void	ft_expand(t_token **token, t_env *env)
 {
 	char	*orig_value;
 	char	*exp_value;
 
-	if(!token_ptr|| !*token_ptr || !(*token_ptr)->value)
+	if (!token|| !*token|| !(*token)->value)
 		return ;
-	orig_value = (*token_ptr)->value;
+	orig_value = (*token)->value;
 	exp_value = ft_build_expanded_string(orig_value, env);
 	if (!exp_value)
 	{
 		exp_value = ft_strdup("");
 		if (!exp_value)
-			return;
+		{
+			free(orig_value);
+			(*token)->value = NULL;
+			return ;
+		}
 	}
 	free(orig_value);
-	(*token_ptr)->value = exp_value;
+	(*token)->value = exp_value;	
 }
+
