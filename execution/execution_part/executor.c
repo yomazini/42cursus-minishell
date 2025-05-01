@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/01 15:18:42 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/01 22:35:05 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ int	execute_commands(t_cmd *cmd_list, t_data *data)
 
 	if (command_count == 1)
 	{
-		if (is_parent_builtin(cmd_list) || 1)
+		if (is_parent_builtin(cmd_list))
 			execute_built_ins(cmd_list, data);
 		else // External command OR child-safe builtin (echo, pwd, env, export no-args)
 		{
