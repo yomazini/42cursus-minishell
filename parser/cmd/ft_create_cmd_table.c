@@ -84,7 +84,7 @@ t_cmd	*ft_creat_cmd_table(t_token *token)
 			{
 				new_cmd->argv =  ft_add_to_argv(new_cmd->argv, curr->value);
 			}
-			else if (curr->type >= TOKEN_REDIR_IN || curr->type <= TOKEN_REDIR_HEREDOC)
+			else if (curr->type >= TOKEN_REDIR_IN && curr->type <= TOKEN_REDIR_HEREDOC)
 			{
 				new_redir = ft_redir_new(curr->type, curr->next->value);
 				ft_redir_add_back(&new_cmd->redir,new_redir);
