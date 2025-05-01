@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/04/29 16:17:00 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/01 17:48:24 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,29 @@ typedef struct s_proc
 	int		last_pos;
 }	t_proc;
 
+typedef struct s_redir
+{
+    t_token_type    type;
+    char            *filename;
+    int                heredoc_fd;
+    bool            expand_heredoc;
+    struct s_redir    *next;
+}    t_redir;
+
+typedef struct s_cmd
+{
+    char            **argv;
+    struct s_redir    *redir;
+    struct s_cmd    *next;
+}    t_cmd;
+
+
+typedef struct s_data
+{
+    t_env    *env_list;
+    int        last_exit_status;
+}    t_data;
+
 
 //libft
 int		ft_isspace(int c);
@@ -107,7 +130,6 @@ char	*ft_isvariablet_exist(t_env *env_list, char *variable_name);
 void	ft_expand(t_token **token_ptr, t_env *env);
 int		ft_isdigit(int c);
 
-
 //	expander/env
 t_env	*ft_getenv(char **env);
 char	*ft_strdup(const char *s1);
@@ -118,5 +140,15 @@ void	ft_tenv_add_back(t_env **env_list, t_env *new_node);
 t_env	*ft_tenv_last(t_env *env);
 void	ft_tenv_delone(t_env *node);
 void	ft_tenv_clear(t_env **token_list);
+
+// cmd_table
+t_cmd	*ft_creat_cmd_table(t_token *token);
+t_cmd	*ft_cmd_new(void);
+void	ft_cmd_add_back(t_cmd **cmd_list, t_cmd *new_cmd);
+t_redir	*ft_redir_new(int type, char *filename);
+void	ft_redir_add_back(t_redir **redir_list, t_redir *new_redir);
+void	ft_print_cmd_table(t_cmd *head);
+void	ft_cmd_clear(t_cmd **cmd_list);
+void	ft_redir_clear(t_redir **redir_list);
 
 #endif

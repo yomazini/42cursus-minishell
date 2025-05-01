@@ -32,6 +32,14 @@ SRC = parser.c \
 	  expander/env/ft_strdup.c \
 	  expander/env/ft_strchr.c \
 	  expander/env/ft_strnstr.c \
+	  cmd/ft_create_cmd_table.c \
+	  cmd/ft_cmd_new.c \
+	  cmd/ft_cmd_add_back.c \
+	  cmd/ft_cmd_clear.c \
+	  cmd/ft_redir_new.c \
+	  cmd/ft_redir_add_back.c \
+	  cmd/ft_redir_clear.c \
+	  cmd/ft_print_cmd_table.c \
 
 
 
