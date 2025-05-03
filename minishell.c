@@ -515,7 +515,7 @@ int	main(int ac, char **av, char **env)
 		free(line);
 		line = NULL;
 
-	} // --- End of main while loop ---
+	} // --- End of main while loop --- 
 
 	// --- Final Cleanup ---
 	ft_tenv_clear(&data.env_list); // Free environment list (Mehdi's func)
@@ -524,7 +524,3 @@ int	main(int ac, char **av, char **env)
 	// printf("Final exit status: %d\n", data.last_exit_status); // Optional debug
 	return (data.last_exit_status); // Return the last exit status
 }
-
-
-
-
