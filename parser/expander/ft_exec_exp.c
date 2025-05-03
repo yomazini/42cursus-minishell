@@ -1,5 +1,49 @@
 #include "../parser.h"
 
+static int	int_len(long c)
+{
+	int	i;
+
+	i = 0;
+	if (c <= 0)
+	{
+		i++;
+		c = -c;
+	}
+	while (c)
+	{
+		c /= 10;
+		i++;
+	}
+	return (i);
+}
+
+static char	*ft_itoa_ps(int n)
+{
+	long	c;
+	char	*str;
+	int		len;
+
+	c = n;
+	len = int_len(c);
+	str = (char *)malloc (len + 1);
+	if (!str)
+		return (NULL);
+	str[len--] = '\0';
+	if (c == 0)
+		str[0] = '0';
+	if (c < 0)
+	{
+		str[0] = '-';
+		c = -c ;
+	}
+	while (c)
+	{
+		str[len--] = (c % 10) + '0';
+		c /= 10;
+	}
+	return (str);
+}
 char	*append_single_char(char *new_str,char c)
 {
 	char	*temp;
@@ -34,6 +78,22 @@ char	*ft_append_vt(char *new_str, const char *orign, t_env *env, int *i, int pea
 	return (new_str);
 }
 
+char	*ft_append_exit_status(char *new_str, int last_exit_status)
+{
+	char	*str;
+	size_t	len;
+	char	*value;
+	char	*temp;
+
+	str = ft_itoa_ps(last_exit_status);
+	len = ft_strlen(str);
+	value = malloc(sizeof(char) * (len + 1));
+	ft_strncpy(value, str, (len + 1));
+	temp = ft_strjoined(new_str, value);
+	free(new_str);
+	new_str = temp;
+	return (new_str);
+}
 char	*ft_expenv(char *new_str, const char *orign, t_data *data, int *i)
 {
 	int	peak;
@@ -52,8 +112,7 @@ char	*ft_expenv(char *new_str, const char *orign, t_data *data, int *i)
 	}
 	else if (peak == 3)
 	{
-		printf("%d\n", data->last_exit_status);
-		// exit(0);
+		new_str = ft_append_exit_status(new_str, data->last_exit_status);
 		*i += 2;
 	}
 	else if (peak == 4)
@@ -85,7 +144,7 @@ char *ft_build_expanded_string(const char *orign, t_data *data)
 			quote_char = '\0';
 			new_str = append_single_char(new_str, orign[i++]);
 		}
-		else if (orign[i] == '$' && orign[i + 1] /*&& data->herdoc == false*/ && (quote_char == '\"' || !quote_char))
+		else if (orign[i] == '$' && orign[i + 1] && data->herdoc == false && (quote_char == '\"' || !quote_char))
 		{
 			process = &orign[i];
 			new_str = ft_expenv(new_str, process, data, &i);
@@ -115,6 +174,8 @@ void	ft_expand(t_token **token, t_data *data)
 			return ;
 		}
 	}
+	if (data->herdoc == true)
+		data->herdoc = false;
 	free(orig_value);
 	(*token)->value = exp_value;	
 }
