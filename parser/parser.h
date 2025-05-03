@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/01 17:48:24 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/02 17:37:29 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ typedef struct s_data
 {
     t_env    *env_list;
     int        last_exit_status;
+	bool	herdoc;
 }    t_data;
 
 
@@ -115,7 +116,7 @@ void	ft_print_token_list(t_token *head); // just for printing
 int		ft_synax_error_free(const char *line);
 
 // expander Part
-void	ft_expander(t_token **token, t_env *env);
+void	ft_expander(t_token **token, t_data *data);
 char	*ft_strjoined(char const *string, char const *str);
 int		ft_strcmp(const char *alpha, const char *bita);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
@@ -127,7 +128,7 @@ int 	ft_ispt_variable(char c);
 int		ft_peakahead(char c);
 char	*ft_build_variable_name(const char *orign, int peak, int *index);
 char	*ft_isvariablet_exist(t_env *env_list, char *variable_name);
-void	ft_expand(t_token **token_ptr, t_env *env);
+void	ft_expand(t_token **token_ptr, t_data *data);
 int		ft_isdigit(int c);
 
 //	expander/env

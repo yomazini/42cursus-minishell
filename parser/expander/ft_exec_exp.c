@@ -34,7 +34,7 @@ char	*ft_append_vt(char *new_str, const char *orign, t_env *env, int *i, int pea
 	return (new_str);
 }
 
-char	*ft_expenv(char *new_str, const char *orign, t_env *env, int *i)
+char	*ft_expenv(char *new_str, const char *orign, t_data *data, int *i)
 {
 	int	peak;
 
@@ -46,21 +46,22 @@ char	*ft_expenv(char *new_str, const char *orign, t_env *env, int *i)
 	}
 	else if (peak == 1 || peak == 2)
 	{
-		new_str = ft_append_vt(new_str, orign, env, i, peak);
+		new_str = ft_append_vt(new_str, orign, data->env_list, i, peak);
 		if (!new_str)
 			return (NULL);
 	}
 	else if (peak == 3)
 	{
-		// new_str = ft_append_exit_status();
-		//!__________FOR: $!
+		printf("%d\n", data->last_exit_status);
+		// exit(0);
+		*i += 2;
 	}
 	else if (peak == 4)
 		*i += 2;
 	return (new_str);
 
 }
-char *ft_build_expanded_string(const char *orign, t_env *env)
+char *ft_build_expanded_string(const char *orign, t_data *data)
 {
 	int		i;
 	char	quote_char;
@@ -84,10 +85,10 @@ char *ft_build_expanded_string(const char *orign, t_env *env)
 			quote_char = '\0';
 			new_str = append_single_char(new_str, orign[i++]);
 		}
-		else if (orign[i] == '$' && orign[i + 1] && (quote_char == '\"' || !quote_char))
+		else if (orign[i] == '$' && orign[i + 1] /*&& data->herdoc == false*/ && (quote_char == '\"' || !quote_char))
 		{
 			process = &orign[i];
-			new_str = ft_expenv(new_str, process, env, &i);
+			new_str = ft_expenv(new_str, process, data, &i);
 		}
 		else if (orign[i])
 			new_str = append_single_char(new_str, orign[i++]);
@@ -95,7 +96,7 @@ char *ft_build_expanded_string(const char *orign, t_env *env)
 	return (new_str);
 }
 
-void	ft_expand(t_token **token, t_env *env)
+void	ft_expand(t_token **token, t_data *data)
 {
 	char	*orig_value;
 	char	*exp_value;
@@ -103,7 +104,7 @@ void	ft_expand(t_token **token, t_env *env)
 	if (!token|| !*token|| !(*token)->value)
 		return ;
 	orig_value = (*token)->value;
-	exp_value = ft_build_expanded_string(orig_value, env);
+	exp_value = ft_build_expanded_string(orig_value, data);
 	if (!exp_value)
 	{
 		exp_value = ft_strdup("");

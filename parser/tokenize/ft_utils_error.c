@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 16:51:48 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/04/16 18:15:46 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/03 09:53:57 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,10 @@ static int	ft_helper_pipe_func(const char *line)
 	start_index = 0;
 	while (line[start_index] && ft_isspace(line[start_index]))
 		start_index++;
-	if (!line[start_index] || line[start_index] == '|')
+	if (line[start_index] == '|')
 		return (1);
 	end_index = lenght - 1;
-	while (end_index >= 0 && ft_isspace(line[end_index]))
+	while (end_index > 0 && ft_isspace(line[end_index]))
 		end_index--;
 	if (line[end_index] == '|')
 		return (1);

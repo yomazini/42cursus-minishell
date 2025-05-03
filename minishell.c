@@ -1,16 +1,6 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/14 20:45:09 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/01 22:48:37 by ymazini          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "exec_header.h" 
+#include "includes/minishell.h" 
+#include "parser/parser.h"
+#include "execution/exec_header.h"
 
 int	is_simple_builtin_command(t_cmd *cmd)
 {
@@ -37,7 +27,6 @@ int	is_simple_builtin_command(t_cmd *cmd)
 	return (FALSE);
 }
 
-#include "exec_header.h"
 
 int	is_known_builtin(t_token *first_token) // Takes t_token*
 {
@@ -61,205 +50,205 @@ int	is_known_builtin(t_token *first_token) // Takes t_token*
 	return (FALSE);
 }
 
-int	contains_pipe(t_token *token_list)
-{
-	t_token	*current = token_list;
-	while (current)
-	{
-		if (current->type == TOKEN_PIPE)
-			return (TRUE);
-		current = current->next;
-	}
-	return (FALSE);
-}
-
-// static int	count_segment_words(t_token *token)
+// int	contains_pipe(t_token *token_list)
 // {
-// 	int count = 0;
-// 	while (token && token->type != TOKEN_PIPE)
+// 	t_token	*current = token_list;
+// 	while (current)
 // 	{
-// 		if (token->type == TOKEN_WORD)
-// 			count++;
-// 		if (token->type >= TOKEN_REDIR_IN && token->type <= TOKEN_REDIR_HEREDOC)
-// 		{
-// 			if (token->next && token->next->type == TOKEN_WORD)
-// 				token = token->next;
-// 			else
-// 				break;
-// 		}
-// 		token = token->next;
+// 		if (current->type == TOKEN_PIPE)
+// 			return (TRUE);
+// 		current = current->next;
 // 	}
-// 	return (count);
+// 	return (FALSE);
 // }
 
-// static char	**create_segment_argv(t_token *token, int word_count)
+// // static int	count_segment_words(t_token *token)
+// // {
+// // 	int count = 0;
+// // 	while (token && token->type != TOKEN_PIPE)
+// // 	{
+// // 		if (token->type == TOKEN_WORD)
+// // 			count++;
+// // 		if (token->type >= TOKEN_REDIR_IN && token->type <= TOKEN_REDIR_HEREDOC)
+// // 		{
+// // 			if (token->next && token->next->type == TOKEN_WORD)
+// // 				token = token->next;
+// // 			else
+// // 				break;
+// // 		}
+// // 		token = token->next;
+// // 	}
+// // 	return (count);
+// // }
+
+// // static char	**create_segment_argv(t_token *token, int word_count)
+// // {
+// // 	char	**argv_array;
+// // 	int		i = 0;
+
+// // 	if (word_count == 0) // Handle commands with only redirections
+// // 		return (NULL); // Or maybe {"", NULL}? Let's return NULL for now.
+
+// // 	argv_array = (char **)malloc(sizeof(char *) * (word_count + 1));
+// // 	if (!argv_array) return (NULL);
+
+// // 	while (token && token->type != TOKEN_PIPE)
+// // 	{
+// // 		if (token->type == TOKEN_WORD)
+// // 		{
+// // 			if (i < word_count) // Bounds check
+// // 			{
+// // 				argv_array[i] = ft_strdup(token->value);
+// // 				if (!argv_array[i]) return (free_arr(argv_array), NULL);
+// // 				i++;
+// // 			} else break; // Should not happen if count was correct
+// // 		}
+// // 		else if (token->type >= TOKEN_REDIR_IN && token->type <= TOKEN_REDIR_HEREDOC)
+// // 		{
+// // 			if (token->next && token->next->type == TOKEN_WORD)
+// // 				token = token->next; // Skip filename
+// // 			else
+// //                 break; // Error
+// // 		}
+// // 		token = token->next;
+// // 	}
+// // 	argv_array[i] = NULL;
+// // 	return (argv_array);
+// // }
+
+// static t_redir *add_redir_node(t_redir **list_head, t_token *redir_token, t_token *filename_token)
 // {
-// 	char	**argv_array;
-// 	int		i = 0;
-
-// 	if (word_count == 0) // Handle commands with only redirections
-// 		return (NULL); // Or maybe {"", NULL}? Let's return NULL for now.
-
-// 	argv_array = (char **)malloc(sizeof(char *) * (word_count + 1));
-// 	if (!argv_array) return (NULL);
-
-// 	while (token && token->type != TOKEN_PIPE)
-// 	{
-// 		if (token->type == TOKEN_WORD)
-// 		{
-// 			if (i < word_count) // Bounds check
-// 			{
-// 				argv_array[i] = ft_strdup(token->value);
-// 				if (!argv_array[i]) return (free_arr(argv_array), NULL);
-// 				i++;
-// 			} else break; // Should not happen if count was correct
-// 		}
-// 		else if (token->type >= TOKEN_REDIR_IN && token->type <= TOKEN_REDIR_HEREDOC)
-// 		{
-// 			if (token->next && token->next->type == TOKEN_WORD)
-// 				token = token->next; // Skip filename
-// 			else
-//                 break; // Error
-// 		}
-// 		token = token->next;
+//     t_redir *new_redir = malloc(sizeof(t_redir));
+// 	if (!new_redir) return (NULL);
+// 	new_redir->type = redir_token->type;
+// 	new_redir->filename = ft_strdup(filename_token->value);
+// 	if (!new_redir->filename) return (free(new_redir), NULL);
+// 	new_redir->heredoc_fd = -1;
+// 	new_redir->expand_heredoc = true;
+// 	new_redir->next = NULL;
+// 	if (!*list_head) *list_head = new_redir;
+// 	else {
+// 		t_redir *curr = *list_head;
+// 		while (curr->next) curr = curr->next;
+// 		curr->next = new_redir;
 // 	}
-// 	argv_array[i] = NULL;
-// 	return (argv_array);
+// 	return new_redir;
 // }
 
-static t_redir *add_redir_node(t_redir **list_head, t_token *redir_token, t_token *filename_token)
-{
-    t_redir *new_redir = malloc(sizeof(t_redir));
-	if (!new_redir) return (NULL);
-	new_redir->type = redir_token->type;
-	new_redir->filename = ft_strdup(filename_token->value);
-	if (!new_redir->filename) return (free(new_redir), NULL);
-	new_redir->heredoc_fd = -1;
-	new_redir->expand_heredoc = true;
-	new_redir->next = NULL;
-	if (!*list_head) *list_head = new_redir;
-	else {
-		t_redir *curr = *list_head;
-		while (curr->next) curr = curr->next;
-		curr->next = new_redir;
-	}
-	return new_redir;
-}
+// t_cmd	*placeholder_create_command_table(t_token *token_list)
+// {
+// 	t_cmd	*cmd_head = NULL;
+// 	t_cmd	*current_cmd = NULL;
+// 	t_token	*segment_start = token_list;
+// 	t_token *current_token = token_list;
 
-t_cmd	*placeholder_create_command_table(t_token *token_list)
-{
-	t_cmd	*cmd_head = NULL;
-	t_cmd	*current_cmd = NULL;
-	t_token	*segment_start = token_list;
-	t_token *current_token = token_list;
+// 	if (!token_list) return (NULL);
 
-	if (!token_list) return (NULL);
+// 	while (current_token != NULL)
+// 	{
+// 		while (current_token && current_token->type != TOKEN_PIPE)
+// 			current_token = current_token->next;
 
-	while (current_token != NULL)
-	{
-		while (current_token && current_token->type != TOKEN_PIPE)
-			current_token = current_token->next;
+// 		// Create a command node for the segment [segment_start ... current_token)
+// 		t_cmd *new_cmd = malloc(sizeof(t_cmd));
+// 		if (!new_cmd) { /* cleanup */ return (NULL); }
+// 		new_cmd->redirections = NULL;
+// 		new_cmd->next = NULL;
 
-		// Create a command node for the segment [segment_start ... current_token)
-		t_cmd *new_cmd = malloc(sizeof(t_cmd));
-		if (!new_cmd) { /* cleanup */ return (NULL); }
-		new_cmd->redirections = NULL;
-		new_cmd->next = NULL;
+// 		// Process tokens in this segment to build argv and redirections
+// 		t_token *seg_token = segment_start;
+// 		int word_count = 0;
+//         // First pass in segment: count words and build redirections
+// 		while (seg_token != current_token)
+// 		{
+// 			if (seg_token->type == TOKEN_WORD) {
+//                 word_count++;
+//             } else if (seg_token->type >= TOKEN_REDIR_IN && seg_token->type <= TOKEN_REDIR_HEREDOC) {
+//                  t_token *filename_token = seg_token->next;
+//                  if (filename_token && filename_token->type == TOKEN_WORD && filename_token != current_token) {
+//                      if (!add_redir_node(&new_cmd->redirections, seg_token, filename_token))
+//                          { /* cleanup */ return (NULL); }
+//                      seg_token = filename_token; // Skip filename
+//                  } else { /* syntax error */ return (NULL); }
+//             }
+//             seg_token = seg_token->next;
+// 		}
 
-		// Process tokens in this segment to build argv and redirections
-		t_token *seg_token = segment_start;
-		int word_count = 0;
-        // First pass in segment: count words and build redirections
-		while (seg_token != current_token)
-		{
-			if (seg_token->type == TOKEN_WORD) {
-                word_count++;
-            } else if (seg_token->type >= TOKEN_REDIR_IN && seg_token->type <= TOKEN_REDIR_HEREDOC) {
-                 t_token *filename_token = seg_token->next;
-                 if (filename_token && filename_token->type == TOKEN_WORD && filename_token != current_token) {
-                     if (!add_redir_node(&new_cmd->redirections, seg_token, filename_token))
-                         { /* cleanup */ return (NULL); }
-                     seg_token = filename_token; // Skip filename
-                 } else { /* syntax error */ return (NULL); }
-            }
-            seg_token = seg_token->next;
-		}
+//         // Second pass: Build argv (needs careful indexing based on count)
+//         new_cmd->argv = malloc(sizeof(char *) * (word_count + 1));
+//         if (!new_cmd->argv) { /* cleanup */ return (NULL); }
+//         seg_token = segment_start; // Reset for second pass
+//         int argc = 0;
+//         while (seg_token != current_token) {
+//             if (seg_token->type == TOKEN_WORD) {
+//                 if (argc < word_count) { // Bounds check
+//                     new_cmd->argv[argc] = ft_strdup(seg_token->value);
+//                     if (!new_cmd->argv[argc]) { /* cleanup */ return (NULL); }
+//                     argc++;
+//                 }
+//             } else if (seg_token->type >= TOKEN_REDIR_IN && seg_token->type <= TOKEN_REDIR_HEREDOC) {
+//                  // Skip redirection and filename again
+//                  if (seg_token->next && seg_token->next->type == TOKEN_WORD)
+//                     seg_token = seg_token->next;
+//                  else break; // Error already handled, just break
+//             }
+//             seg_token = seg_token->next;
+//         }
+//         new_cmd->argv[argc] = NULL; // Null-terminate argv
 
-        // Second pass: Build argv (needs careful indexing based on count)
-        new_cmd->argv = malloc(sizeof(char *) * (word_count + 1));
-        if (!new_cmd->argv) { /* cleanup */ return (NULL); }
-        seg_token = segment_start; // Reset for second pass
-        int argc = 0;
-        while (seg_token != current_token) {
-            if (seg_token->type == TOKEN_WORD) {
-                if (argc < word_count) { // Bounds check
-                    new_cmd->argv[argc] = ft_strdup(seg_token->value);
-                    if (!new_cmd->argv[argc]) { /* cleanup */ return (NULL); }
-                    argc++;
-                }
-            } else if (seg_token->type >= TOKEN_REDIR_IN && seg_token->type <= TOKEN_REDIR_HEREDOC) {
-                 // Skip redirection and filename again
-                 if (seg_token->next && seg_token->next->type == TOKEN_WORD)
-                    seg_token = seg_token->next;
-                 else break; // Error already handled, just break
-            }
-            seg_token = seg_token->next;
-        }
-        new_cmd->argv[argc] = NULL; // Null-terminate argv
+// 		// Check if command is valid (must have a command if no redirections)
+// 		if (argc == 0 && !new_cmd->redirections) {
+//              ft_putstr_fd("minishell: syntax error near pipe or empty command\n", 2);
+// 			 // free_cmd_list(cmd_head); // Need list free
+// 			 free_cmd_struct(new_cmd); // Free invalid node
+// 			 return NULL; // Invalid structure
+// 		}
 
-		// Check if command is valid (must have a command if no redirections)
-		if (argc == 0 && !new_cmd->redirections) {
-             ft_putstr_fd("minishell: syntax error near pipe or empty command\n", 2);
-			 // free_cmd_list(cmd_head); // Need list free
-			 free_cmd_struct(new_cmd); // Free invalid node
-			 return NULL; // Invalid structure
-		}
+// 		// Link the new command node into the list
+// 		if (!cmd_head) { // First command
+// 			cmd_head = new_cmd;
+// 			current_cmd = cmd_head;
+// 		} else { // Subsequent commands
+// 			current_cmd->next = new_cmd;
+// 			current_cmd = new_cmd;
+// 		}
 
-		// Link the new command node into the list
-		if (!cmd_head) { // First command
-			cmd_head = new_cmd;
-			current_cmd = cmd_head;
-		} else { // Subsequent commands
-			current_cmd->next = new_cmd;
-			current_cmd = new_cmd;
-		}
-
-		// Advance past the PIPE token for the next iteration
-		if (current_token && current_token->type == TOKEN_PIPE)
-		{
-			segment_start = current_token->next; // Next segment starts after pipe
-			current_token = current_token->next;
-			// Check for pipe at end or consecutive pipes (parser should catch, but safety)
-            if (!segment_start || segment_start->type == TOKEN_PIPE) {
-                ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
-                // free_cmd_list(cmd_head);
-                return NULL;
-            }
-		}
-	}
-	return (cmd_head);
-}
+// 		// Advance past the PIPE token for the next iteration
+// 		if (current_token && current_token->type == TOKEN_PIPE)
+// 		{
+// 			segment_start = current_token->next; // Next segment starts after pipe
+// 			current_token = current_token->next;
+// 			// Check for pipe at end or consecutive pipes (parser should catch, but safety)
+//             if (!segment_start || segment_start->type == TOKEN_PIPE) {
+//                 ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
+//                 // free_cmd_list(cmd_head);
+//                 return NULL;
+//             }
+// 		}
+// 	}
+// 	return (cmd_head);
+// }
 
 
-void	free_cmd_list(t_cmd *cmd_list) {
-    t_cmd *current_cmd = cmd_list;
-    t_cmd *next_cmd;
-    t_redir *redir, *next_redir;
+// void	free_cmd_list(t_cmd *cmd_list) {
+//     t_cmd *current_cmd = cmd_list;
+//     t_cmd *next_cmd;
+//     t_redir *redir, *next_redir;
 
-    while (current_cmd) {
-        next_cmd = current_cmd->next;
-        free_arr(current_cmd->argv);
-        redir = current_cmd->redirections;
-        while (redir) {
-            next_redir = redir->next;
-            free(redir->filename);
-            free(redir);
-            redir = next_redir;
-        }
-        free(current_cmd);
-        current_cmd = next_cmd;
-    }
-}
+//     while (current_cmd) {
+//         next_cmd = current_cmd->next;
+//         free_arr(current_cmd->argv);
+//         redir = current_cmd->redirections;
+//         while (redir) {
+//             next_redir = redir->next;
+//             free(redir->filename);
+//             free(redir);
+//             redir = next_redir;
+//         }
+//         free(current_cmd);
+//         current_cmd = next_cmd;
+//     }
+// }
 
 // int	main(int ac, char **av, char **env)
 // {
@@ -414,7 +403,8 @@ int	main(int ac, char **av, char **env)
 		// 2. Handle EOF (Ctrl+D)
 		if (!line)
 		{
-			ft_putstr_fd("exit\n", STDOUT_FILENO); // Mimic bash output
+			// ft_putstr_fd("exit\n", STDOUT_FILENO); // Mimic bash output
+			// write(1, "exit", 5);
 			break ; // Exit the main loop
 		}
 
@@ -452,7 +442,7 @@ int	main(int ac, char **av, char **env)
 
 		// 6. Expand Variables & Remove Quotes (Mehdi's function)
 		// Ensure ft_expander handles quote removal or call ft_clean_up after.
-		ft_expander(&token_list, data.env_list /*, data.last_exit_status ? */);
+		ft_expander(&token_list, &data /*, data.last_exit_status ? */);
 			// printf("Testing 6.0\n");
 		// ft_clean_up(&token_list); // If quote removal is separate
 
@@ -498,8 +488,12 @@ int	main(int ac, char **av, char **env)
 
 	// --- Final Cleanup ---
 	ft_tenv_clear(&data.env_list); // Free environment list (Mehdi's func)
-	rl_clear_history(); // Clear readline history
+	// rl_clear_history(); // Clear readline history
 
 	// printf("Final exit status: %d\n", data.last_exit_status); // Optional debug
 	return (data.last_exit_status); // Return the last exit status
 }
+
+
+
+

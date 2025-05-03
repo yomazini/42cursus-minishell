@@ -123,7 +123,6 @@ t_cmd	*ft_creat_cmd_table(t_token *token)
 	i = 0;
 	n_cmd = ft_count_cmd(token);
 	curr = token;
-	curr = token;
 	while (i < n_cmd && curr) // Loop per command segment (pipe delimited)
 	{
 		new_cmd = ft_cmd_new();

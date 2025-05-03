@@ -33,7 +33,11 @@ t_redir	*ft_redir_new(int type, char *filename_val) // Changed param name
     }
     // *** END FIX ***
     new_redir->heredoc_fd = -1;
-    // ... rest of initialization ...
-    new_redir->next = NULL;
+    if (new_redir->type == TOKEN_REDIR_HEREDOC)
+		new_redir->expand_heredoc = true;
+	else
+		new_redir->expand_heredoc = false;
+	new_redir->next = NULL;
     return (new_redir);
 }
+
