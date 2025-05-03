@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:18:04 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/02 11:52:24 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/03 13:19:59 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	ft_print_syntax_error(char *error_message)
 {
-	printf("\033[1;31msyntax error:\033[0m \033[1;36m%s\033[0m\n",
+	printf("\033[1;31m minishell$ msyntax error:\033[0m \033[1;36m%s\033[0m\n",
 		error_message);
 }
 
