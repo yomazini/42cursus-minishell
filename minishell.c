@@ -2,6 +2,36 @@
 #include "parser/parser.h"
 #include "execution/exec_header.h"
 
+const char* get_token_type_name(t_token_type type) {
+	switch (type) {
+		case TOKEN_WORD:         return "WORD";
+		case TOKEN_PIPE:         return "PIPE";
+		case TOKEN_REDIR_IN:     return "REDIR_IN";
+		case TOKEN_REDIR_OUT:    return "REDIR_OUT";
+		case TOKEN_REDIR_APPEND: return "REDIR_APPEND"; // Make sure you have this enum
+		case TOKEN_REDIR_HEREDOC:return "REDIR_HEREDOC";
+		// Add cases for any other token types you might have
+		default:                 return "UNKNOWN";
+	}
+}
+void ft_print_token_list(t_token *head)
+{
+	t_token *current = head; 
+	int i = 0;   
+	while (current != NULL)
+	{
+		// Print in the requested format
+		printf("token[%d]= [%s], type(%s)\n",
+			   i,
+			   current->value ? current->value : "(null value)", // Safety check
+			   get_token_type_name(current->type)); // Get type name string
+
+		// Move to the next node in the list
+		current = current->next;
+		i++; // Increment index
+	}
+}
+
 int	is_simple_builtin_command(t_cmd *cmd)
 {
 	t_cmd	*current;
@@ -443,6 +473,7 @@ int	main(int ac, char **av, char **env)
 		// 6. Expand Variables & Remove Quotes (Mehdi's function)
 		// Ensure ft_expander handles quote removal or call ft_clean_up after.
 		ft_expander(&token_list, &data /*, data.last_exit_status ? */);
+		// ft_print_token_list(token_list);
 			// printf("Testing 6.0\n");
 		// ft_clean_up(&token_list); // If quote removal is separate
 
