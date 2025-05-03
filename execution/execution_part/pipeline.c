@@ -6,45 +6,12 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:01:41 by ymazini           #+#    #+#             */
-/*   Updated: 2025/04/29 18:32:16 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/02 23:12:53 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
 
-static void	execute_command_node(t_cmd *cmd, t_data *data)
-{
-	int		builtin_status;
-	char	*path;
-	char	**envp_array;
-	if (apply_redirections(cmd) != 0)
-		exit(EXIT_FAILURE);
-
-	builtin_status = execute_built_ins(cmd, data);
-
-	if (builtin_status != -1)
-		exit(builtin_status);
-	else
-	{
-		envp_array = convert_envlist_to_array(data->env_list);
-		if (!envp_array) exit(EXIT_FAILURE);
-		path = find_command_path(cmd->argv[0], data->env_list);
-		if (!path)
-		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
-			ft_putstr_fd(": command not found\n", STDERR_FILENO);
-			free_arr(envp_array);
-			exit(127);
-		}
-		execve(path, cmd->argv, envp_array);
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		perror(cmd->argv[0]);
-		free(path);
-		free_arr(envp_array);
-		exit(errno == EACCES ? 126 : EXIT_FAILURE);
-	}
-}
 
 int	execute_pipeline(t_cmd *cmd_list, t_data *data)
 {
@@ -116,7 +83,8 @@ int	execute_pipeline(t_cmd *cmd_list, t_data *data)
 
 		if (finished_pid < 0)
 		{
-			if (errno == ECHILD) {
+			if (errno == ECHILD) 
+			{
 				// No more children exist (this shouldn't happen if count is correct)
 				break;
 			}
@@ -135,4 +103,3 @@ int	execute_pipeline(t_cmd *cmd_list, t_data *data)
 	}
 	return (last_cmd_status_interpreted);
 }
-	

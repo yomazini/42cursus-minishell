@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:06:26 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/01 14:53:40 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/02 23:11:07 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ char **ft_list_to_array(t_env *env_list)
 	char	*tmp;
 	int		i;
 
-	// ft_putstr_fd("DEBUG: Entering ft_list_to_array\n", 2); 
 	count = 0;
 	curr = env_list;
 	while (curr)
@@ -45,16 +44,10 @@ char **ft_list_to_array(t_env *env_list)
 			count++;
 		curr = curr->next;
 	}
-	// ft_putstr_fd("DEBUG: Counted variables with values: ", 2);
-	// fprintf(stderr, "%d\n", count);
 	arr = malloc(sizeof(char *) * (count + 1));
 	if (!arr) {
-        // perror("DEBUG: Malloc failed for array");
         return (NULL);
     }
-	// ft_putstr_fd("DEBUG: Allocated array\n", 2);
-
-	// --- Second Pass: Construct strings ---
 	curr = env_list;
 	i = 0;
 	while (curr && i < count)
@@ -71,8 +64,6 @@ char **ft_list_to_array(t_env *env_list)
 		curr = curr->next;
 	}
 	arr[i] = NULL;
-
-	// ft_putstr_fd("DEBUG: Exiting ft_list_to_array successfully\n", 2);
 	return (arr);
 }
 
@@ -81,12 +72,10 @@ void ft_sort_array(char **array)
 	int i, j, count = 0;
 	char *temp;
 
-	if (!array) return;
+	if (!array) 
+		return;
 	while (array[count]) count++;
 	if (count < 2) return;
-
-	// ft_putstr_fd("DEBUG: Entering ft_sort_array\n", 2);
-
 	i = 0;
 	while (i < count - 1)
 	{
@@ -103,7 +92,6 @@ void ft_sort_array(char **array)
 		}
 		i++;
 	}
-	// ft_putstr_fd("DEBUG: Exiting ft_sort_array\n", 2);
 }
 
 static void	print_export_env(t_env *env_list)

@@ -74,8 +74,7 @@ PARSER_SRC = tokenize/tokenizer.c \
    			 cmd/ft_redir_clear.c \
    			 cmd/ft_print_cmd_table.c
 
-EXEC_SRC =  execution_part/temp_converter.c \
-            execution_part/find_path.c \
+EXEC_SRC =      execution_part/find_path.c \
             execution_part/env_init.c \
             built_in/cd_built_in.c \
             execution_part/execute_builtin.c \
@@ -171,4 +170,3 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
-

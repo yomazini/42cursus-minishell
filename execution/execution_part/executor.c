@@ -6,11 +6,119 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/01 22:35:05 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/02 23:24:04 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
+
+      
+int	execute_commands(t_cmd *cmd_list, t_data *data)
+{
+	int		command_count;
+	t_cmd	*counter;
+	// int		status; // Variable to store return status
+
+	if (!cmd_list) 
+		return (data->last_exit_status = 0, 0);
+
+	// Count commands
+	command_count = 0;
+	counter = cmd_list;
+	while (counter != NULL) { command_count++; counter = counter->next; }
+
+	// --- Dispatch ---
+	if (command_count == 1)
+	{
+		// --- FIX: Check for valid argv before proceeding ---
+		if (!cmd_list->argv || !cmd_list->argv[0])
+		{
+            // Command exists but has no command word (e.g., just redirections)
+            // Apply redirections only? Bash usually errors here.`
+            // Let's apply redirections and return error status (1)
+            // Or just return an error directly? Let's apply for now.
+            ft_putstr_fd("minishell: syntax error near unexpected token `newline' (or invalid command)\n", 2); // Or specific error
+            // status = apply_redirections(cmd_list); // Apply redirections?
+			// data->last_exit_status = (status == 0) ? 0 : 1; // Status 0 if redir ok? Bash errors.
+			data->last_exit_status = 2; // Syntax error is safer
+			return (data->last_exit_status);
+		}
+		// --- End FIX ---
+
+		// Now we know argv[0] exists
+		if (is_parent_builtin(cmd_list)) // Check if it's cd, export <args>, unset, exit
+		{
+			execute_built_ins(cmd_list, data);
+		}
+		else // External or child-safe builtin
+		{
+			execute_external_command(cmd_list, data);
+		}
+	}
+	else // command_count > 1 -> Pipeline
+	{
+		// --- FIX: Check first command in pipeline ---
+		if (!cmd_list->argv || !cmd_list->argv[0]) {
+            ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
+            data->last_exit_status = 2; // Syntax error
+            return(data->last_exit_status);
+        }
+        // --- End FIX ---
+		execute_pipeline(cmd_list, data);
+	}
+
+	return (data->last_exit_status);
+}
+
+ void	execute_command_node(t_cmd *cmd, t_data *data)
+{
+	int		builtin_status;
+	char	*path;
+	char	**envp_array;
+
+	// Apply redirections first
+	if (apply_redirections(cmd) != 0)
+		exit(EXIT_FAILURE);
+
+	// --- FIX: Check if command exists before trying builtins/externals ---
+	if (!cmd->argv || !cmd->argv[0])
+	{
+		// This case implies an error like `cmd1 | > file | cmd3` where the middle
+		// command node has no actual command. Parser should ideally prevent this.
+		// If it happens, exit child with error.
+		ft_putstr_fd("minishell: Invalid command node in pipeline\n", 2);
+		exit(EXIT_FAILURE); // Or syntax error code?
+	}
+	// --- End FIX ---
+
+	// Now safe to check cmd->argv[0]
+	builtin_status = execute_built_ins(cmd, data);
+
+	if (builtin_status != -1) // It was a builtin
+		exit(builtin_status);
+	else // External command
+	{
+		envp_array = convert_envlist_to_array(data->env_list);
+		if (!envp_array) exit(EXIT_FAILURE);
+		path = find_command_path(cmd->argv[0], data->env_list);
+		if (!path)
+		{
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
+			ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
+			ft_putstr_fd(": command not found\n", STDERR_FILENO);
+			free_arr(envp_array);
+			exit(127);
+		}
+		execve(path, cmd->argv, envp_array);
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		perror(cmd->argv[0]);
+		free(path);
+		free_arr(envp_array);
+		exit(errno == EACCES ? 126 : EXIT_FAILURE);
+
+	}
+}
+
 
 int	execute_external_command(t_cmd *cmd, t_data *data)
 {
@@ -80,11 +188,6 @@ int	is_parent_builtin(t_cmd *cmd)
 	if (!cmd || !cmd->argv || !cmd->argv[0])
 		return (FALSE);
 	name = cmd->argv[0];
-	// if (ft_strncmp(name, "cd", 3) == 0) return (TRUE);
-	// if (ft_strncmp(name, "export", 7) == 0 && cmd->argv[1] != NULL)
-	// 	 return (TRUE);
-	// if (ft_strncmp(name, "unset", 6) == 0) return (TRUE);
-	// if (ft_strncmp(name, "exit", 5) == 0) return (TRUE);
 		if ((ft_strncmp(name, "pwd", 4) == 0) ||
 		(ft_strncmp(name, "echo", 5) == 0) ||
 		(ft_strncmp(name, "env", 4) == 0) ||
@@ -94,47 +197,4 @@ int	is_parent_builtin(t_cmd *cmd)
         (ft_strncmp(name, "export", 7) == 0))
 			return TRUE;
 	return (FALSE);
-}
-
-int	is_known_builtin_name(char *name)
-{
-	if (!name) return (FALSE);
-	if ((ft_strncmp(name, "pwd", 4) == 0) ||
-		(ft_strncmp(name, "echo", 5) == 0) ||
-		(ft_strncmp(name, "env", 4) == 0) ||
-		(ft_strncmp(name, "exit", 5) == 0) ||
-        (ft_strncmp(name, "cd", 3) == 0) ||
-        (ft_strncmp(name, "unset", 6) == 0) ||
-        (ft_strncmp(name, "export", 7) == 0))
-		return (TRUE);
-	return (FALSE);
-}
-
-
-int	execute_commands(t_cmd *cmd_list, t_data *data)
-{
-	int		command_count;
-	t_cmd	*counter;
-
-	if (!cmd_list) return (data->last_exit_status = 0, 0);
-	command_count = 0;
-	counter = cmd_list;
-	while (counter != NULL) { command_count++; counter = counter->next; }
-
-	if (command_count == 1)
-	{
-		if (is_parent_builtin(cmd_list))
-			execute_built_ins(cmd_list, data);
-		else // External command OR child-safe builtin (echo, pwd, env, export no-args)
-		{
-			// Let external executor handle fork/redir/exec/wait
-			// It should also handle calling builtins within the child if needed
-			execute_external_command(cmd_list, data);
-		}
-	}
-	else // command_count > 1 -> Pipeline
-	{
-		execute_pipeline(cmd_list, data);
-	}
-	return (data->last_exit_status);
 }

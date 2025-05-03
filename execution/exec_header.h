@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/01 22:17:49 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/02 23:06:23 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,10 @@
 # include <signal.h>
 # include "../parser/parser.h"
 
+# define TRUE 1
+# define FALSE 0
+# define redirections redir
+
 // struct	s_cmd;
 
 // typedef struct s_redir
@@ -47,10 +51,6 @@
 // 	struct s_cmd	*next;
 // }	t_cmd;
 
-# define TRUE 1
-# define FALSE 0
-#define redirections redir
-
 // typedef struct s_data
 // {
 // 	t_env	*env_list;
@@ -59,6 +59,7 @@
 
 void	update_shell_level(t_data *data);
 int		execute_built_ins(t_cmd *cmd, t_data *data);
+
 int		ft_pwd(t_cmd *cmd, t_data *data);
 int		ft_echo(t_cmd *cmd, t_data *data);
 int		ft_exit(t_cmd *cmd, t_data *data);
@@ -66,13 +67,13 @@ int		ft_env(t_cmd *cmd, t_data *data);
 int		ft_cd(t_cmd *cmd, t_data *data);
 int		ft_export(t_cmd *cmd, t_data *data);
 int		ft_unset(t_cmd *cmd, t_data *data);
+
 int		ft_is_valid_identifier(const char *name);
 int		ft_is_only_whitespace(char *str);
 void	free_arr(char **arr);
 int		ft_valid_number(char *s);
 t_cmd	*convert_simple_tokens_to_cmd(t_token *token_list);
 void	free_cmd_struct(t_cmd *cmd);
-int		is_simple_builtin_command(t_cmd *token_list);
 int		apply_redirections(t_cmd *cmd);
 int		ft_list_setenv(t_env **env_list_head,
 			const char *name, const char *value);
@@ -88,7 +89,8 @@ int		execute_external_command(t_cmd *cmd, t_data *data);
 int		save_original_fds(int *original_stdin, int *original_stdout);
 int		restore_original_fds(int original_stdin, int original_stdout);
 int		execute_commands(t_cmd *cmd_list, t_data *data);
+int		execute_pipeline(t_cmd *cmd_list, t_data *data);
 int		is_parent_builtin(t_cmd *cmd);
-int		execute_pipeline(t_cmd *cmd, t_data *data);
+void	execute_command_node(t_cmd *cmd, t_data *data);
 
 #endif

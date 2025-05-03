@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:06:22 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/01 15:18:57 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/02 22:43:32 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,9 +66,7 @@ int	ft_exit(t_cmd *cmd, t_data *data)
 		exit(exit_status);
 	}
 	if (argc == 2)
-	{
 		return (handle_two_argument(cmd, data));
-	}
 	else
 		return (ft_handle_exit_too_many_args(data));
 }
