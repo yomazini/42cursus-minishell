@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/04 16:37:56 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/04 20:04:51 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int	handle_invalid_command(t_cmd *cmd_list, t_data *data)
 	(void)cmd_list;
 	ft_putstr_fd("minishell: syntax error near unexpected token `newline'", 2);
 	ft_putstr_fd(" (or invalid command)\n", 2);
-	data->last_exit_status = 2;
+	data->last_exit_status = 258;
 	return (data->last_exit_status);
 }
 
@@ -53,7 +53,7 @@ int	execute_commands(t_cmd *cmd_list, t_data *data)
 		if (!cmd_list->argv || !cmd_list->argv[0])
 		{
 			ft_putstr_fd("mini: syntax error near unexpected token`|'\n", 2);
-			data->last_exit_status = 2;
+			data->last_exit_status = 258;
 			return (data->last_exit_status);
 		}
 		execute_pipeline(cmd_list, data);
