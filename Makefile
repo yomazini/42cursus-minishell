@@ -83,12 +83,16 @@ EXEC_SRC =      execution_part/find_path.c \
             execution_part/redirections.c \
             execution_part/tools3.c \
             execution_part/pipeline.c \
+            execution_part/pipeline_utils.c \
             execution_part/executor.c \
+            execution_part/executor_utils.c \
             execution_part/tools4.c \
             execution_part/tools5.c \
             built_in/env_built_in.c \
             built_in/echo_built_in.c \
-            built_in/pwd_built_in.c \
+            built_in/cd_built_in_utils.c \
+            built_in/export_built_in_utils.c \
+            built_in/export_built_in_utils2.c \
             built_in/exit_built_in.c \
             built_in/export_built_in.c \
             built_in/unset_built_in.c

@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/02 23:06:23 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/04 18:50:51 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@
 
 # define TRUE 1
 # define FALSE 0
-# define redirections redir
 
 // struct	s_cmd;
 
@@ -59,7 +58,6 @@
 
 void	update_shell_level(t_data *data);
 int		execute_built_ins(t_cmd *cmd, t_data *data);
-
 int		ft_pwd(t_cmd *cmd, t_data *data);
 int		ft_echo(t_cmd *cmd, t_data *data);
 int		ft_exit(t_cmd *cmd, t_data *data);
@@ -67,12 +65,17 @@ int		ft_env(t_cmd *cmd, t_data *data);
 int		ft_cd(t_cmd *cmd, t_data *data);
 int		ft_export(t_cmd *cmd, t_data *data);
 int		ft_unset(t_cmd *cmd, t_data *data);
-
+void	print_export_env(t_env *env_list);
+char	**ft_list_to_array(t_env *env_list);
+int		process_dir_change(char *target, t_data *data, int print_path_flag);
+int		cd_error(char *path, t_data *data, char *old_pwd_to_free);
+int		ft_list_setenv(t_env **env_list_head,
+			const char *name, const char *value);
+int		update_pwd_env_vars(t_data *data, char *old_pwd_path);
 int		ft_is_valid_identifier(const char *name);
 int		ft_is_only_whitespace(char *str);
 void	free_arr(char **arr);
 int		ft_valid_number(char *s);
-t_cmd	*convert_simple_tokens_to_cmd(t_token *token_list);
 void	free_cmd_struct(t_cmd *cmd);
 int		apply_redirections(t_cmd *cmd);
 int		ft_list_setenv(t_env **env_list_head,
@@ -92,5 +95,8 @@ int		execute_commands(t_cmd *cmd_list, t_data *data);
 int		execute_pipeline(t_cmd *cmd_list, t_data *data);
 int		is_parent_builtin(t_cmd *cmd);
 void	execute_command_node(t_cmd *cmd, t_data *data);
+void	execute_child_process(t_cmd *cmd, t_data *data, char *path);
+void	setup_child_pipes(int prev_pipe_read, int pipe_fd[2], t_cmd *cmd);
+int		wait_for_pipeline(int count, pid_t last_pid, t_data *data);
 
 #endif

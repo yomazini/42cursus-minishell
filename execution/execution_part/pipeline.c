@@ -6,100 +6,89 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:01:41 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/02 23:12:53 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/04 18:05:34 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
 
+static int	count_commands(t_cmd *cmd_list)
+{
+	int		count;
+	t_cmd	*counter;
+
+	count = 0;
+	counter = cmd_list;
+	while (counter)
+	{
+		count++;
+		counter = counter->next;
+	}
+	return (count);
+}
+
+static void	parent_pipe_handler(int *prev_pipe_read_end, int pipe_fd[2],
+								t_cmd *current_cmd)
+{
+	if (*prev_pipe_read_end != STDIN_FILENO)
+		close(*prev_pipe_read_end);
+	if (current_cmd->next != NULL)
+	{
+		close(pipe_fd[1]);
+		*prev_pipe_read_end = pipe_fd[0];
+	}
+}
+
+static	void	initialize_pipeline_vars(int *prev_pipe_read_end
+									, pid_t *last_pid, int *pipe0, int *pipe1)
+{
+	*prev_pipe_read_end = STDIN_FILENO;
+	*last_pid = -1;
+	*pipe0 = -1;
+	*pipe1 = -1;
+}
+
+static	pid_t	fork_and_exec_child(t_cmd *cmd, t_data *data, int prev_read_end,
+										int pipe_fd[2])
+{
+	pid_t	pid;
+
+	pid = fork();
+	if (pid < 0)
+		return (perror("fork"), -1);
+	else if (pid == 0)
+	{
+		setup_child_pipes(prev_read_end, pipe_fd, cmd);
+		execute_command_node(cmd, data);
+	}
+	return (pid);
+}
 
 int	execute_pipeline(t_cmd *cmd_list, t_data *data)
 {
 	int		pipe_fd[2];
 	int		prev_pipe_read_end;
 	pid_t	pid;
-	t_cmd	*current_cmd;
-	int		last_cmd_status_interpreted;
 	pid_t	last_pid;
 	int		command_count;
-	int		children_waited_for;
 
-	prev_pipe_read_end = STDIN_FILENO;
-	current_cmd = cmd_list;
-	pipe_fd[0] = -1;
-	pipe_fd[1] = -1;
-	last_pid = -1;
-	last_cmd_status_interpreted = EXIT_SUCCESS;
-	command_count = 0;
-	children_waited_for = 0;
-
-	t_cmd *counter = cmd_list;
-	while (counter) {
-		command_count++;
-		counter = counter->next;
-	}
-	if (command_count == 0) return (EXIT_SUCCESS);
-	while (current_cmd != NULL)
+	initialize_pipeline_vars(&prev_pipe_read_end,
+		&last_pid, &pipe_fd[0], &pipe_fd[1]);
+	command_count = count_commands(cmd_list);
+	if (command_count == 0)
+		return (EXIT_SUCCESS);
+	while (cmd_list != NULL)
 	{
-		if (current_cmd->next != NULL) {
-			if (pipe(pipe_fd) == -1) { return (EXIT_FAILURE); }
-		}
-
-		pid = fork();
-		if (pid < 0) {return (EXIT_FAILURE); }
-
-		if (pid == 0) {
-			if (prev_pipe_read_end != STDIN_FILENO) {
-				if (dup2(prev_pipe_read_end, STDIN_FILENO) < 0) exit(1);
-				close(prev_pipe_read_end);
-			}
-			if (current_cmd->next != NULL) {
-				close(pipe_fd[0]);
-				if (dup2(pipe_fd[1], STDOUT_FILENO) < 0) exit(1);
-				close(pipe_fd[1]);
-			}
-			execute_command_node(current_cmd, data);
-		}
-		else {
-			last_pid = pid;
-			if (prev_pipe_read_end != STDIN_FILENO) close(prev_pipe_read_end);
-			if (current_cmd->next != NULL) {
-				close(pipe_fd[1]);
-				prev_pipe_read_end = pipe_fd[0];
-			}
-			current_cmd = current_cmd->next;
-		}
+		if (cmd_list->next && pipe(pipe_fd) == -1)
+			return (perror("pipe"), EXIT_FAILURE);
+		pid = fork_and_exec_child(cmd_list, data, prev_pipe_read_end, pipe_fd);
+		if (pid < 0)
+			return (EXIT_FAILURE);
+		last_pid = pid;
+		parent_pipe_handler(&prev_pipe_read_end, pipe_fd, cmd_list);
+		cmd_list = cmd_list->next;
 	}
-	if (prev_pipe_read_end != STDIN_FILENO) {
-        close(prev_pipe_read_end);
-    }
-
-	int	wait_status;
-	pid_t finished_pid;
-
-	while (children_waited_for < command_count)
-	{
-		finished_pid = waitpid(-1, &wait_status, 0);
-
-		if (finished_pid < 0)
-		{
-			if (errno == ECHILD) 
-			{
-				// No more children exist (this shouldn't happen if count is correct)
-				break;
-			}
-			else {
-				perror("minishell: waitpid error");
-                last_cmd_status_interpreted = EXIT_FAILURE;
-				break;
-			}
-		}
-		children_waited_for++;
-		if (finished_pid == last_pid)
-		{
-			update_last_exit_status(data, wait_status);
-			last_cmd_status_interpreted = data->last_exit_status;
-		}
-	}
-	return (last_cmd_status_interpreted);
+	if (prev_pipe_read_end != STDIN_FILENO)
+		close(prev_pipe_read_end);
+	return (wait_for_pipeline(command_count, last_pid, data));
 }

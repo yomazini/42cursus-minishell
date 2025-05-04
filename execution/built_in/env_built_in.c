@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:06:19 by ymazini           #+#    #+#             */
-/*   Updated: 2025/04/29 22:38:48 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/03 22:23:28 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,9 @@ int	ft_env(t_cmd *cmd, t_data *data)
 
 	if (cmd->argv[1] != NULL)
 	{
-		ft_putstr_fd("minishell: env: Too many arguments\n", STDERR_FILENO);
+		ft_putstr_fd("env: ", STDERR_FILENO);
+		ft_putstr_fd(cmd->argv[1], STDERR_FILENO);
+		ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
 		data->last_exit_status = 127;
 		return (127);
 	}
@@ -39,9 +41,7 @@ int	ft_env(t_cmd *cmd, t_data *data)
 	while (current_env_node != NULL)
 	{
 		if (current_env_node->name != NULL && current_env_node->value != NULL)
-		{
 			print_the_env(current_env_node);
-		}
 		current_env_node = current_env_node->next;
 	}
 	data->last_exit_status = EXIT_SUCCESS;

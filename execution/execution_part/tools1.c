@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 22:08:59 by ymazini           #+#    #+#             */
-/*   Updated: 2025/04/26 11:47:50 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/04 18:17:48 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,9 @@ void	free_arr(char **arr)
 
 int	ft_is_only_whitespace(char *arg)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	if (!arg || arg[0] == '\0')
 		return (0);
 	while (arg[i] == ' ' || (arg[i] >= '\t' && '\r' >= arg[i]))
@@ -58,4 +60,3 @@ int	ft_valid_number(char *s)
 	}
 	return (1);
 }
-

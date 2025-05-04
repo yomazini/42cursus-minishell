@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 15:10:19 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/02 22:43:40 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/03 20:41:43 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 int	ft_pwd(t_cmd *cmd, t_data *data)
 {
 	char	*pwd;
+
 	(void)cmd;
 	pwd = NULL;
 	pwd = getcwd(NULL, 0);

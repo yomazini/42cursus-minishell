@@ -6,139 +6,65 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:06:26 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/02 23:11:07 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/04 15:10:00 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
 
-int	ft_is_valid_identifier(const char *name)
+static int	validate_and_set_env(char *key,
+	char *value, char *arg, t_data *data)
 {
-	int	i;
-
-	if (!name || (!ft_isalpha(name[0]) && name[0] != '_'))
-		return (0);
-	i = 1;
-	while (name[i])
+	if (!ft_is_valid_identifier(key))
 	{
-		if (!ft_isalnum(name[i]) && name[i] != '_')
-			return (0);
-		i++;
+		ft_putstr_fd("minishell: export: `", STDERR_FILENO);
+		ft_putstr_fd(arg, STDERR_FILENO);
+		ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
+		return (EXIT_FAILURE);
 	}
-	return (1);
+	if (ft_list_setenv(&data->env_list, key, value) == -1)
+	{
+		perror("minishell: export: setenv error");
+		return (EXIT_FAILURE);
+	}
+	return (EXIT_SUCCESS);
 }
 
-char **ft_list_to_array(t_env *env_list)
+static int	process_export_pair(char *arg, t_data *data)
 {
-	int		count;
-	t_env	*curr;
-	char	**arr;
-	char	*tmp;
-	int		i;
-
-	count = 0;
-	curr = env_list;
-	while (curr)
-	{
-		if (curr->name && curr->value)
-			count++;
-		curr = curr->next;
-	}
-	arr = malloc(sizeof(char *) * (count + 1));
-	if (!arr) {
-        return (NULL);
-    }
-	curr = env_list;
-	i = 0;
-	while (curr && i < count)
-	{
-		if (curr->name && curr->value)
-		{
-			tmp = ft_strjoin(curr->name, "=");
-			if (!tmp) { free_arr(arr); return (NULL); }
-			arr[i] = ft_strjoin(tmp, curr->value);
-			free(tmp);
-			if (!arr[i]) { free_arr(arr); return (NULL); }
-			i++;
-		}
-		curr = curr->next;
-	}
-	arr[i] = NULL;
-	return (arr);
-}
-
-void ft_sort_array(char **array)
-{
-	int i, j, count = 0;
-	char *temp;
-
-	if (!array) 
-		return;
-	while (array[count]) count++;
-	if (count < 2) return;
-	i = 0;
-	while (i < count - 1)
-	{
-		j = 0;
-		while (j < count - i - 1)
-		{
-			if (ft_strncmp(array[j], array[j + 1], -1) > 0)
-			{
-				temp = array[j];
-				array[j] = array[j + 1];
-				array[j + 1] = temp;
-			}
-			j++;
-		}
-		i++;
-	}
-}
-
-static void	print_export_env(t_env *env_list)
-{
-	char	**env_array;
-	int		i;
 	char	*equals_ptr;
+	char	*key;
+	char	*value;
+	int		result;
 
-	env_array = ft_list_to_array(env_list);
-	if (!env_array)
+	equals_ptr = ft_strchr(arg, '=');
+	key = NULL;
+	value = NULL;
+	result = EXIT_SUCCESS;
+	if (equals_ptr != NULL)
 	{
-		perror("minishell: export: malloc error");
-		return;
+		key = ft_substr(arg, 0, equals_ptr - arg);
+		value = ft_strdup(equals_ptr + 1);
+		if (!key || !value)
+			return (free(key), free(value), EXIT_FAILURE);
 	}
-	ft_sort_array(env_array);
-	i = 0;
-	while (env_array[i])
+	else
 	{
-		equals_ptr = ft_strchr(env_array[i], '=');
-		ft_putstr_fd("declare -x ", STDOUT_FILENO);
-		if (equals_ptr)
-		{
-			write(STDOUT_FILENO, env_array[i], equals_ptr - env_array[i] + 1);
-			ft_putchar_fd('"', STDOUT_FILENO);
-			ft_putstr_fd(equals_ptr + 1, STDOUT_FILENO);
-			ft_putstr_fd("\"\n", STDOUT_FILENO);
-		}
-		else
-		{
-			ft_putstr_fd(env_array[i], STDOUT_FILENO);
-			ft_putchar_fd('\n', STDOUT_FILENO);
-		}
-		i++;
+		key = ft_strdup(arg);
+		if (!key)
+			return (perror("minishell: export: malloc error"), EXIT_FAILURE);
+		value = NULL;
 	}
-	free_arr(env_array);
+	result = validate_and_set_env(key, value, arg, data);
+	return (free(key), free(value), result);
 }
 
 int	ft_export(t_cmd *cmd, t_data *data)
 {
 	int		i;
 	int		return_status;
-	char	*arg;
-	char	*key;
-	char	*value;
-	char	*equals_ptr;
-	return_status = EXIT_SUCCESS;
 
+	return_status = EXIT_SUCCESS;
 	if (cmd->argv[1] == NULL)
 	{
 		print_export_env(data->env_list);
@@ -148,52 +74,8 @@ int	ft_export(t_cmd *cmd, t_data *data)
 	i = 1;
 	while (cmd->argv[i] != NULL)
 	{
-		arg = cmd->argv[i];
-		equals_ptr = ft_strchr(arg, '=');
-		key = NULL;
-		value = NULL;
-		if (equals_ptr != NULL)
-		{
-			key = ft_substr(arg, 0, equals_ptr - arg);
-			value = ft_strdup(equals_ptr + 1);
-			if (!key || !value)
-			{
-				perror("minishell: export: malloc error");
-				free(key); free(value);
-				return_status = EXIT_FAILURE;
-				i++;
-				continue;
-			}
-		}
-		else
-		{
-			key = ft_strdup(arg);
-			if (!key) 
-			{
-				 perror("minishell: export: malloc error");
-				 return_status = EXIT_FAILURE;
-					i++; 
-				   continue;
-			}
-			value = NULL;
-		}
-		if (!ft_is_valid_identifier(key))
-		{
-			ft_putstr_fd("minishell: export: `", STDERR_FILENO);
-			ft_putstr_fd(arg, STDERR_FILENO);
-			ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
+		if (process_export_pair(cmd->argv[i], data) == EXIT_FAILURE)
 			return_status = EXIT_FAILURE;
-		}
-		else
-		{
-			if (ft_list_setenv(&data->env_list, key, value) == -1)
-			{
-				perror("minishell: export: setenv error");
-				return_status = EXIT_FAILURE;
-			}
-		}
-		free(key);
-		free(value);
 		i++;
 	}
 	data->last_exit_status = return_status;

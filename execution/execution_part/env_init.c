@@ -6,10 +6,9 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/01 14:39:25 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/01 14:52:10 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/04 15:32:44 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "../exec_header.h"
 
@@ -29,6 +28,20 @@ static int	str_is_positive_numeric(const char *str)
 	return (1);
 }
 
+void	ft_print_n_reset(int lvl, int *new_lvl)
+{
+	ft_putstr_fd("minishell: warning: shell level (", STDERR_FILENO);
+	ft_putnbr_fd(lvl + 1, STDERR_FILENO);
+	ft_putstr_fd(") too high, resetting to 1\n", STDERR_FILENO);
+	*new_lvl = 1;
+}
+
+static void	ft_assign_var(int *current_level, int *new_level)
+{
+	*current_level = 0;
+	*new_level = 1;
+}
+
 void	update_shell_level(t_data *data)
 {
 	char	*current_shlvl_str;
@@ -36,11 +49,8 @@ void	update_shell_level(t_data *data)
 	int		new_level;
 	char	*new_shlvl_str;
 
-	current_level = 0;
-	new_level = 1;
-
+	ft_assign_var(&current_level, &new_level);
 	current_shlvl_str = ft_list_getenv(data->env_list, "SHLVL");
-
 	if (current_shlvl_str)
 	{
 		if (str_is_positive_numeric(current_shlvl_str))
@@ -50,23 +60,13 @@ void	update_shell_level(t_data *data)
 				current_level = 0;
 		}
 		if (current_level >= 999)
-		{
-			ft_putstr_fd("minishell: warning: shell level (", STDERR_FILENO);
-			ft_putnbr_fd(current_level + 1, STDERR_FILENO);
-			ft_putstr_fd(") too high, resetting to 1\n", STDERR_FILENO);
-			new_level = 1;
-		}
+			ft_print_n_reset(current_level, &new_level);
 		else
 			new_level = current_level + 1;
 	}
 	new_shlvl_str = ft_itoa(new_level);
 	if (!new_shlvl_str)
-	{
-		perror("minishell: ft_itoa failed for SHLVL");
 		return ;
-	}
-
-	if (ft_list_setenv(&data->env_list, "SHLVL", new_shlvl_str) == -1)
-		perror("minishell: ft_list_setenv failed for SHLVL");
+	ft_list_setenv(&data->env_list, "SHLVL", new_shlvl_str);
 	free(new_shlvl_str);
 }

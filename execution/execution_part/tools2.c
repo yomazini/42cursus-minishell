@@ -12,13 +12,10 @@
 
 #include "../exec_header.h"
 
-char	**convert_envlist_to_array(t_env *env_list)
+static int	count_valid_env_entries(t_env *env_list)
 {
 	int		count;
 	t_env	*curr;
-	char	**envp_array;
-	char	*temp_join;
-	int		i;
 
 	count = 0;
 	curr = env_list;
@@ -28,37 +25,61 @@ char	**convert_envlist_to_array(t_env *env_list)
 			count++;
 		curr = curr->next;
 	}
-	envp_array = (char **)malloc(sizeof(char *) * (count + 1));
-	if (!envp_array)
-	{
-		perror("minishell: malloc failed in convert_envlist_to_array");
+	return (count);
+}
+
+static char	*create_env_string(t_env *node)
+{
+	char	*temp_join;
+	char	*full_entry;
+
+	temp_join = ft_strjoin(node->name, "=");
+	if (!temp_join)
 		return (NULL);
-	}
+	full_entry = ft_strjoin(temp_join, node->value);
+	free(temp_join);
+	return (full_entry);
+}
+
+static int	fill_envp_array(char **envp_array, t_env *env_list, int count)
+{
+	t_env	*curr;
+	int		i;
+
 	curr = env_list;
 	i = 0;
 	while (curr && i < count)
 	{
 		if (curr->name && curr->value)
 		{
-			temp_join = ft_strjoin(curr->name, "=");
-			if (!temp_join)
-			{
-				free_arr(envp_array);
-				perror("minishell: malloc failed in convert_envlist_to_array");
-				return (NULL);
-			}
-			envp_array[i] = ft_strjoin(temp_join, curr->value);
-			free(temp_join);
+			envp_array[i] = create_env_string(curr);
 			if (!envp_array[i])
 			{
+				perror("minishell: malloc failed");
 				free_arr(envp_array);
-				perror("minishell: malloc failed in convert_envlist_to_array");
-				return (NULL);
+				return (-1);
 			}
 			i++;
 		}
 		curr = curr->next;
 	}
 	envp_array[i] = NULL;
+	return (0);
+}
+
+char	**convert_envlist_to_array(t_env *env_list)
+{
+	int		count;
+	char	**envp_array;
+
+	count = count_valid_env_entries(env_list);
+	envp_array = (char **)malloc(sizeof(char *) * (count + 1));
+	if (!envp_array)
+	{
+		perror("minishell: malloc failed");
+		return (NULL);
+	}
+	if (fill_envp_array(envp_array, env_list, count) == -1)
+		return (NULL);
 	return (envp_array);
 }
