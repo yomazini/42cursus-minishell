@@ -6,29 +6,11 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:06:14 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/04 15:06:47 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/05 12:08:09 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
-
-char	*ft_list_getenv(t_env *env_list, const char *name)
-{
-	t_env	*curr;
-	size_t	name_len;
-
-	if (!env_list || !name)
-		return (NULL);
-	curr = env_list;
-	name_len = ft_strlen(name);
-	while (curr)
-	{
-		if (curr->name && ft_strncmp(curr->name, name, name_len + 1) == 0)
-			return (curr->value);
-		curr = curr->next;
-	}
-	return (NULL);
-}
 
 static char	*get_home_path(t_data *data)
 {
@@ -44,7 +26,7 @@ static char	*get_home_path(t_data *data)
 	return (target_path);
 }
 
-static char	*handle_special_path(char *arg, t_data *data, int *print_flag)
+static char	*handle_dash_path(char *arg, t_data *data, int *print_flag)
 {
 	char	*target_path;
 
@@ -61,10 +43,7 @@ static char	*handle_special_path(char *arg, t_data *data, int *print_flag)
 		*print_flag = TRUE;
 		return (target_path);
 	}
-	else if (ft_strncmp(arg, "~", 2) == 0)
-		return (get_home_path(data));
-	// TODO: Optional: Handle ~/path expansion here if desired
-	return (arg); // Return original argument if not special
+	return (arg);
 }
 
 int	update_pwd_env_vars(t_data *data, char *old_pwd_path)
@@ -91,27 +70,52 @@ int	update_pwd_env_vars(t_data *data, char *old_pwd_path)
 	return (0);
 }
 
+static char	*determine_cd_target(t_cmd *cmd, t_data *data,
+								int *print_path_flag, char **path_to_free)
+{
+	char	*path_after_dash;
+
+	*path_to_free = NULL;
+	*print_path_flag = FALSE;
+	if (cmd->argv[1])
+	{
+		path_after_dash = handle_dash_path(cmd->argv[1],
+				data, print_path_flag);
+		if (!path_after_dash)
+			return (NULL);
+		if (*print_path_flag == TRUE)
+			return (path_after_dash);
+		else
+		{
+			*path_to_free = expand_tilde_path(path_after_dash, data->env_list);
+			if (!*path_to_free)
+			{
+				if (!ft_list_getenv(data->env_list, "HOME"))
+					ft_putstr_fd("minishell: cd: HOME not set\n", 2);
+				data->last_exit_status = EXIT_FAILURE;
+				return (NULL);
+			}
+		}
+	}
+	return (*path_to_free);
+}
+
 int	ft_cd(t_cmd *cmd, t_data *data)
 {
-	char	*target_path_arg;
-	char	*target_path;
+	char	*final_target_path;
+	char	*allocated_path;
 	int		print_path_flag;
+	int		result;
 
-	target_path_arg = cmd->argv[1];
-	target_path = NULL;
-	print_path_flag = FALSE;
-	if (target_path_arg && cmd->argv[2])
-	{
-		ft_putstr_fd("minishell: cd: too many arguments\n", STDERR_FILENO);
-		data->last_exit_status = EXIT_FAILURE;
-		return (EXIT_FAILURE);
-	}
-	if (!target_path_arg)
-		target_path = get_home_path(data);
+	allocated_path = NULL;
+	if (!cmd->argv[1])
+		final_target_path = get_home_path(data);
 	else
-		target_path = handle_special_path(target_path_arg,
-				data, &print_path_flag);
-	if (!target_path)
+		final_target_path = determine_cd_target(cmd, data,
+				&print_path_flag, &allocated_path);
+	if (!final_target_path)
 		return (EXIT_FAILURE);
-	return (process_dir_change(target_path, data, print_path_flag));
+	result = process_dir_change(final_target_path, data, print_path_flag);
+	free(allocated_path);
+	return (result);
 }

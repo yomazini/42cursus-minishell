@@ -42,6 +42,7 @@ SRCS =  built_in/echo_built_in.c \
 		execution_part/redirections.c \
 		execution_part/tools3.c \
     	built_in/cd_built_in_utils.c \
+    	built_in/cd_built_in_utils2.c \
         built_in/export_built_in_utils.c \
         built_in/export_built_in_utils2.c \
 		execution_part/pipeline.c \

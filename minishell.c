@@ -37,6 +37,9 @@ void	handler_sigint(int signum)
 		rl_replace_line("", 0);
 		rl_redisplay();
 }
+
+// TODO: Here must edit the ctl + C to be 130 in last status {128 + 2} --> update last exit status;
+
 int	main(int ac, char **av, char **env)
 {
 	t_data	data;
