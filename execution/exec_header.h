@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/05 12:40:56 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/05 14:14:48 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,30 +31,6 @@
 
 # define TRUE 1
 # define FALSE 0
-
-// struct	s_cmd;
-
-// typedef struct s_redir
-// {
-// 	t_token_type	type;
-// 	char			*filename;
-// 	int				heredoc_fd;
-// 	bool			expand_heredoc;
-// 	struct s_redir	*next;
-// }	t_redir;
-
-// typedef struct s_cmd
-// {
-// 	char			**argv;
-// 	struct s_redir	*redirections;
-// 	struct s_cmd	*next;
-// }	t_cmd;
-
-// typedef struct s_data
-// {
-// 	t_env	*env_list;
-// 	int		last_exit_status;
-// }	t_data;
 
 void	update_shell_level(t_data *data);
 int		execute_built_ins(t_cmd *cmd, t_data *data);
