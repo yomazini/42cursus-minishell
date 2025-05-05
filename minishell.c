@@ -54,7 +54,6 @@ int	main(int ac, char **av, char **env)
 	command_list = NULL;
 	data.last_exit_status = EXIT_SUCCESS;
 	data.env_list = ft_getenv(env);
-	printint_shit("hhhhhhh");
 	if (!data.env_list && env && env[0])
 		ft_putstr_fd("minishell: Warning: env list init failed.\n", 2);
 	update_shell_level(&data);
@@ -68,7 +67,7 @@ int	main(int ac, char **av, char **env)
 		line = readline("\001\033[1;32m\002minishell$ \001\033[0m\002");
 		if (!line)
 		{
-			printf("exit\n");
+			printf("exit\n");// here better to do write as long as like bash {pay attention if can reditrect or not if like /dev/stdout or fd}
 			break ;
 		}
 		if (line[0] == '\0')
@@ -102,7 +101,7 @@ int	main(int ac, char **av, char **env)
 		}
 		else
 		{
-			data.last_exit_status = 2;
+			data.last_exit_status = 2; // should it be 2 or 258 ?? Why ? and How ?
 			printf("[Command Table Creation Failed - Check Syntax]\n");
 			// here free command_list linked list
 		}
