@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/05 11:44:55 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/05 12:40:56 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,6 @@ void	execute_command_node(t_cmd *cmd, t_data *data);
 void	execute_child_process(t_cmd *cmd, t_data *data, char *path);
 void	setup_child_pipes(int prev_pipe_read, int pipe_fd[2], t_cmd *cmd);
 int		wait_for_pipeline(int count, pid_t last_pid, t_data *data);
-
 char	*expand_tilde_path(const char *path_arg, t_env *env_list);
 
 #endif

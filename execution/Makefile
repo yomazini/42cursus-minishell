@@ -54,6 +54,7 @@ SRCS =  built_in/echo_built_in.c \
 		built_in/pwd_built_in.c \
 		built_in/exit_built_in.c \
 		built_in/export_built_in.c \
+		execution_part/heredoc/process_heredocs.c \
 		built_in/unset_built_in.c
 
 # --- Objects ---

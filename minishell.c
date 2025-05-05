@@ -54,6 +54,7 @@ int	main(int ac, char **av, char **env)
 	command_list = NULL;
 	data.last_exit_status = EXIT_SUCCESS;
 	data.env_list = ft_getenv(env);
+	printint_shit("hhhhhhh");
 	if (!data.env_list && env && env[0])
 		ft_putstr_fd("minishell: Warning: env list init failed.\n", 2);
 	update_shell_level(&data);
