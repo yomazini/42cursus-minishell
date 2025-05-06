@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/03 11:01:51 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/06 15:04:22 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <stdbool.h>
 # include <errno.h> //! MBLater
 # include <string.h> //^ for strcmp make your's
+
 
 typedef enum s_token_type
 {
