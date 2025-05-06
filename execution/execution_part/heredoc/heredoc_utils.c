@@ -6,11 +6,11 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:44:52 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/05 21:35:52 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/06 18:07:54 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../exec_header.h"
+#include "../../exec_header.h" 
 
 // Assume ft_list_getenv, ft_itoa, ft_strdup, ft_strjoin, ft_substr exist
 
