@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:47:59 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/06 16:02:27 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/06 18:28:16 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,23 +15,38 @@
 
 
 // Handles '<< DELIMITER' (uses pre-opened heredoc_fd from pipe's read end)
+// int handle_heredoc_redir(int heredoc_fd)
+// {
+// 	if (heredoc_fd < 0)
+// 		return (errno = EBADF, redir_error01("heredoc (invalid fd)"));
+
+// 	// Redirect stdin (FD 0) to the heredoc input FD (pipe's read end)
+// 	if (dup2(heredoc_fd, STDIN_FILENO) < 0)
+// 	{
+// 		close (heredoc_fd); // Close if dup2 fails
+// 		return (redir_error01("heredoc (dup2 failed)"));
+// 	}
+// 	// Close the original heredoc pipe read end fd after successful dup2
+// 	close(heredoc_fd);
+// 	return (0); // Success
+// }
+
 int handle_heredoc_redir(int heredoc_fd)
 {
 	if (heredoc_fd < 0)
 		return (errno = EBADF, redir_error01("heredoc (invalid fd)"));
 
-	// Redirect stdin (FD 0) to the heredoc input FD (pipe's read end)
+	// *** FIX: Correct parenthesis for dup2 condition ***
 	if (dup2(heredoc_fd, STDIN_FILENO) < 0)
 	{
-		close (heredoc_fd); // Close if dup2 fails
+		close (heredoc_fd); // Close original if dup2 fails
 		return (redir_error01("heredoc (dup2 failed)"));
 	}
-	// Close the original heredoc pipe read end fd after successful dup2
-	close(heredoc_fd);
-	return (0); // Success
+	// *** END FIX ***
+
+	close(heredoc_fd); // Close the original FD after successful dup2
+	return (0);
 }
-
-
 
 
 
