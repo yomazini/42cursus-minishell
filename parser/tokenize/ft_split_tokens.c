@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:17:32 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/06 17:44:49 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/06 17:47:53 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,7 @@ static char	**filltkn_array_revised(char **token_array, const char *line)
 			}
 		}
 	}
-	token_array[i] = NULL;
-	return (token_array);
+	return (token_array[i] = NULL, token_array);
 }
 
 char	**ft_split_tokens(const char *line)
