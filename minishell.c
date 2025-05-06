@@ -3,6 +3,8 @@
 #include "execution/exec_header.h"
 #include <signal.h>
 
+int g_global_signal = 0;
+
 // const char* get_token_type_name(t_token_type type) {
 // 	switch (type) {
 // 		case TOKEN_WORD:         return "WORD";
@@ -29,13 +31,16 @@
 // 	}
 // }
 
-void	handler_sigint(int signum)
+void	ft_handler(int signum)
 {
-		(void)signum;
-		printf("\n");
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
+		if (signum == SIGINT)
+		{
+			write(1, "\n",1);
+			rl_on_new_line();
+			rl_replace_line("", 0);
+			rl_redisplay();
+			g_global_signal = 2;
+		}
 }
 
 // TODO: Here must edit the ctl + C to be 130 in last status {128 + 2} --> update last exit status;
@@ -46,6 +51,7 @@ int	main(int ac, char **av, char **env)
 	char	*line;
 	t_token	*token_list;
 	t_cmd	*command_list;
+	
 
 	(void)ac; //~ maby add in a check: if ac > 1 -> do all of this 
 	(void)av;
@@ -54,11 +60,12 @@ int	main(int ac, char **av, char **env)
 	command_list = NULL;
 	data.last_exit_status = EXIT_SUCCESS;
 	data.env_list = ft_getenv(env);
+	rl_catch_signals = 0;
 	if (!data.env_list && env && env[0])
 		ft_putstr_fd("minishell: Warning: env list init failed.\n", 2);
 	update_shell_level(&data);
-	signal(SIGINT, handler_sigint);
-	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, ft_handler);
+	signal(SIGQUIT, ft_handler);
 	while (TRUE)
 	{
 		// command_list = NULL;
@@ -67,7 +74,7 @@ int	main(int ac, char **av, char **env)
 		line = readline("\001\033[1;32m\002minishell$ \001\033[0m\002");
 		if (!line)
 		{
-			printf("exit\n");// here better to do write as long as like bash {pay attention if can reditrect or not if like /dev/stdout or fd}
+			printf("exit\n");
 			break ;
 		}
 		if (line[0] == '\0')

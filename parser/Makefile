@@ -41,7 +41,6 @@ SRCS =	tokenize/tokenizer.c \
 		tokenize/ft_token_clear.c \
 		tokenize/ft_synax_error_free.c \
 		tokenize/ft_utils_error.c \
-		tokenize/ft_print_tokens.c \
 		expander/expander.c \
 		expander/ft_isdigit.c \
 		expander/ft_strcmp.c \

@@ -1,4 +1,5 @@
 #include "../parser.h"
+#include "../execution/exec_header.h"
 
 static int	int_len(long c)
 {
@@ -97,6 +98,7 @@ char	*ft_append_exit_status(char *new_str, int last_exit_status)
 char	*ft_expenv(char *new_str, const char *orign, t_data *data, int *i)
 {
 	int	peak;
+	extern int g_global_signal;
 
 	peak = ft_peakahead(orign[1]);
 	if (peak == -1)
@@ -112,6 +114,11 @@ char	*ft_expenv(char *new_str, const char *orign, t_data *data, int *i)
 	}
 	else if (peak == 3)
 	{
+		if (g_global_signal)
+		{
+			data->last_exit_status = 130;
+			g_global_signal = 0;
+		}
 		new_str = ft_append_exit_status(new_str, data->last_exit_status);
 		*i += 2;
 	}
