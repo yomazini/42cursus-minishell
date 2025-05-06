@@ -95,7 +95,20 @@ int	main(int ac, char **av, char **env)
 		token_list = NULL;
 		if (command_list)
 		{
-			execute_commands(command_list, &data);
+			// --- *** NEW: Process Heredocs BEFORE Execution *** ---
+			if (process_heredocs(command_list, &data) == EXIT_SUCCESS)
+			{
+				// Heredocs processed ok (or none found), proceed to execute
+				execute_commands(command_list, &data);
+			}
+			else
+			{
+				// Heredoc processing failed (e.g., Ctrl+D, file error)
+				// Status is already set in data by process_heredocs
+				printf("[Heredoc processing failed or interrupted]\n");
+			}
+			// if (process_heredocs(command_list, &data))
+			// execute_commands(command_list, &data);
 			ft_cmd_clear(&command_list);
 			command_list = NULL;
 		}
@@ -112,3 +125,52 @@ int	main(int ac, char **av, char **env)
 	rl_clear_history();
 	return (data.last_exit_status);
 }
+
+
+// --> in mainbsb
+// int	main(int ac, char **av, char **env)
+// {
+// 	// ... (declarations, initialization, update_shell_level) ...
+
+// 	while (TRUE)
+// 	{
+// 		// ... (reset pointers, readline, EOF check, empty check, history) ...
+
+// 		// --- Parsing Pipeline ---
+// 		// ... (syntax check, tokenize) ...
+
+// 		if (token_list)
+// 		{
+// 			// ... (expander, quote removal) ...
+// 			command_list = ft_create_cmd_table(token_list);
+// 			ft_token_clear(&token_list); // Clear tokens early
+
+// 			if (command_list)
+// 			{
+// 				// --- *** NEW: Process Heredocs BEFORE Execution *** ---
+// 				if (process_heredocs(command_list, &data) == EXIT_SUCCESS)
+// 				{
+// 					// Heredocs processed ok (or none found), proceed to execute
+// 					execute_commands(command_list, &data);
+// 				}
+// 				else
+// 				{
+// 					// Heredoc processing failed (e.g., Ctrl+D, file error)
+// 					// Status is already set in data by process_heredocs
+// 					printf("[Heredoc processing failed or interrupted]\n");
+// 				}
+// 				// --- *** END HEREDOC PROCESSING *** ---
+
+// 				ft_cmd_clear(&command_list); // Always clear cmd list
+// 				command_list = NULL;
+// 			}
+// 			// ... (handle command table creation failure) ...
+// 		}
+//         // ... (handle tokenization failure) ...
+
+// 		// ... (free line) ...
+// 	} // End while loop
+
+// 	// ... (final cleanup) ...
+// 	return (data.last_exit_status);
+// }

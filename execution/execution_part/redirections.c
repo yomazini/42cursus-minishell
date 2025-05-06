@@ -6,11 +6,34 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:47:59 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/04 18:51:31 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/06 16:02:27 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
+
+
+
+// Handles '<< DELIMITER' (uses pre-opened heredoc_fd from pipe's read end)
+int handle_heredoc_redir(int heredoc_fd)
+{
+	if (heredoc_fd < 0)
+		return (errno = EBADF, redir_error01("heredoc (invalid fd)"));
+
+	// Redirect stdin (FD 0) to the heredoc input FD (pipe's read end)
+	if (dup2(heredoc_fd, STDIN_FILENO) < 0)
+	{
+		close (heredoc_fd); // Close if dup2 fails
+		return (redir_error01("heredoc (dup2 failed)"));
+	}
+	// Close the original heredoc pipe read end fd after successful dup2
+	close(heredoc_fd);
+	return (0); // Success
+}
+
+
+
+
 
 int	redir_error01(char *filename)
 {
@@ -61,18 +84,18 @@ int	handle_outfile_trunc_n_append__redir(char *filename, int append)
 	return (0);
 }
 
-int	handle_heredoc_redir(int heredoc_fd)
-{
-	if (heredoc_fd < 0)
-		return (errno = EBADF, redir_error01("heredoc"));
-	if (dup2(heredoc_fd, STDIN_FILENO < 0))
-	{
-		close (heredoc_fd);
-		return (redir_error01("heredoc"));
-	}
-	close(heredoc_fd);
-	return (0);
-}
+// int	handle_heredoc_redir(int heredoc_fd)
+// {
+// 	if (heredoc_fd < 0)
+// 		return (errno = EBADF, redir_error01("heredoc"));
+// 	if (dup2(heredoc_fd, STDIN_FILENO < 0))
+// 	{
+// 		close (heredoc_fd);
+// 		return (redir_error01("heredoc"));
+// 	}
+// 	close(heredoc_fd);
+// 	return (0);
+// }
 
 int	apply_redirections(t_cmd *cmd)
 {
@@ -85,6 +108,8 @@ int	apply_redirections(t_cmd *cmd)
 	current_redir = cmd->redir;
 	while (current_redir)
 	{
+		if (current_redir->type == TOKEN_REDIR_HEREDOC)
+			status = handle_heredoc_redir(current_redir->heredoc_fd);
 		if (current_redir->type == TOKEN_REDIR_IN)
 			status = handle_infile_redir(current_redir->filename);
 		else if (current_redir->type == TOKEN_REDIR_HEREDOC)
@@ -101,3 +126,26 @@ int	apply_redirections(t_cmd *cmd)
 	}
 	return (EXIT_SUCCESS);
 }
+
+// Make sure apply_redirections calls it
+// int	apply_redirections(t_cmd *cmd)
+// {
+// 	int status = EXIT_SUCCESS;
+// 	t_redir *current_redir;
+
+// 	if (!cmd || !cmd->redir)
+// 		return (0);
+// 	current_redir = cmd->redir;
+// 	while(current_redir != NULL)
+// 	{
+// 		// ... other cases ...
+// 		if (current_redir->type == TOKEN_REDIR_HEREDOC)
+// 			status = handle_heredoc_redir(current_redir->heredoc_fd);
+// 		// ... other cases ...
+
+// 		if (status != 0)
+// 			return (EXIT_FAILURE); // Exit on first failure
+// 		current_redir = current_redir->next;
+// 	}
+// 	return (EXIT_SUCCESS);
+// }

@@ -86,7 +86,9 @@ EXEC_SRC =      execution_part/find_path.c \
             execution_part/pipeline_utils.c \
             execution_part/executor.c \
             execution_part/executor_utils.c \
-			execution_part/heredoc/process_heredocs.c \
+			execution_part/heredoc/process_heredoc.c \
+			execution_part/heredoc/heredoc.c \
+			execution_part/heredoc/heredoc_utils.c \
             execution_part/tools4.c \
             execution_part/tools5.c \
             built_in/env_built_in.c \
