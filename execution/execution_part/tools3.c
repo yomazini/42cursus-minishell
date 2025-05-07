@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tools3.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 22:09:03 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/04 18:27:28 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/07 20:03:08 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	update_last_exit_status(t_data *data, int wait_status)
 		term_sig = WTERMSIG(wait_status);
 		data->last_exit_status = 128 + term_sig;
 		if (term_sig == SIGQUIT)
-			ft_putstr_fd("Quit: 3/n", STDERR_FILENO);
+			ft_putstr_fd("Quit: 3\n", STDERR_FILENO);
 		else if (term_sig == SIGINT)
 			ft_putchar_fd('\n', STDERR_FILENO);
 	}

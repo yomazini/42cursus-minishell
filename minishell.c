@@ -5,32 +5,6 @@
 
 int g_global_signal = 0;
 
-// const char* get_token_type_name(t_token_type type) {
-// 	switch (type) {
-// 		case TOKEN_WORD:         return "WORD";
-// 		case TOKEN_PIPE:         return "PIPE";
-// 		case TOKEN_REDIR_IN:     return "REDIR_IN";
-// 		case TOKEN_REDIR_OUT:    return "REDIR_OUT";
-// 		case TOKEN_REDIR_APPEND: return "REDIR_APPEND";
-// 		case TOKEN_REDIR_HEREDOC:return "REDIR_HEREDOC";
-// 		default:                 return "UNKNOWN";
-// 	}
-// }
-// void ft_print_token_list(t_token *head)
-// {
-// 	t_token *current = head; 
-// 	int i = 0;   
-// 	while (current != NULL)
-// 	{
-// 		printf("token[%d]= [%s], type(%s)\n",
-// 			   i,
-// 			   current->value ? current->value : "(null value)",
-// 			   get_token_type_name(current->type));
-// 		current = current->next;
-// 		i++;
-// 	}
-// }
-
 void	ft_handler(int signum)
 {
 		if (signum == SIGINT)
@@ -40,6 +14,10 @@ void	ft_handler(int signum)
 			rl_replace_line("", 0);
 			rl_redisplay();
 			g_global_signal = 2;
+		}
+		if (signum == SIGQUIT)
+		{
+			printf("Quit: 3\n");
 		}
 }
 
