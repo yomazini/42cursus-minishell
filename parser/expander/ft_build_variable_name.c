@@ -1,9 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_build_variable_name.c                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/07 11:23:18 by eel-garo          #+#    #+#             */
+/*   Updated: 2025/05/07 11:25:46 by eel-garo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../parser.h"
 
 static size_t	ft_vtsize(const char *string, int j)
 {
-	size_t	size = 0;
+	size_t	size;
 
+	size = 0;
 	while (string[j] && ft_ispt_variable(string[j]))
 	{
 		size++;
@@ -12,9 +25,9 @@ static size_t	ft_vtsize(const char *string, int j)
 	return (size);
 }
 
-static char *ft_build_digit(const char *string)
+static char	*ft_build_digit(const char *string)
 {
-	char *vt_name;
+	char	*vt_name;
 
 	vt_name = malloc(2);
 	if (!vt_name)
@@ -24,14 +37,14 @@ static char *ft_build_digit(const char *string)
 	return (vt_name);
 }
 
-static char *ft_build_world(const char *string, size_t *var_size)
+static char	*ft_build_world(const char *string, size_t *var_size)
 {
 	char	*vt_name;
 	size_t	j;
 	int		k;
 
 	j = 1;
-	k = 0; 
+	k = 0;
 	*var_size = ft_vtsize(string, j);
 	if (var_size == 0)
 		return (ft_strdup(""));
@@ -39,10 +52,11 @@ static char *ft_build_world(const char *string, size_t *var_size)
 	if (!vt_name)
 		return (NULL);
 	while (j <= *var_size)
-			vt_name[k++] = string[j++];
+		vt_name[k++] = string[j++];
 	vt_name[k] = '\0';
 	return (vt_name);
 }
+
 char	*ft_build_variable_name(const char *orign, int peak, int *index)
 {
 	char		*vt_name;
@@ -57,7 +71,7 @@ char	*ft_build_variable_name(const char *orign, int peak, int *index)
 		*index += 2;
 	}
 	if (peak == 1)
-	{	
+	{
 		vt_name = ft_build_world(orign, &var_size);
 		if (!vt_name)
 			return (NULL);

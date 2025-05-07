@@ -1,26 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_cmd_new.c                                       :+:      :+:    :+:   */
+/*   ft_utils_cmd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/07 13:20:34 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/07 13:20:37 by eel-garo         ###   ########.fr       */
+/*   Created: 2025/05/07 14:27:28 by eel-garo          #+#    #+#             */
+/*   Updated: 2025/05/07 15:09:59 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../parser.h"
 
-t_cmd	*ft_cmd_new(void)
+size_t	ft_count_cmd(t_token *token)
 {
-	t_cmd	*new_cmd;
+	t_token	*current;
+	size_t	count_pipe;
 
-	new_cmd = malloc(sizeof(t_cmd));
-	if (!new_cmd)
-		return (NULL);
-	new_cmd->argv = NULL;
-	new_cmd->redir = NULL;
-	new_cmd->next = NULL;
-	return (new_cmd);
+	current = token;
+	count_pipe = 0;
+	while (current)
+	{
+		if (current->type == TOKEN_PIPE)
+			count_pipe++;
+		current = current->next;
+	}
+	return (count_pipe + 1);
+}
+
+size_t	ft_viclen(char **argv)
+{
+	size_t	i;
+
+	if (!argv)
+		return (0);
+	i = 0;
+	while (argv[i])
+		i++;
+	return (i);
 }

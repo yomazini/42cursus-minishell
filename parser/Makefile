@@ -60,6 +60,7 @@ SRCS =	tokenize/tokenizer.c \
 		expander/env/ft_strdup.c \
 		expander/env/ft_strchr.c \
 		expander/env/ft_strnstr.c \
+		expander/ft_utils_expand.c \
 		cmd/ft_create_cmd_table.c \
 		cmd/ft_cmd_new.c \
 		cmd/ft_cmd_add_back.c \
@@ -67,7 +68,7 @@ SRCS =	tokenize/tokenizer.c \
 		cmd/ft_redir_new.c \
 		cmd/ft_redir_add_back.c \
 		cmd/ft_redir_clear.c \
-		cmd/ft_print_cmd_table.c
+		cmd/ft_utils_cmd.c \
 
 # --- Objects ---
 OBJS = $(SRCS:.c=.o)

@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 16:43:13 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/04/29 16:18:13 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/07 11:17:24 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,5 +37,3 @@ char	**free_all(char **tkn_array, int i)
 	free(tkn_array);
 	return (NULL);
 }
-
-

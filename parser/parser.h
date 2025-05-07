@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/06 15:04:22 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/07 15:33:38 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ char	*ft_strjoined(char const *string, char const *str);
 int		ft_strcmp(const char *alpha, const char *bita);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 void	ft_clean_up(t_token **token);
-int		ft_isdouble_quote(char *word);
+// int		ft_isdouble_quote(char *word);
 int 	ft_isexpandable(t_token *current);
 int		ft_isbign_variable(char c);
 int 	ft_ispt_variable(char c);
@@ -131,6 +131,9 @@ char	*ft_build_variable_name(const char *orign, int peak, int *index);
 char	*ft_isvariablet_exist(t_env *env_list, char *variable_name);
 void	ft_expand(t_token **token_ptr, t_data *data);
 int		ft_isdigit(int c);
+char	*ft_append_exit_status(char *new_str, int last_exit_status);
+char	*ft_append_vt(char *new_str, const char *orign, t_env *env, int *i, int peak);
+char	*append_single_char(char *new_str,char c);
 
 //	expander/env
 t_env	*ft_getenv(char **env);
@@ -152,5 +155,7 @@ void	ft_redir_add_back(t_redir **redir_list, t_redir *new_redir);
 void	ft_print_cmd_table(t_cmd *head);
 void	ft_cmd_clear(t_cmd **cmd_list);
 void	ft_redir_clear(t_redir **redir_list);
+size_t	ft_count_cmd(t_token *token);
+size_t	ft_viclen(char **argv);
 
 #endif

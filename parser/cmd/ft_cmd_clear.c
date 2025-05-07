@@ -1,42 +1,32 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_cmd_clear.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/07 13:19:47 by eel-garo          #+#    #+#             */
+/*   Updated: 2025/05/07 13:20:14 by eel-garo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../parser.h"
 
-
-
-// static void	ft_cmd_delone(t_cmd *node)
-// {
-
-// 	if (!node)
-// 		return ;
-// 	if (node->argv)
-// 	{
-// 		free(node->argv);
-// 		node->argv = NULL;
-// 	}
-// 	if (node->redir)
-// 		ft_redir_clear(&node->redir);
-// 	free(node);
-// }
 void	free_arr(char **arr);
 
 static void	ft_cmd_delone(t_cmd *node)
 {
 	if (!node)
 		return ;
-
-	// *** FIX: Use free_arr to free strings inside argv first ***
 	if (node->argv)
 	{
-		free_arr(node->argv); // Frees strings AND the array itself
-		node->argv = NULL;    // Set to NULL after freeing
+		free_arr(node->argv);
+		node->argv = NULL;
 	}
-	// *** END FIX ***
-
-	if (node->redir) // Assuming 'redir' is the correct name from parser.h
-		ft_redir_clear(&node->redir); // Ensure ft_redir_clear handles its freeing correctly
-
-	free(node); // Free the t_cmd struct itself
+	if (node->redir)
+		ft_redir_clear(&node->redir);
+	free(node);
 }
-
 
 void	ft_cmd_clear(t_cmd **cmd_list)
 {
@@ -48,10 +38,9 @@ void	ft_cmd_clear(t_cmd **cmd_list)
 	current = *cmd_list;
 	while (current)
 	{
-		next_node = current->next;	
+		next_node = current->next;
 		ft_cmd_delone(current);
 		current = next_node;
 	}
 	*cmd_list = NULL;
-	 
 }
