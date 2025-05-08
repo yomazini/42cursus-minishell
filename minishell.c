@@ -57,7 +57,7 @@ int	main(int ac, char **av, char **env)
 		// command_list = NULL;
 		// token_list = NULL;
 		// line = NULL;
-		line = readline("\001\033[1;32m\002minishell$ \001\033[0m\002");
+		line = readline(MINISHELL_PROMPT);
 		if (!line)
 		{
 			printf("exit\n");
