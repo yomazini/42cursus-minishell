@@ -3,20 +3,28 @@
 #include "execution/exec_header.h"
 #include <signal.h>
 
-int g_global_signal = 0;
+int g_child_open = 0;
 
 void	ft_handler(int signum)
 {
 		if (signum == SIGINT)
 		{
-			write(1, "\n",1);
-			rl_on_new_line();
-			rl_replace_line("", 0);
-			rl_redisplay();
-			g_global_signal = 2;
+			if (!g_child_open)
+			{
+				write(1, "\n",1);
+				rl_on_new_line();
+				rl_replace_line("", 0);
+				rl_redisplay();
+			}
+			else if (g_child_open == 1)
+			{
+				g_child_open = 2;
+				write(1, "\n", 1);
+			}
 		}
 		if (signum == SIGQUIT)
 		{
+			if (g_child_open == 1)
 			printf("Quit: 3\n");
 		}
 }
