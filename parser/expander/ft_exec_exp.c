@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:42:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/08 12:55:23 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/09 16:38:48 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ static char	*ft_helper_exit_status_func(char *new_str, t_data *data, int *i)
 
 char	*ft_expenv(char *new_str, const char *orign, t_data *data, int *i)
 {
-	extern int	g_global_signal;
 
 	data->peak = ft_peakahead(orign[1]);
 	if (data->peak == -1)
@@ -40,6 +39,11 @@ char	*ft_expenv(char *new_str, const char *orign, t_data *data, int *i)
 		new_str = ft_helper_exit_status_func(new_str, data, i);
 	else if (data->peak == 4)
 		*i += 2;
+	else
+	{
+		new_str = append_single_char(new_str, orign[0]);
+		(*i)++;
+	}	
 	return (new_str);
 }
 
