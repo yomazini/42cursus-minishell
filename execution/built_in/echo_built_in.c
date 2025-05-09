@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:46:19 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/03 21:25:01 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/09 16:13:04 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,7 @@ int	get_printing_start_index(t_cmd *cmd)
 	i = 1;
 	while (cmd->argv[i])
 	{
-		if (ft_is_only_whitespace(cmd->argv[i])
-			|| ft_check_n_flag(cmd->argv[i]))
+		if ( ft_check_n_flag(cmd->argv[i]))
 			i++;
 		else
 			break ;

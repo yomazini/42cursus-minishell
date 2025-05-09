@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:44:52 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/06 18:07:54 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/08 20:37:55 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static int	is_var_char(char c)
 // Reallocates the string. Returns new pointer or NULL on failure.
 static char	*append_char(char *str, char c)
 {
-	size_t	len;
+	size_t	len;// line1
 	char	*new_str;
 	char	append[2];
 
@@ -57,7 +57,7 @@ static char	*append_char(char *str, char c)
 // Caller MUST free the result.
 char	*expand_heredoc_line(char *line, t_data *data)
 {
-	char	*expanded_line;
+	char	*expanded_line;// L31
 	char	*var_name;
 	char	*var_value;
 	char	*tmp_str;
