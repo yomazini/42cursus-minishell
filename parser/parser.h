@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/06 15:04:22 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/07 18:07:24 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,14 @@
 # include <errno.h> //! MBLater
 # include <string.h> //^ for strcmp make your's
 
-
 typedef enum s_token_type
 {
-	TOKEN_WORD, // 0
-	TOKEN_PIPE, // 1
-	TOKEN_REDIR_IN, // 2 -> < 
-	TOKEN_REDIR_OUT, // 3 -> >
-	TOKEN_REDIR_APPEND, // 4 -> >>
-	TOKEN_REDIR_HEREDOC, // 5 -> >>
+	TOKEN_WORD,
+	TOKEN_PIPE,
+	TOKEN_REDIR_IN,
+	TOKEN_REDIR_OUT,
+	TOKEN_REDIR_APPEND,
+	TOKEN_REDIR_HEREDOC,
 }	t_token_type;
 
 typedef struct s_token
@@ -42,20 +41,18 @@ typedef struct s_token
 
 typedef struct s_env
 {
-	char	*name;
-	char	*value;
-	int		flag_env;
-	struct s_env *next;
+	char			*name;
+	char			*value;
+	int				flag_env;
+	struct s_env	*next;
 }	t_env;
-
 
 typedef struct s_exp_result
 {
-	char *res_str;
-	int	chars_consumed;
-	int	peak;
-} t_exp_res;
-
+	char	*res_str;
+	int		chars_consumed;
+	int		peak;
+}	t_exp_res;
 
 typedef struct s_proc
 {
@@ -66,28 +63,33 @@ typedef struct s_proc
 
 typedef struct s_redir
 {
-    t_token_type    type;
-    char            *filename;
-    int                heredoc_fd;
-    bool            expand_heredoc;
-    struct s_redir    *next;
-}    t_redir;
+	t_token_type	type;
+	char			*filename;
+	int				heredoc_fd;
+	bool			expand_heredoc;
+	struct s_redir	*next;
+}	t_redir;
 
 typedef struct s_cmd
 {
-    char            **argv;
-    struct s_redir    *redir;
-    struct s_cmd    *next;
-}    t_cmd;
-
-
+	char			**argv;
+	struct s_redir	*redir;
+	struct s_cmd	*next;
+}	t_cmd;
 typedef struct s_data
 {
-    t_env    *env_list;
-    int        last_exit_status;
+	t_env	*env_list;
+	int		last_exit_status;
 	bool	herdoc;
-}    t_data;
-
+	int		peak;
+}	t_data;
+typedef struct s_exp_st
+{
+	char	**ptr;
+	int		*i_ptr;
+	char	*qt_ptr;
+	t_data	*data;
+}	t_exp_p;
 
 //libft
 int		ft_isspace(int c);
@@ -122,15 +124,18 @@ char	*ft_strjoined(char const *string, char const *str);
 int		ft_strcmp(const char *alpha, const char *bita);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 void	ft_clean_up(t_token **token);
-int		ft_isdouble_quote(char *word);
-int 	ft_isexpandable(t_token *current);
+// int		ft_isdouble_quote(char *word);
+int		ft_isexpandable(t_token *current);
 int		ft_isbign_variable(char c);
-int 	ft_ispt_variable(char c);
+int		ft_ispt_variable(char c);
 int		ft_peakahead(char c);
 char	*ft_build_variable_name(const char *orign, int peak, int *index);
 char	*ft_isvariablet_exist(t_env *env_list, char *variable_name);
 void	ft_expand(t_token **token_ptr, t_data *data);
 int		ft_isdigit(int c);
+char	*ft_append_exit_status(char *new_str, int last_exit_status);
+char	*ft_append_vt(char *new_str, const char *orign, t_data *data, int *i);
+char	*append_single_char(char *new_str, char c);
 
 //	expander/env
 t_env	*ft_getenv(char **env);
@@ -149,8 +154,10 @@ t_cmd	*ft_cmd_new(void);
 void	ft_cmd_add_back(t_cmd **cmd_list, t_cmd *new_cmd);
 t_redir	*ft_redir_new(int type, char *filename);
 void	ft_redir_add_back(t_redir **redir_list, t_redir *new_redir);
-void	ft_print_cmd_table(t_cmd *head);
+// void	ft_print_cmd_table(t_cmd *head);
 void	ft_cmd_clear(t_cmd **cmd_list);
 void	ft_redir_clear(t_redir **redir_list);
+size_t	ft_count_cmd(t_token *token);
+size_t	ft_viclen(char **argv);
 
 #endif

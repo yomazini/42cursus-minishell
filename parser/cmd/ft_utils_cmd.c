@@ -1,23 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_utils_cmd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/16 15:17:44 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/04/16 15:56:43 by eel-garo         ###   ########.fr       */
+/*   Created: 2025/05/07 14:27:28 by eel-garo          #+#    #+#             */
+/*   Updated: 2025/05/07 15:09:59 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../parser.h"
 
-size_t	ft_strlen(const char *string)
+size_t	ft_count_cmd(t_token *token)
 {
-	size_t	string_len;
+	t_token	*current;
+	size_t	count_pipe;
 
-	string_len = 0;
-	while (string[string_len])
-		string_len++;
-	return (string_len);
+	current = token;
+	count_pipe = 0;
+	while (current)
+	{
+		if (current->type == TOKEN_PIPE)
+			count_pipe++;
+		current = current->next;
+	}
+	return (count_pipe + 1);
+}
+
+size_t	ft_viclen(char **argv)
+{
+	size_t	i;
+
+	if (!argv)
+		return (0);
+	i = 0;
+	while (argv[i])
+		i++;
+	return (i);
 }

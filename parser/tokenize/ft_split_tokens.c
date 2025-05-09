@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:17:32 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/06 17:47:53 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/07 16:38:28 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,7 @@ static size_t	ft_get_token_len(const char *line, int *k)
 	{
 		if (ft_isquot(line[*k]))
 		{
-			quote = line[*k];
-			(*k)++;
+			quote = line[(*k)++];
 			while (line[*k] && line[*k] != quote)
 				(*k)++;
 			if (line[*k] == quote)

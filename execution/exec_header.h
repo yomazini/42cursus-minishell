@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/05 22:00:51 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/09 20:48:23 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # include <sys/wait.h>
 # include <fcntl.h>
 # include <limits.h>
-# include "libft/libft.h"
+# include "../libft/libft.h"
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <stdbool.h>
@@ -79,5 +79,8 @@ char	*expand_tilde_path(const char *path_arg, t_env *env_list);
 int	 process_heredocs(t_cmd *cmd_list, t_data *data);
 char *expand_heredoc_line(char *line, t_data *data);
 int	handle_heredoc_redir(int heredoc_fd);
+
+
+void	cleanup_shell_resources(t_data *data);
 
 #endif
