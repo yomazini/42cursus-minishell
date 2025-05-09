@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:42:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/08 11:04:13 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/08 12:55:23 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,6 @@
 
 static char	*ft_helper_exit_status_func(char *new_str, t_data *data, int *i)
 {
-	// extern int	g_global_signal;
-
-	// if (g_global_signal)
-	// {
-	// 	data->last_exit_status = 130;
-	// 	g_global_signal = 0;
-	// }
 	new_str = ft_append_exit_status(new_str, data->last_exit_status);
 	*i += 2;
 	return (new_str);

@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 13:23:07 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/07 15:08:14 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/09 15:23:04 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ t_cmd	*ft_creat_cmd_table(t_token *token)
 		new_cmd = ft_cmd_new();
 		if (!new_cmd)
 			return (ft_cmd_clear(&head), NULL);
-		ft_populate_cmd(&token, new_cmd);
+		ft_populate_cmd(&curr_token, new_cmd);
 		ft_cmd_add_back(&head, new_cmd);
 		if (curr_token && curr_token->type == TOKEN_PIPE)
 			curr_token = curr_token->next;

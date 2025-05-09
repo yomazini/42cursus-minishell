@@ -6,56 +6,11 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:39:55 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/07 15:49:40 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/09 15:25:44 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../parser.h"
-
-static int	int_len(long c)
-{
-	int	i;
-
-	i = 0;
-	if (c <= 0)
-	{
-		i++;
-		c = -c;
-	}
-	while (c)
-	{
-		c /= 10;
-		i++;
-	}
-	return (i);
-}
-
-static char	*ft_itoa_ps(int n)
-{
-	long	c;
-	char	*str;
-	int		len;
-
-	c = n;
-	len = int_len(c);
-	str = (char *)malloc (len + 1);
-	if (!str)
-		return (NULL);
-	str[len--] = '\0';
-	if (c == 0)
-		str[0] = '0';
-	if (c < 0)
-	{
-		str[0] = '-';
-		c = -c ;
-	}
-	while (c)
-	{
-		str[len--] = (c % 10) + '0';
-		c /= 10;
-	}
-	return (str);
-}
+#include "minishell.h"
 
 char	*append_single_char(char *new_str, char c)
 {
@@ -98,7 +53,7 @@ char	*ft_append_exit_status(char *new_str, int last_exit_status)
 	char	*value;
 	char	*temp;
 
-	str = ft_itoa_ps(last_exit_status);
+	str = ft_itoa(last_exit_status);
 	len = ft_strlen(str);
 	value = malloc(sizeof(char) * (len + 1));
 	ft_strncpy(value, str, (len + 1));
