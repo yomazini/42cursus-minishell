@@ -1,0 +1,559 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executor.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/10 01:21:00 by ymazini          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../exec_header.h"
+
+static int	handle_syntax_error_message(char *message, t_data *data, int err_code)
+{
+    ft_putstr_fd("minishell: ", STDERR_FILENO);
+    ft_putstr_fd(message, STDERR_FILENO);
+    ft_putchar_fd('\n', STDERR_FILENO);
+    data->last_exit_status = err_code;
+    return (err_code);
+}
+
+
+// static int	handle_single_command(t_cmd *cmd_node, t_data *data) // Renamed param
+// {
+//     int	child_status;
+
+//     // Case 1: Node has a command word (argv[0] is not NULL)
+//     if (cmd_node->argv && cmd_node->argv[0])
+//     {
+//         if (is_parent_builtin(cmd_node))
+//         {
+//             execute_built_ins(cmd_node, data); // Builtin sets its own status
+//         }
+//         else if (cmd_node->argv[0][0])// External command OR child-safe builtin
+//         {
+//             execute_external_command(cmd_node, data); // Sets status via waitpid
+//         }
+//         return (data->last_exit_status);
+//     }
+//     // Case 2: Node has NO command word, but has redirections (e.g., "> file", "<< EOF")
+//     else if (cmd_node->redir)
+//     {
+//         //  process for apply_redirections to work in child context for some.
+//         pid_t pid = fork();
+//         if (pid < 0) { perror("minishell: fork"); data->last_exit_status = 1; return 1; }
+//         if (pid == 0) { // Child
+//             if (apply_redirections(cmd_node) != 0)
+//                 exit(EXIT_FAILURE); // Redirection failed
+//             exit(EXIT_SUCCESS);     // Redirection succeeded
+//         }
+//         // Parent
+//         waitpid(pid, &child_status, 0);
+//         update_last_exit_status(data, child_status);
+//         return (data->last_exit_status);
+//     }
+//     else
+//         return (handle_syntax_error_message("invalid command structure", data, 2));
+// }
+
+
+static int	handle_single_command(t_cmd *cmd_node, t_data *data)
+{
+	int	child_status;
+	if (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0] != '\0')
+	{
+		if (is_parent_builtin(cmd_node))
+		{
+			execute_built_ins(cmd_node, data);
+		}
+		else // External command OR child-safe builtin
+		{
+			execute_external_command(cmd_node, data);
+		}
+		return (data->last_exit_status);
+	}
+	// Case 2: No command word (argv[0] is NULL or empty string), but has redirections
+	else if ((!cmd_node->argv || !cmd_node->argv[0] || cmd_node->argv[0][0] == '\0')
+				&& cmd_node->redir)
+	{
+		pid_t pid = fork();
+		if (pid < 0) { perror("minishell: fork"); data->last_exit_status = 1; return 1; }
+		if (pid == 0) { // Child
+			if (apply_redirections(cmd_node) != 0)
+				exit(EXIT_FAILURE); // Redirection failed
+			exit(EXIT_SUCCESS);     // Redirection succeeded
+		}
+		// Parent
+		waitpid(pid, &child_status, 0);
+		update_last_exit_status(data, child_status);
+		return (data->last_exit_status);
+	}
+	// Case 3: No command word (argv[0] is NULL or empty string) AND no redirections
+	// OR command word is empty string and no redirections
+	else if (!cmd_node->argv || !cmd_node->argv[0] || cmd_node->argv[0][0] == '\0')
+	{
+		if (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0] == '\0')
+		{
+            ft_putstr_fd("minishell: ", STDERR_FILENO);
+            ft_putstr_fd("\"\"", STDERR_FILENO); // Or just print nothing for cmd_name
+            ft_putstr_fd(": command not found\n", STDERR_FILENO);
+			data->last_exit_status = 127;
+		}
+        else
+        {
+            data->last_exit_status = 258;
+        }
+		return (data->last_exit_status);
+	}
+	else
+		return (handle_syntax_error_message("invalid command structure", data, 2));
+}
+
+int	execute_commands(t_cmd *cmd_list, t_data *data)
+{
+	int		command_count;
+	t_cmd	*counter;
+
+	if (!cmd_list)
+		return (data->last_exit_status = 0, 0);
+	command_count = 0;
+	counter = cmd_list;
+	while (counter != NULL)
+	{
+		command_count++;
+		counter = counter->next;
+	}
+	if (command_count == 1)
+		return (handle_single_command(cmd_list, data));
+	else
+	{
+		if (!cmd_list->argv || !cmd_list->argv[0])
+		{
+			ft_putstr_fd("mini: syntax error near unexpected token`|'\n", 2);
+			data->last_exit_status = 258;
+			return (data->last_exit_status);
+		}
+		execute_pipeline(cmd_list, data);
+	}
+	return (data->last_exit_status);
+}
+
+void	ft_print_not_found(char *cmd_name)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(cmd_name, STDERR_FILENO);
+	ft_putstr_fd(" : command not found\n", STDERR_FILENO);
+}
+
+int	execute_external_command(t_cmd *cmd, t_data *data)
+{
+	char	*executable_path;
+	pid_t	child_pid;
+	int		wait_status;
+
+	executable_path = find_command_path(cmd->argv[0], data->env_list);
+	if (!executable_path)
+	{
+		ft_print_not_found(cmd->argv[0]);
+		data->last_exit_status = 127;
+		return (127);
+	}
+	child_pid = fork();
+	if (child_pid < 0)
+	{
+		data->last_exit_status = EXIT_FAILURE;
+		return (perror("minishell: fork"), free(executable_path), EXIT_FAILURE);
+	}
+	else if (child_pid == 0)
+	{
+		set_child_signal_handlers();
+		execute_child_process(cmd, data, executable_path);
+	}
+	free(executable_path);
+	wait_status = 0;
+	waitpid(child_pid, &wait_status, 0);
+	update_last_exit_status(data, wait_status);
+	return (data->last_exit_status);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/05 20:43:01 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/10 01:23:48 by ymazini          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../exec_header.h"
+
+/**
+ * @brief Iterates through command list, processes all heredocs.
+ *        Creates a pipe for each heredoc, reads input, stores readable FD.
+ *
+ * @param cmd_list Head of command list.
+ * @param data Shell data structure.
+ * @return int EXIT_SUCCESS or EXIT_FAILURE.
+ */
+
+
+/*		---   */
+
+extern volatile sig_atomic_t	g_received_signal;
+char							*expand_heredoc_line(char *line, t_data *data);
+void							heredoc_sigint_handler(int signum);
+void							main_prompt_sigint_handler(int signum); // For restoring
+void							setup_signal_action(int signum, void (*handler)(int), int flags);
+
+
+static int	read_input_to_pipe(char *delimiter, bool expand,
+								t_data *data, int pipe_write_fd)
+{
+	char	*line;
+	char	*line_to_write;
+	size_t	delim_len;
+
+	delim_len = ft_strlen(delimiter);
+	while (1)
+	{
+		if (g_received_signal == SIGINT) // Check global flag
+			return (130); // Indicate interruption
+		line = readline("> ");
+		if (g_received_signal == SIGINT) // Check again after readline
+		{
+			free(line); // Readline might have allocated
+			return (130);
+		}
+		if (!line) { /* EOF warning */ return (0); } // Normal EOF is not an error
+		if (ft_strncmp(line, delimiter, delim_len + 1) == 0) { free(line); break; }
+		if (expand) { 
+			line_to_write = expand_heredoc_line(line, data);
+			free(line); // Free original readline buffer
+			if (!line_to_write) return (-1); // Malloc error in expander
+		} else { line_to_write = line; }
+		if (write(pipe_write_fd, line_to_write, ft_strlen(line_to_write)) < 0
+			|| write(pipe_write_fd, "\n", 1) < 0) 
+			{
+				perror("minishell: heredoc: write to pipe failed");
+
+				 /* handle error, free, return -1 */ }
+		if (expand) free(line_to_write);
+	}
+	return (0); // Success
+}
+
+int	process_heredocs(t_cmd *cmd_list, t_data *data)
+{
+	t_cmd				*current_cmd;
+	t_redir				*current_redir;
+	int					pipe_fds[2];
+	int					read_status;
+	struct sigaction	sa_old_main_int; // To store main prompt SIGINT handler
+
+	// 1. Save current main SIGINT handler & set heredoc SIGINT handler
+	sigaction(SIGINT, NULL, &sa_old_main_int); // Save current SIGINT
+	setup_signal_action(SIGINT, heredoc_sigint_handler, 0); // Set heredoc one, NO SA_RESTART
+
+	g_received_signal = 0; // Ensure flag is clear before starting
+	current_cmd = cmd_list;
+	while (current_cmd != NULL && g_received_signal != SIGINT) {
+		current_redir = current_cmd->redir; // Use correct field name
+		while (current_redir != NULL && g_received_signal != SIGINT) {
+			if (current_redir->type == TOKEN_REDIR_HEREDOC) {
+				if (current_redir->heredoc_fd == -1) {
+					if (pipe(pipe_fds) == -1) {
+						perror("minishell: heredoc: pipe creation failed");
+						return (data->last_exit_status = EXIT_FAILURE, EXIT_FAILURE);
+						 /* perror, restore main sigint, return fail */ }
+					read_status = read_input_to_pipe(current_redir->filename,
+												current_redir->expand_heredoc, data, pipe_fds[1]);
+					close(pipe_fds[1]); // Close write end
+					if (read_status == 130 || g_received_signal == SIGINT) { // Interrupted
+						close(pipe_fds[0]); // Close read end on interrupt
+						data->last_exit_status = 130;
+						sigaction(SIGINT, &sa_old_main_int, NULL); // Restore main SIGINT
+						return (EXIT_FAILURE);
+					} else if (read_status < 0) { // Other error
+						close(pipe_fds[0]);
+						data->last_exit_status = EXIT_FAILURE;
+						sigaction(SIGINT, &sa_old_main_int, NULL);
+						return (EXIT_FAILURE);
+					}
+					current_redir->heredoc_fd = pipe_fds[0];
+				}
+			}
+			current_redir = current_redir->next;
+		}
+		current_cmd = current_cmd->next;
+	}
+	// 2. Restore original main SIGINT handler
+	sigaction(SIGINT, &sa_old_main_int, NULL);
+	if (g_received_signal == SIGINT) { // If loop exited due to signal
+		data->last_exit_status = 130;
+		return (EXIT_FAILURE);
+	}
+	return (EXIT_SUCCESS);
+}
+#include "includes/minishell.h" 
+#include "parser/parser.h"
+#include "execution/exec_header.h"
+#include <signal.h>
+
+// int g_child_open = 0;
+
+const char* get_token_type_name(t_token_type type) {
+    switch (type) {
+        case TOKEN_WORD:         return "WORD";
+        case TOKEN_PIPE:         return "PIPE";
+        case TOKEN_REDIR_IN:     return "REDIR_IN";
+        case TOKEN_REDIR_OUT:    return "REDIR_OUT";
+        case TOKEN_REDIR_APPEND: return "REDIR_APPEND";
+        case TOKEN_REDIR_HEREDOC:return "REDIR_HEREDOC";
+        default:                 return "UNKNOWN";
+    }
+}
+void ft_print_token_list(t_token *head)
+{
+    t_token *current = head; 
+    int i = 0;   
+    while (current != NULL)
+    {
+        printf("token[%d]= [%s], type(%s)\n",
+               i,
+               current->value ? current->value : "(null value)",
+               get_token_type_name(current->type));
+        current = current->next;
+        i++;
+    }
+}
+
+
+
+void ft_print(char **argv)
+{
+    int i = 0;
+
+    // *** ADD THIS CHECK ***
+    if (argv == NULL)
+    {
+        printf("[ (no arguments) ]\n"); // Or just print nothing
+        return;
+    }
+    // *** END CHECK ***
+
+    // Original loop is fine if argv is not NULL
+    while (argv[i] != NULL)
+    {
+        printf("[%s] ", argv[i]); // Maybe remove trailing comma/newline here
+        i++;
+    }
+     printf("\n"); // Add newline after printing all args for one command
+}
+
+// Optional: Adjust ft_print_cmd_table slightly for formatting
+void    ft_print_cmd_table(t_cmd *head)
+{
+    t_cmd *curr_cmd = head;
+    t_redir *curr_redir;
+    int cmd_num = 0;
+
+    while (curr_cmd)
+    {
+        printf("--- Command %d ---\n", cmd_num);
+        printf("  Args: "); // Label for arguments
+        ft_print(curr_cmd->argv); // ft_print now handles NULL and adds newline
+
+        if (curr_cmd->redir)
+        {
+             printf("  Redirs:\n"); // Label for redirections
+            curr_redir = curr_cmd->redir;
+            while (curr_redir)
+            {
+                // Use the helper function from before for readable types
+                // const char *type_str = ft_redir_type_to_str(curr_redir->type);
+                // printf("    type: %s ", type_str);
+                printf("    type: %d ", curr_redir->type); // Original version
+                printf("bool: %d ", curr_redir->expand_heredoc);
+                printf("filename: %s " , curr_redir->filename ? curr_redir->filename : "(null)");
+                printf("fd: %d\n", curr_redir->heredoc_fd);
+                curr_redir = curr_redir->next;
+            }
+        } else {
+             printf("  Redirs: (None)\n");
+        }
+        printf("------------------\n");
+        curr_cmd = curr_cmd->next;
+        cmd_num++;
+    }
+}
+
+
+// --- Define the Global Signal Variable ---
+volatile sig_atomic_t	g_received_signal = 0;
+
+// --- Signal Handlers ---
+void	main_prompt_sigint_handler(int signum)
+{
+	(void)signum;
+	g_received_signal = SIGINT;
+	write(STDOUT_FILENO, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
+void	heredoc_sigint_handler(int signum)
+{
+	(void)signum;
+	g_received_signal = SIGINT; // Set flag
+	// To unblock readline, we close a different FD, NOT STDIN directly
+	// This requires a global pipe or a way to pass FD to handler.
+	// Simpler: rely on readline returning NULL or error on EINTR.
+	// For now, just setting flag and printing newline for feedback.
+	write(STDERR_FILENO, "\n", 1); // Bash prints newline after ^C in heredoc
+	// Readline should return NULL if rl_catch_signals = 0 and handler runs.
+	// We check g_received_signal in the heredoc loop.
+    close(STDIN_FILENO); // Force readline to return (can be risky if stdin was not terminal)
+                         // This is a common way to make readline return on signal
+                         // if SA_RESTART is not used or readline doesn't handle EINTR well.
+}
+
+// --- Setup Functions for Signal Actions ---
+void	setup_signal_action(int signum, void (*handler)(int), int flags)
+{
+	struct sigaction	sa;
+
+	sa.sa_handler = handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = flags; // Typically SA_RESTART for prompt, 0 for heredoc/child
+	if (sigaction(signum, &sa, NULL) == -1)
+		perror("minishell: sigaction setup failed");
+}
+
+// Setup for main prompt
+void	setup_signal_handlers_prompt(void)
+{
+	setup_signal_action(SIGINT, main_prompt_sigint_handler, SA_RESTART);
+	setup_signal_action(SIGQUIT, SIG_IGN, 0); // Ignore Ctrl+\ at prompt
+}
+
+// Setup for child processes (default behavior)
+void	set_child_signal_handlers(void)
+{
+	setup_signal_action(SIGINT, SIG_DFL, 0);
+	setup_signal_action(SIGQUIT, SIG_DFL, 0);
+}
+
+// Setup for parent when waiting for children
+void	set_parent_wait_signal_handlers(struct sigaction *old_sigint,
+										struct sigaction *old_sigquit)
+{
+	struct sigaction	sa_ign;
+
+	sa_ign.sa_handler = SIG_IGN; // Ignore SIGINT and SIGQUIT
+	sigemptyset(&sa_ign.sa_mask);
+	sa_ign.sa_flags = 0;
+	sigaction(SIGINT, &sa_ign, old_sigint);   // Save old SIGINT (prompt handler)
+	sigaction(SIGQUIT, &sa_ign, old_sigquit); // Save old SIGQUIT (SIG_IGN)
+}
+
+// Restore original/prompt handlers (used by parent after wait or by heredoc)
+void	restore_signal_handlers(struct sigaction *old_sigint,
+								struct sigaction *old_sigquit)
+{
+	if (old_sigint)
+		sigaction(SIGINT, old_sigint, NULL);
+	if (old_sigquit)
+		sigaction(SIGQUIT, old_sigquit, NULL);
+}
+
+
+int	main(int ac, char **av, char **env)
+{
+	t_data				data;
+	char				*line;
+	t_token				*token_list;
+	t_cmd				*command_list;
+	struct sigaction	old_parent_sigint; // To store handlers when waiting
+	struct sigaction	old_parent_sigquit;
+
+	(void)ac; (void)av;
+	line = NULL; token_list = NULL; command_list = NULL;
+	data.last_exit_status = EXIT_SUCCESS;
+	data.env_list = ft_getenv(env);
+	if (!data.env_list && env && env[0])
+		ft_putstr_fd("minishell: Warning: env list init failed.\n", 2);
+	update_shell_level(&data);
+	rl_catch_signals = 0; // IMPORTANT: Let our handlers work
+	setup_signal_handlers_prompt(); // Initial prompt signal setup
+
+	while (TRUE)
+	{
+		command_list = NULL; token_list = NULL; line = NULL;
+		if (g_received_signal == SIGINT) // Handle SIGINT that occurred at prompt
+		{
+			data.last_exit_status = 130;
+			g_received_signal = 0; // Reset flag
+		}
+		line = readline("\001\033[1;32m\002minishell$ \001\033[0m\002");
+		if (!line) // EOF (Ctrl+D or readline interrupted by signal)
+		{
+			// If g_signal_received is SIGINT here, it means heredoc_sigint_handler
+			// closed stdin, causing readline to return NULL.
+			if (g_received_signal == SIGINT) {
+				// main_prompt_sigint_handler would have been restored by process_heredocs
+				// and it will do the rl_on_new_line etc.
+				// The flag g_received_signal will be handled at the top of the next loop.
+				// No "exit" message here if it was a heredoc ^C.
+				continue;
+			}
+			ft_putstr_fd("exit\n", STDOUT_FILENO); // Actual Ctrl+D at prompt
+			break ;
+		}
+		if (line[0] == '\0') { free(line); continue; }
+		add_history(line);
+		if (!ft_synax_error_free(line)) { data.last_exit_status = 258; free(line); continue; }
+		token_list = ft_tokenize(line);
+		if (!token_list) { data.last_exit_status = 258; free(line); continue; }
+
+		ft_expander(&token_list, &data); // Pass &data
+		command_list = ft_creat_cmd_table(token_list);
+		ft_token_clear(&token_list);
+
+		if (command_list)
+		{
+			g_received_signal = 0; // Reset flag before potentially blocking operations
+			if (process_heredocs(command_list, &data) == EXIT_SUCCESS && g_received_signal != SIGINT)
+			{
+				set_parent_wait_signal_handlers(&old_parent_sigint, &old_parent_sigquit);
+				execute_commands(command_list, &data);
+				restore_signal_handlers(&old_parent_sigint, &old_parent_sigquit);
+			}
+			else if (g_received_signal == SIGINT) // Heredoc was interrupted
+			{
+				data.last_exit_status = 130;
+				// g_received_signal is reset at top of loop
+				// ensure prompt handlers are restored if process_heredocs didn't
+				restore_signal_handlers(&old_parent_sigint, &old_parent_sigquit);
+			}
+			// else: process_heredocs failed for non-signal reason, status already set
+			ft_cmd_clear(&command_list);
+		}
+		else
+		{
+			data.last_exit_status = 2; // should it be 2 or 258 ?? Why ? and How ?
+			printf("[Command Table Creation Failed - Check Syntax]\n");
+			// here free command_list linked list
+		}
+		// ... (handle command_list NULL from ft_create_cmd_table) ...
+		free(line);
+	}
+	ft_tenv_clear(&data.env_list);
+	rl_clear_history();
+	return (data.last_exit_status);
+}

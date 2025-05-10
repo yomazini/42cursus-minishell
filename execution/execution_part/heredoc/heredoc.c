@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:43:01 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/10 15:47:33 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/10 16:11:39 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -313,7 +313,6 @@ void cleanup_all_heredoc_fds(t_cmd *cmd_list)
 		current_cmd = current_cmd->next;
 	}
 }
-
 
 int	process_heredocs(t_cmd *cmd_list, t_data *data)
 {
