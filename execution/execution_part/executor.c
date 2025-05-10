@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/09 22:44:30 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/10 02:33:14 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,11 @@ int	execute_external_command(t_cmd *cmd, t_data *data)
 		return (perror("minishell: fork"), free(executable_path), EXIT_FAILURE);
 	}
 	else if (child_pid == 0)
+	{
+		set_signal_handlers_default(); // Resets SIGINT and SIGQUIT to SIG_DFL
 		execute_child_process(cmd, data, executable_path);
+		// set_signal_handlers_default(); // Resets SIGINT and SIGQUIT to SIG_DFL
+	}
 	free(executable_path);
 	wait_status = 0;
 	waitpid(child_pid, &wait_status, 0);

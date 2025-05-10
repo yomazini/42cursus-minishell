@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/09 20:48:23 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/10 02:27:15 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,5 +82,21 @@ int	handle_heredoc_redir(int heredoc_fd);
 
 
 void	cleanup_shell_resources(t_data *data);
+
+
+// ... other definitions ...
+
+// --- Global Signal Variable (Declared as extern) ---
+extern volatile sig_atomic_t	g_received_signal; // Use this single global
+
+// --- Signal Handling Prototypes ---
+void	set_signal_handlers_prompt(void);
+void	set_signal_handlers_heredoc(void);
+void	set_signal_handlers_ignore(void); // Parent ignores while waiting
+void	set_signal_handlers_default(void); // Child resets to default
+
+// Individual handlers (can be static in the .c file where they are defined)
+void	sigint_handler_prompt(int signum);
+void	sigint_handler_heredoc(int signum);
 
 #endif

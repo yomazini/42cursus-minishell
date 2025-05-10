@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 16:28:42 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/09 20:13:42 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/10 02:34:00 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	execute_command_node(t_cmd *cmd, t_data *data)
 	int		builtin_status;
 	char	*path;
 	char	**envp_array;
-
+	set_signal_handlers_default(); // Resets SIGINT and SIGQUIT to SIG_DFL
 	if (apply_redirections(cmd) != 0)
 		exit(EXIT_FAILURE);
 	if (!cmd->argv || !cmd->argv[0])
