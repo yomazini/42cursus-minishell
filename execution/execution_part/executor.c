@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/11 13:53:31 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/11 18:48:22 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,14 +63,13 @@ static int	handle_syntax_error_message(char *message, t_data *data, int err_code
 static int	handle_single_command(t_cmd *cmd_node, t_data *data)
 {
 	int	child_status;
-	
-	if (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0] != '\0')
+	if (cmd_node->argv && cmd_node->argv[0] )
 	{
 		if (is_parent_builtin(cmd_node))
 		{
 			execute_built_ins(cmd_node, data);
 		}
-		else // External command OR child-safe builtin
+		else if ( (cmd_node->argv[0][0]) || (!cmd_node->argv[0][0] && !data->empty_arg))// External command OR child-safe builtin
 		{
 			execute_external_command(cmd_node, data);
 		}

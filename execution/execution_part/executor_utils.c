@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 16:28:42 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/11 13:42:54 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/11 18:51:00 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void	execute_command_node(t_cmd *cmd, t_data *data)
 	builtin_status = execute_built_ins(cmd, data);
 	if (builtin_status != -1)
 		exit(builtin_status);
-	else
+	else if ()
 	{
 		envp_array = convert_envlist_to_array(data->env_list);
 		if (!envp_array)

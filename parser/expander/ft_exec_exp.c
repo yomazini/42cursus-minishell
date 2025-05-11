@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_exec_exp.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:42:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/11 13:56:26 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/11 18:31:47 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static bool	ft_process_expansion(t_exp_p *st, const char *org)
 		else
 		{
 			st->data->trim = false;
-			st->data->empty_arg = true;
+			st->data->empty_arg = false;
 		}
 		proc = &org[*(st->i_ptr)];
 		if (ft_need_to_add_spaces(proc, st->data->env_list))
