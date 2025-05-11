@@ -6,11 +6,33 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:47:59 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/04 18:51:31 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/09 02:17:11 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
+
+int handle_heredoc_redir(int heredoc_fd)
+{
+	if (heredoc_fd < 0) // This implies process_heredocs had an issue
+	{
+		ft_putstr_fd("minishell: heredoc error: invalid internal heredoc_fd for dup2\n", 2);
+		errno = EBADF; // Explicitly set errno for clarity if redir_error01 uses it
+		return (redir_error01("heredoc"));
+	}
+	// Redirect stdin (FD 0) to the heredoc input FD (pipe's read end)
+	if (dup2(heredoc_fd, STDIN_FILENO) < 0)
+	{
+		// dup2 failed. Print error based on errno set by dup2.
+		redir_error01("heredoc (dup2 failed)");
+		close(heredoc_fd); // Attempt to close the original FD
+		return (1);        // Indicate failure
+	}
+	// Close the original heredoc pipe read end fd after successful dup2
+	// It's no longer needed directly by this child; FD 0 is the handle now.
+	close(heredoc_fd);
+	return (0); // Success
+}
 
 int	redir_error01(char *filename)
 {
@@ -61,28 +83,15 @@ int	handle_outfile_trunc_n_append__redir(char *filename, int append)
 	return (0);
 }
 
-int	handle_heredoc_redir(int heredoc_fd)
-{
-	if (heredoc_fd < 0)
-		return (errno = EBADF, redir_error01("heredoc"));
-	if (dup2(heredoc_fd, STDIN_FILENO < 0))
-	{
-		close (heredoc_fd);
-		return (redir_error01("heredoc"));
-	}
-	close(heredoc_fd);
-	return (0);
-}
-
 int	apply_redirections(t_cmd *cmd)
 {
 	int		status;
 	t_redir	*current_redir;
 
 	status = EXIT_SUCCESS;
-	if (!cmd || !cmd->redir)
+	if (!cmd || !cmd->redir) // Corrected field name
 		return (0);
-	current_redir = cmd->redir;
+	current_redir = cmd->redir; // Corrected field name
 	while (current_redir)
 	{
 		if (current_redir->type == TOKEN_REDIR_IN)
@@ -90,11 +99,9 @@ int	apply_redirections(t_cmd *cmd)
 		else if (current_redir->type == TOKEN_REDIR_HEREDOC)
 			status = handle_heredoc_redir(current_redir->heredoc_fd);
 		else if (current_redir->type == TOKEN_REDIR_OUT)
-			status = handle_outfile_trunc_n_append__redir
-				(current_redir->filename, 0);
+			status = handle_outfile_trunc_n_append__redir(current_redir->filename, 0);
 		else if (current_redir->type == TOKEN_REDIR_APPEND)
-			status = handle_outfile_trunc_n_append__redir
-				(current_redir->filename, 1);
+			status = handle_outfile_trunc_n_append__redir(current_redir->filename, 1);
 		if (status != 0)
 			return (EXIT_FAILURE);
 		current_redir = current_redir->next;

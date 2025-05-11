@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 16:28:42 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/04 18:52:00 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/11 13:42:54 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static void	ft_check_command_existance(char *path,
 {
 	if (!path)
 	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd("minishell3: ", STDERR_FILENO);
 		ft_putstr_fd(cmd_name, STDERR_FILENO);
 		ft_putstr_fd(": command not found\n", STDERR_FILENO);
 		free_arr(envp_array);
@@ -48,7 +48,7 @@ void	execute_command_node(t_cmd *cmd, t_data *data)
 	int		builtin_status;
 	char	*path;
 	char	**envp_array;
-
+	set_signal_handlers_default(); // Resets SIGINT and SIGQUIT to SIG_DFL
 	if (apply_redirections(cmd) != 0)
 		exit(EXIT_FAILURE);
 	if (!cmd->argv || !cmd->argv[0])
@@ -67,7 +67,7 @@ void	execute_command_node(t_cmd *cmd, t_data *data)
 		path = find_command_path(cmd->argv[0], data->env_list);
 		ft_check_command_existance(path, cmd->argv[0], envp_array);
 		execve(path, cmd->argv, envp_array);
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd("minishell1: ", STDERR_FILENO);
 		(perror(cmd->argv[0]), free(path), free_arr(envp_array), exit(126));
 	}
 }
@@ -89,7 +89,7 @@ void	execute_child_process(t_cmd *cmd, t_data *data, char *path)
 		exit(EXIT_FAILURE);
 	}
 	execve(path, cmd->argv, envp_array);
-	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd("minishell2: ", STDERR_FILENO);
 	perror(cmd->argv[0]);
 	free(path);
 	free_arr(envp_array);

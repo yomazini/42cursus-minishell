@@ -3,116 +3,203 @@
 #include "execution/exec_header.h"
 #include <signal.h>
 
-void ft_print(char **argv)
+volatile sig_atomic_t	g_received_signal = 0;
+
+// const char* get_token_type_name(t_token_type type) {
+//     switch (type) {
+//         case TOKEN_WORD:         return "WORD";
+//         case TOKEN_PIPE:         return "PIPE";
+//         case TOKEN_REDIR_IN:     return "REDIR_IN";
+//         case TOKEN_REDIR_OUT:    return "REDIR_OUT";
+//         case TOKEN_REDIR_APPEND: return "REDIR_APPEND";
+//         case TOKEN_REDIR_HEREDOC:return "REDIR_HEREDOC";
+//         default:                 return "UNKNOWN";
+//     }
+// }
+// void ft_print_token_list(t_token *head)
+// {
+//     t_token *current = head; 
+//     int i = 0;   
+//     while (current != NULL)
+//     {
+//         printf("token[%d]= [%s], type(%s)\n",
+//                i,
+//                current->value ? current->value : "(null value)",
+//                get_token_type_name(current->type));
+//         current = current->next;
+//         i++;
+//     }
+// }
+
+
+
+// void ft_print(char **argv)
+// {
+//     int i = 0;
+
+//     // *** ADD THIS CHECK ***
+//     if (argv == NULL)
+//     {
+//         printf("[ (no arguments) ]\n"); // Or just print nothing
+//         return;
+//     }
+//     // *** END CHECK ***
+
+//     // Original loop is fine if argv is not NULL
+//     while (argv[i] != NULL)
+//     {
+//         printf("[%s] ", argv[i]); // Maybe remove trailing comma/newline here
+//         i++;
+//     }
+//      printf("\n"); // Add newline after printing all args for one command
+// }
+
+// // Optional: Adjust ft_print_cmd_table slightly for formatting
+// void    ft_print_cmd_table(t_cmd *head)
+// {
+//     t_cmd *curr_cmd = head;
+//     t_redir *curr_redir;
+//     int cmd_num = 0;
+
+//     while (curr_cmd)
+//     {
+//         printf("--- Command %d ---\n", cmd_num);
+//         printf("  Args: "); // Label for arguments
+//         ft_print(curr_cmd->argv); // ft_print now handles NULL and adds newline
+
+//         if (curr_cmd->redir)
+//         {
+//              printf("  Redirs:\n"); // Label for redirections
+//             curr_redir = curr_cmd->redir;
+//             while (curr_redir)
+//             {
+//                 // Use the helper function from before for readable types
+//                 // const char *type_str = ft_redir_type_to_str(curr_redir->type);
+//                 // printf("    type: %s ", type_str);
+//                 printf("    type: %d ", curr_redir->type); // Original version
+//                 printf("bool: %d ", curr_redir->expand_heredoc);
+//                 printf("filename: %s " , curr_redir->filename ? curr_redir->filename : "(null)");
+//                 printf("fd: %d\n", curr_redir->heredoc_fd);
+//                 curr_redir = curr_redir->next;
+//             }
+//         } else {
+//              printf("  Redirs: (None)\n");
+//         }
+//         printf("------------------\n");
+//         curr_cmd = curr_cmd->next;
+//         cmd_num++;
+//     }
+// }
+
+void	setup_signal_action(int signum, void (*handler)(int), int flags)
 {
-    int i = 0;
-
-    // *** ADD THIS CHECK ***
-    if (argv == NULL)
-    {
-        printf("[ (no arguments) ]\n"); // Or just print nothing
-        return;
-    }
-    // *** END CHECK ***
-
-    // Original loop is fine if argv is not NULL
-    while (argv[i] != NULL)
-    {
-        printf("[%s] ", argv[i]); // Maybe remove trailing comma/newline here
-        i++;
-    }
-     printf("\n"); // Add newline after printing all args for one command
+    struct sigaction	sa;
+    sa.sa_handler = handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = flags;
+    sigaction(signum, &sa, NULL);
 }
 
-// Optional: Adjust ft_print_cmd_table slightly for formatting
-void    ft_print_cmd_table(t_cmd *head)
+void	heredoc_sigint_handler(int signum) //!
 {
-    t_cmd *curr_cmd = head;
-    t_redir *curr_redir;
-    int cmd_num = 0;
-
-    while (curr_cmd)
-    {
-        printf("--- Command %d ---\n", cmd_num);
-        printf("  Args: "); // Label for arguments
-        ft_print(curr_cmd->argv); // ft_print now handles NULL and adds newline
-
-        if (curr_cmd->redir)
-        {
-             printf("  Redirs:\n"); // Label for redirections
-            curr_redir = curr_cmd->redir;
-            while (curr_redir)
-            {
-                // Use the helper function from before for readable types
-                // const char *type_str = ft_redir_type_to_str(curr_redir->type);
-                // printf("    type: %s ", type_str);
-                printf("    type: %d ", curr_redir->type); // Original version
-                printf("bool: %d ", curr_redir->expand_heredoc);
-                printf("filename: %s " , curr_redir->filename ? curr_redir->filename : "(null)");
-                printf("fd: %d\n", curr_redir->heredoc_fd);
-                curr_redir = curr_redir->next;
-            }
-        } else {
-             printf("  Redirs: (None)\n");
-        }
-        printf("------------------\n");
-        curr_cmd = curr_cmd->next;
-        cmd_num++;
-    }
+    (void)signum;
+    g_received_signal = SIGINT;
+    // DO NOT CLOSE STDIN_FILENO HERE.
+    // The readline call in read_input_to_pipe should return NULL
+    // or its loop should check g_received_signal.
+    // Printing newline here can be confusing if readline also prints one.
+    // It's better to let process_heredocs handle the visual feedback of abortion.
+    // write(STDERR_FILENO, "\n", 1); // Optional: if needed for immediate feedback
 }
-const char* get_token_type_name(t_token_type type) {
-	switch (type) {
-		case TOKEN_WORD:         return "WORD";
-		case TOKEN_PIPE:         return "PIPE";
-		case TOKEN_REDIR_IN:     return "REDIR_IN";
-		case TOKEN_REDIR_OUT:    return "REDIR_OUT";
-		case TOKEN_REDIR_APPEND: return "REDIR_APPEND";
-		case TOKEN_REDIR_HEREDOC:return "REDIR_HEREDOC";
-		default:                 return "UNKNOWN";
-	}
-}
-void ft_print_token_list(t_token *head)
+
+
+// --- Define the Global Signal Variable --
+
+// --- Signal Handlers ---
+void	sigint_handler_prompt(int signum)
 {
-	t_token *current = head; 
-	int i = 0;   
-	while (current != NULL)
+	(void)signum;
+	// g_received_signal = SIGINT; //~ -> we do not ealy need
+	write(STDOUT_FILENO, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
+void	sigint_handler_heredoc(int signum)
+{
+	(void)signum;
+	g_received_signal = SIGINT; // Set flag
+	// The heredoc's readline loop needs to break.
+	// Closing STDIN is a common way to force readline to return.
+	// Make sure this STDIN is the one readline is using (usually terminal).
+	close(STDIN_FILENO); // This will make readline in heredoc return NULL or error
+	// Note: Bash prints newline after heredoc ^C, handled by process_heredocs
+}
+
+// --- Setup Functions for Signal Actions ---
+static void	configure_sigaction(int signum, void (*handler)(int), int flags)
+{
+	struct sigaction	sa;
+
+	sa.sa_handler = handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = flags;
+	if (sigaction(signum, &sa, NULL) == -1)
 	{
-		printf("token[%d]= [%s], type(%s)\n",
-			   i,
-			   current->value ? current->value : "(null value)",
-			   get_token_type_name(current->type));
-		current = current->next;
-		i++;
+		perror("minishell: sigaction setup failed");
+		// Consider exiting if critical signal setup fails
 	}
 }
-
-int g_child_open = 0;
-
-void	ft_handler(int signum)
+void set_signal_handlers_ignore(void) // Parent uses while waiting for child(ren)
 {
-		if (signum == SIGINT)
-		{
-			if (!g_child_open)
-			{
-				write(1, "\n",1);
-				rl_on_new_line();
-				rl_replace_line("", 0);
-				rl_redisplay();
-			}
-			else if (g_child_open == 1)
-			{
-				g_child_open = 2;
-				write(1, "\n", 1);
-			}
-		}
-		if (signum == SIGQUIT)
-		{
-			if (g_child_open == 1)
-			printf("Quit: 3\n");
-		}
+    configure_sigaction(SIGINT, SIG_IGN, 0);
+    configure_sigaction(SIGQUIT, SIG_IGN, 0);
 }
 
-// TODO: Here must edit the ctl + C to be 130 in last status {128 + 2} --> update last exit status;
+// In minishell.c or signals.c
+void set_parent_wait_signal_handlers(struct sigaction *old_sigint,
+                                     struct sigaction *old_sigquit)
+{
+    struct sigaction sa_ign;
+
+    sa_ign.sa_handler = SIG_IGN;
+    sigemptyset(&sa_ign.sa_mask);
+    sa_ign.sa_flags = 0;
+    // Save old handler and set new one to ignore
+    sigaction(SIGINT, &sa_ign, old_sigint);
+    sigaction(SIGQUIT, &sa_ign, old_sigquit);
+}
+
+void restore_signal_handlers(struct sigaction *old_sigint,
+                             struct sigaction *old_sigquit)
+{
+    if (old_sigint)
+        sigaction(SIGINT, old_sigint, NULL);
+    if (old_sigquit)
+        sigaction(SIGQUIT, old_sigquit, NULL);
+}
+
+
+// Setups for different shell states
+void	set_signal_handlers_prompt(void)
+{
+	configure_sigaction(SIGINT, sigint_handler_prompt, SA_RESTART);
+	configure_sigaction(SIGQUIT, SIG_IGN, 0);
+}
+
+void	set_signal_handlers_heredoc(void)
+{
+	// For heredoc, SIGINT should interrupt readline, so no SA_RESTART
+	configure_sigaction(SIGINT, sigint_handler_heredoc, 0);
+	configure_sigaction(SIGQUIT, SIG_IGN, 0); // Still ignore SIGQUIT
+}
+
+void	set_signal_handlers_default(void) // Child process uses
+{
+	configure_sigaction(SIGINT, SIG_DFL, 0);
+	configure_sigaction(SIGQUIT, SIG_DFL, 0);
+}
 
 int	main(int ac, char **av, char **env)
 {
@@ -120,73 +207,90 @@ int	main(int ac, char **av, char **env)
 	char	*line;
 	t_token	*token_list;
 	t_cmd	*command_list;
-	
+	struct sigaction	old_parent_sigint;
+	struct sigaction	old_parent_sigquit;
 
-	(void)ac; //~ maby add in a check: if ac > 1 -> do all of this 
-	(void)av;
-	line = NULL;
-	token_list = NULL;
-	command_list = NULL;
+	(void)ac; (void)av;
+	line = NULL; token_list = NULL; command_list = NULL;
 	data.last_exit_status = EXIT_SUCCESS;
 	data.env_list = ft_getenv(env);
-	rl_catch_signals = 0;
 	if (!data.env_list && env && env[0])
 		ft_putstr_fd("minishell: Warning: env list init failed.\n", 2);
 	update_shell_level(&data);
-	signal(SIGINT, ft_handler);
-	signal(SIGQUIT, ft_handler);
+	rl_catch_signals = 0;         // Very important for our handlers to work
+	set_signal_handlers_prompt(); // Initial setup for prompt
 	while (TRUE)
 	{
-		// command_list = NULL;
-		// token_list = NULL;
-		// line = NULL;
-		line = readline(MINISHELL_PROMPT);
-		if (!line)
+		command_list = NULL; token_list = NULL; line = NULL;
+		// Check and reset global signal flag *before* readline
+		if (g_received_signal == SIGINT) {
+			data.last_exit_status = 130; // Status for SIGINT
+			g_received_signal = 0;       // Reset flag
+		}
+
+		line = readline("\001\033[1;32m\002minishell$ \001\033[0m\002");
+
+		if (!line) // EOF from readline
 		{
-			printf("exit\n");
+			// If g_received_signal is SIGINT here, it means our heredoc_sigint_handler
+			// closed STDIN, causing readline to return NULL.
+			if (g_received_signal == SIGINT)
+			{
+				g_received_signal = 0; // Reset flag, status already 130 from above
+				// Prompt handlers should have been restored by process_heredocs
+				// No "exit" message here, main prompt will redraw.
+				continue; // Go to next iteration to display fresh prompt
+			}
+			ft_putstr_fd("exit\n", STDOUT_FILENO); // Actual Ctrl+D at prompt
 			break ;
 		}
-		if (line[0] == '\0')
-		{
-			free(line);
-			continue;
-		}
+
+		if (line[0] == '\0') { free(line); continue; }
 		add_history(line);
-		if (!ft_synax_error_free(line))
-		{
-			data.last_exit_status = 258;
-			free(line);
-			continue;
-		}
+
+		if (!ft_synax_error_free(line)) { data.last_exit_status = 258; free(line); continue; }
 		token_list = ft_tokenize(line);
-		if (!token_list)
-		{
-			data.last_exit_status = 258;
-			free(line);
-			continue;
-		}
-		// ft_print_token_list(token_list);
-		// printf("_____________\n");
+		if (!token_list) { data.last_exit_status = 258; free(line); continue; }
+
 		ft_expander(&token_list, &data);
 		// ft_print_token_list(token_list);
 		command_list = ft_creat_cmd_table(token_list);
 		// ft_print_cmd_table(command_list);
 		ft_token_clear(&token_list);
-		token_list = NULL;
-		if (command_list)	
+		if (command_list)
 		{
-			execute_commands(command_list, &data);
+			g_received_signal = 0;
+			if (process_heredocs(command_list, &data) == EXIT_SUCCESS && g_received_signal != SIGINT)
+			{
+				// --- Parent ignores signals while children run ---
+				set_parent_wait_signal_handlers(&old_parent_sigint, &old_parent_sigquit); // <-- CORRECTED CALL
+				// --- End Parent Ignore ---
+
+				execute_commands(command_list, &data);
+
+				// --- Parent restores prompt signal handlers ---
+				restore_signal_handlers(&old_parent_sigint, &old_parent_sigquit); // <-- Needs prototype
+				// --- End Restore Handlers ---
+			}
+			else if (g_received_signal == SIGINT)
+			{
+				data.last_exit_status = 130;
+				g_received_signal = 0;
+				// Ensure prompt handlers are restored if process_heredocs was interrupted
+				// and didn't get to its own restore.
+				// If old_parent_sigint/quit were not set yet, this might be an issue.
+				// Better: process_heredocs should ALWAYS restore before returning failure.
+				// For now, if it was interrupted, main prompt handlers should be default.
+				set_signal_handlers_prompt(); // Re-assert prompt handlers after ^C in heredoc
+			}
 			ft_cmd_clear(&command_list);
-			command_list = NULL;
 		}
 		else
 		{
 			data.last_exit_status = 2; // should it be 2 or 258 ?? Why ? and How ?
 			printf("[Command Table Creation Failed - Check Syntax]\n");
-			// here free command_list linked list
 		}
 		free(line);
-		line = NULL;
 	}
 	ft_tenv_clear(&data.env_list);
 	rl_clear_history();

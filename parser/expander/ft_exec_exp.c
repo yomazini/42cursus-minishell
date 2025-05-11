@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:42:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/11 11:08:43 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/11 13:56:26 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,6 @@ static bool	ft_process_expansion(t_exp_p *st, const char *org)
 			st->data->empty_arg = true;
 		}
 		proc = &org[*(st->i_ptr)];
-		printf("%s\n", proc);
 		if (ft_need_to_add_spaces(proc, st->data->env_list))
 			*(st->ptr) = append_single_char(*(st->ptr), ' ');
 		*(st->ptr) = ft_expenv(*(st->ptr), proc, st->data, st->i_ptr);
