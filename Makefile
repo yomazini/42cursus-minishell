@@ -2,13 +2,7 @@ NAME = minishell
 
 CC = cc
 RM = rm -f
-CFLAGS = -Wall -Wextra -Werror -g3
-
-ifdef SANITIZE
-	CFLAGS += -fsanitize=address
-else
-	CFLAGS += -fsanitize=address # Defaulting to on
-endif
+CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
 
 LIBFT_DIR = libft
 PARSER_DIR = parser

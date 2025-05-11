@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 13:04:51 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/07 13:05:02 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/10 16:09:39 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,10 @@ char	*ft_isvariablet_exist(t_env *env_list, char *variable_name)
 	while (current)
 	{
 		if (current->name && ft_strcmp(current->name, variable_name) == 0)
-			return (current->value);
+		{
+			if (current->value)
+				return (ft_strdup(current->value));
+		}
 		current = current->next;
 	}
 	return (NULL);

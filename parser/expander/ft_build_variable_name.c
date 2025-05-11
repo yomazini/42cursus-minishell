@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:23:18 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/07 11:25:46 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/11 11:08:15 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,4 +78,25 @@ char	*ft_build_variable_name(const char *orign, int peak, int *index)
 		*index += var_size + 1;
 	}
 	return (vt_name);
+}
+int ft_need_to_add_spaces(const char *proc, t_env *env)
+{
+	int 	peak = ft_peakahead(proc[1]);
+	char	*var = NULL;
+	char	*value = NULL;
+	size_t	var_size;
+	if (peak == 1)
+	{
+		var = ft_build_world(proc, &var_size);
+		value = ft_isvariablet_exist(env, var);
+		if (!var || !value)
+			return (0);
+		if(getenv(var) == NULL)
+		{
+			free(var);
+			return (1);
+		}
+	}
+	free(var);
+	return (0);
 }

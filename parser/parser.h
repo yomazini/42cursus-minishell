@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/07 18:07:24 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/11 11:06:51 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,9 @@ typedef struct s_data
 	int		last_exit_status;
 	bool	herdoc;
 	int		peak;
+	bool	trim;
+	bool	empty_arg;
+	bool	add_spaces;
 }	t_data;
 typedef struct s_exp_st
 {
@@ -124,7 +127,7 @@ char	*ft_strjoined(char const *string, char const *str);
 int		ft_strcmp(const char *alpha, const char *bita);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 void	ft_clean_up(t_token **token);
-// int		ft_isdouble_quote(char *word);
+int 	ft_need_to_add_spaces(const char *proc, t_env *env);
 int		ft_isexpandable(t_token *current);
 int		ft_isbign_variable(char c);
 int		ft_ispt_variable(char c);
