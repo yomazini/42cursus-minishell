@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_exec_exp.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:42:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/11 18:31:47 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/13 15:21:35 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,12 @@
 
 static char	*ft_helper_exit_status_func(char *new_str, t_data *data, int *i)
 {
+	extern int g_tmp;
+	if (g_tmp == 2)
+	{
+		data->last_exit_status = 130;
+		g_tmp = 0;
+	}
 	new_str = ft_append_exit_status(new_str, data->last_exit_status);
 	*i += 2;
 	return (new_str);
