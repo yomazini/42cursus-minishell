@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:43:01 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/13 17:00:13 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/13 21:04:46 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,7 +189,6 @@
 
 #include "../../exec_header.h"
 
-// extern volatile sig_atomic_t	g_received_signal;
 extern int g_tmp;
 
 char							*expand_heredoc_line(char *line, t_data *data);
@@ -249,7 +248,6 @@ static int	read_input_to_pipe(char *delimiter, bool expand,
 	return (0); // Success
 }
 
-
 void cleanup_all_heredoc_fds(t_cmd *cmd_list)
 {
 	t_cmd	*current_cmd;
@@ -264,7 +262,7 @@ void cleanup_all_heredoc_fds(t_cmd *cmd_list)
 			if (current_redir->type == TOKEN_REDIR_HEREDOC && current_redir->heredoc_fd != -1)
 			{
 				close(current_redir->heredoc_fd);
-				current_redir->heredoc_fd = -1; // Mark as closed
+				current_redir->heredoc_fd = -1;
 			}
 			current_redir = current_redir->next;
 		}
@@ -272,10 +270,7 @@ void cleanup_all_heredoc_fds(t_cmd *cmd_list)
 	}
 }
 
-// In heredoc.c
 extern int g_tmp;
-
-// ... (read_input_to_pipe and cleanup_all_heredoc_fds remain the same) ...
 
 int	process_heredocs(t_cmd *cmd_list, t_data *data)
 {
@@ -284,10 +279,11 @@ int	process_heredocs(t_cmd *cmd_list, t_data *data)
 	int		pipe_fds[2];
 	int		read_status_code;
 	int		saved_stdin_fd = -1;
-	int		overall_status = EXIT_SUCCESS; // Assume success, change on error/interrupt
+	int		overall_status = EXIT_SUCCESS;
 
 	saved_stdin_fd = dup(STDIN_FILENO);
-	if (saved_stdin_fd == -1) {
+	if (saved_stdin_fd == -1) 
+	{
 		perror("minishell: dup (saving stdin)");
 		data->last_exit_status = EXIT_FAILURE;
 		return (EXIT_FAILURE);
@@ -296,35 +292,32 @@ int	process_heredocs(t_cmd *cmd_list, t_data *data)
 	set_signal_handlers_heredoc();
 	g_tmp = 0; 
 	current_cmd = cmd_list;
-	while (current_cmd != NULL && overall_status == EXIT_SUCCESS && g_tmp != 3) // Loop condition
+	while (current_cmd != NULL && overall_status == EXIT_SUCCESS && g_tmp != 3)
 	{
 		current_redir = current_cmd->redir;
-		while (current_redir != NULL && overall_status == EXIT_SUCCESS && g_tmp != 3) // Loop condition
+		while (current_redir != NULL && overall_status == EXIT_SUCCESS && g_tmp != 3)
 		{
 			if (current_redir->type == TOKEN_REDIR_HEREDOC)
 			{
 				if (current_redir->heredoc_fd == -1) 
 				{
-					if (pipe(pipe_fds) == -1) {
+					if (pipe(pipe_fds) == -1) 
+					{
 						perror("minishell: heredoc pipe");
 						data->last_exit_status = EXIT_FAILURE;
 						overall_status = EXIT_FAILURE; // Signal error
-						// No goto, loop conditions will break
 						break; // Break inner while loop
 					}
-
 					read_status_code = read_input_to_pipe(current_redir->filename,
 												current_redir->expand_heredoc, data, pipe_fds[1]);
 					// It's important to close the write end even if read_input_to_pipe was interrupted,
 					// as long as pipe() succeeded.
 					close(pipe_fds[1]); // Close write end in parent
-
 					if (g_tmp == 3 || read_status_code == 130) // Interrupted
 					{
 						close(pipe_fds[0]); // Close read end as it's not needed
 						// data->last_exit_status will be set by main loop based on g_tmp=3
 						overall_status = EXIT_FAILURE; // Signal interruption
-						// No goto, loop conditions will break
 						break; // Break inner while loop
 					}
 					else if (read_status_code < 0) // Other read/write error
@@ -332,7 +325,6 @@ int	process_heredocs(t_cmd *cmd_list, t_data *data)
 						close(pipe_fds[0]);
 						data->last_exit_status = EXIT_FAILURE;
 						overall_status = EXIT_FAILURE; // Signal error
-						// No goto, loop conditions will break
 						break; // Break inner while loop
 					}
 					current_redir->heredoc_fd = pipe_fds[0]; // Store read end
@@ -347,7 +339,6 @@ int	process_heredocs(t_cmd *cmd_list, t_data *data)
 
 	// ---- Cleanup section (replaces the goto target) ----
 	set_signal_handlers_prompt(); // Always restore prompt handlers
-
 	// Restore STDIN
 	if (saved_stdin_fd != -1) {
 		if (dup2(saved_stdin_fd, STDIN_FILENO) == -1) {
@@ -361,7 +352,6 @@ int	process_heredocs(t_cmd *cmd_list, t_data *data)
 		close(saved_stdin_fd);
 		saved_stdin_fd = -1; // Mark as closed
 	}
-
 	// Final status check and cleanup of heredoc FDs if there was any interruption or error
 	if (g_tmp == 3) // If global flag indicates overall interruption from signal handler
 	{
@@ -369,10 +359,9 @@ int	process_heredocs(t_cmd *cmd_list, t_data *data)
 		cleanup_all_heredoc_fds(cmd_list); // Close any opened heredoc FDs
 		return (EXIT_FAILURE); // Ensure failure is returned specifically for SIGINT
 	}
-	
-	if (overall_status == EXIT_FAILURE) { // If any other error occurred
+	if (overall_status == EXIT_FAILURE) 
+	{ // If any other error occurred
 		cleanup_all_heredoc_fds(cmd_list); // Clean up all heredoc fds created so far
 	}
-	
 	return (overall_status); // EXIT_SUCCESS or EXIT_FAILURE from other errors
 }

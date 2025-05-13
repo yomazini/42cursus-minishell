@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:44:52 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/11 10:02:00 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/13 21:04:08 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ static char	*append_char(char *str, char c)
 
 	if (!str) 
 		return (ft_strdup(&c));
-
 	len = ft_strlen(str);
 	new_str = (char *)malloc(sizeof(char) * (len + 2));
 	if (!new_str)
@@ -49,7 +48,7 @@ static char	*append_char(char *str, char c)
 
 char	*expand_heredoc_line(char *line, t_data *data)
 {
-	char	*expanded_line;// L31
+	char	*expanded_line;
 	char	*var_name;
 	char	*var_value;
 	char	*tmp_str;
@@ -73,7 +72,7 @@ char	*expand_heredoc_line(char *line, t_data *data)
 				free(expanded_line); free(tmp_str);
 				if (!var_value) return (NULL);
 				expanded_line = var_value;
-				i++; // Move past '?'
+				i++;
 			}
 			else if (is_var_start(line[i])) 
 			{
