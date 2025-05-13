@@ -76,6 +76,7 @@ SRCS_EXEC = $(addprefix $(EXEC_DIR)/, \
 		execution_part/env_init.c \
 		built_in/cd_built_in.c \
 		execution_part/execute_builtin.c \
+		execution_part/execute_builtin2.c \
 		execution_part/tools1.c \
 		execution_part/tools2.c \
 		execution_part/redirections.c \
