@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 13:23:07 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/09 15:23:04 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/13 16:44:23 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,8 @@ static void	ft_populate_cmd(t_token **curr_token, t_cmd *cmd)
 			if (!(*curr_token)->next)
 				break ;
 			new_redir = ft_redir_new((*curr_token)->type,
-					(*curr_token)->next->value);
+					(*curr_token)->next->value, 
+					(*curr_token)->next->exp_in_herdoc);
 			ft_redir_add_back(&cmd->redir, new_redir);
 			*curr_token = (*curr_token)->next;
 		}

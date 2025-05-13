@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:43:01 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/13 15:15:54 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/13 16:37:12 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,34 +95,35 @@ void cleanup_all_heredoc_fds(t_cmd *cmd_list)
 	}
 }
 
+// In heredoc.c
+extern int g_tmp;
+
+// ... (read_input_to_pipe and cleanup_all_heredoc_fds remain the same) ...
+
 int	process_heredocs(t_cmd *cmd_list, t_data *data)
 {
-	t_cmd				*current_cmd;
-	t_redir				*current_redir;
-	int					pipe_fds[2];
-	int					read_status_code;
-	int					saved_stdin_fd = -1; // Variable to hold the duplicated STDIN
-	int					return_code = EXIT_SUCCESS; // Assume success initially
+	t_cmd	*current_cmd;
+	t_redir	*current_redir;
+	int		pipe_fds[2];
+	int		read_status_code;
+	int		saved_stdin_fd = -1;
+	int		overall_status = EXIT_SUCCESS; // Assume success, change on error/interrupt
 
-	// Save STDIN
 	saved_stdin_fd = dup(STDIN_FILENO);
 	if (saved_stdin_fd == -1) {
 		perror("minishell: dup (saving stdin)");
-		data->last_exit_status = EXIT_FAILURE; // Set error status
+		data->last_exit_status = EXIT_FAILURE;
 		return (EXIT_FAILURE);
 	}
 
 	set_signal_handlers_heredoc();
 	g_tmp = 0; 
 	current_cmd = cmd_list;
-	while (current_cmd != NULL)
+	while (current_cmd != NULL && overall_status == EXIT_SUCCESS && g_tmp != 3) // Loop condition
 	{
-		if (g_tmp == 3) { return_code = EXIT_FAILURE; break; } // Interruption detected
 		current_redir = current_cmd->redir;
-		while (current_redir != NULL)
+		while (current_redir != NULL && overall_status == EXIT_SUCCESS && g_tmp != 3) // Loop condition
 		{
-			if (g_tmp == 3) { return_code = EXIT_FAILURE; break; } // Interruption detected
-
 			if (current_redir->type == TOKEN_REDIR_HEREDOC)
 			{
 				if (current_redir->heredoc_fd == -1) 
@@ -130,57 +131,71 @@ int	process_heredocs(t_cmd *cmd_list, t_data *data)
 					if (pipe(pipe_fds) == -1) {
 						perror("minishell: heredoc pipe");
 						data->last_exit_status = EXIT_FAILURE;
-						return_code = EXIT_FAILURE;
-						goto cleanup_and_exit; // Use goto for centralized cleanup
+						overall_status = EXIT_FAILURE; // Signal error
+						// No goto, loop conditions will break
+						break; // Break inner while loop
 					}
+
 					read_status_code = read_input_to_pipe(current_redir->filename,
 												current_redir->expand_heredoc, data, pipe_fds[1]);
-					close(pipe_fds[1]); 
+					// It's important to close the write end even if read_input_to_pipe was interrupted,
+					// as long as pipe() succeeded.
+					close(pipe_fds[1]); // Close write end in parent
+
 					if (g_tmp == 3 || read_status_code == 130) // Interrupted
 					{
-						close(pipe_fds[0]); 
-						// data->last_exit_status = 130; // Main loop will handle based on g_tmp=3
-						return_code = EXIT_FAILURE;
-						goto cleanup_and_exit;
+						close(pipe_fds[0]); // Close read end as it's not needed
+						// data->last_exit_status will be set by main loop based on g_tmp=3
+						overall_status = EXIT_FAILURE; // Signal interruption
+						// No goto, loop conditions will break
+						break; // Break inner while loop
 					}
 					else if (read_status_code < 0) // Other read/write error
 					{
 						close(pipe_fds[0]);
 						data->last_exit_status = EXIT_FAILURE;
-						return_code = EXIT_FAILURE;
-						goto cleanup_and_exit;
+						overall_status = EXIT_FAILURE; // Signal error
+						// No goto, loop conditions will break
+						break; // Break inner while loop
 					}
-					current_redir->heredoc_fd = pipe_fds[0];
+					current_redir->heredoc_fd = pipe_fds[0]; // Store read end
 				}
 			}
-			if (return_code == EXIT_FAILURE) break; // Break inner loop if outer detected interruption
 			current_redir = current_redir->next;
 		}
-		if (return_code == EXIT_FAILURE) break; // Break outer loop
+		// If inner loop broke due to error/interrupt, overall_status is already EXIT_FAILURE
+		// The outer loop condition (overall_status == EXIT_SUCCESS && g_tmp != 3) will then cause it to exit.
 		current_cmd = current_cmd->next;
 	}
 
-cleanup_and_exit: // Label for cleanup
+	// ---- Cleanup section (replaces the goto target) ----
 	set_signal_handlers_prompt(); // Always restore prompt handlers
 
 	// Restore STDIN
 	if (saved_stdin_fd != -1) {
 		if (dup2(saved_stdin_fd, STDIN_FILENO) == -1) {
 			perror("minishell: dup2 (restoring stdin)");
-			// This is a critical error, shell might be unusable for input
-			// but we should still try to close saved_stdin_fd.
+			// This is a critical error, shell might be unusable for input.
+			// If overall_status was success, this makes it a failure.
+			if (overall_status == EXIT_SUCCESS) 
+				data->last_exit_status = EXIT_FAILURE; // Indicate this new error
+			overall_status = EXIT_FAILURE; 
 		}
 		close(saved_stdin_fd);
+		saved_stdin_fd = -1; // Mark as closed
 	}
 
-	if (g_tmp == 3) // If global flag indicates overall interruption
+	// Final status check and cleanup of heredoc FDs if there was any interruption or error
+	if (g_tmp == 3) // If global flag indicates overall interruption from signal handler
 	{
-		// data->last_exit_status = 130; // Main loop will handle this
+		// data->last_exit_status will be set by main loop.
 		cleanup_all_heredoc_fds(cmd_list); // Close any opened heredoc FDs
-		return (EXIT_FAILURE); // Ensure failure is returned
+		return (EXIT_FAILURE); // Ensure failure is returned specifically for SIGINT
 	}
-	if (return_code == EXIT_FAILURE) { // If any other error caused failure path
-		cleanup_all_heredoc_fds(cmd_list);
+	
+	if (overall_status == EXIT_FAILURE) { // If any other error occurred
+		cleanup_all_heredoc_fds(cmd_list); // Clean up all heredoc fds created so far
 	}
-	return (return_code); // EXIT_SUCCESS or EXIT_FAILURE from other errors
+	
+	return (overall_status); // EXIT_SUCCESS or EXIT_FAILURE from other errors
 }

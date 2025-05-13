@@ -6,13 +6,13 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 15:09:03 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/07 15:09:45 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/13 16:30:15 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../parser.h"
 
-t_redir	*ft_redir_new(int type, char *filename_val)
+t_redir	*ft_redir_new(int type, char *filename_val, bool herdoc)
 {
 	t_redir	*new_redir;
 
@@ -27,7 +27,7 @@ t_redir	*ft_redir_new(int type, char *filename_val)
 		return (NULL);
 	}
 	new_redir->heredoc_fd = -1;
-	if (new_redir->type == TOKEN_REDIR_HEREDOC)
+	if (new_redir->type == TOKEN_REDIR_HEREDOC && herdoc == true)
 		new_redir->expand_heredoc = true;
 	else
 		new_redir->expand_heredoc = false;
