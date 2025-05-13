@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:01:41 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/11 14:08:27 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/13 15:15:04 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,11 @@ static	void	initialize_pipeline_vars(int *prev_pipe_read_end
 	*pipe0 = -1;
 	*pipe1 = -1;
 }
-
 static	pid_t	fork_and_exec_child(t_cmd *cmd, t_data *data, int prev_read_end,
 										int pipe_fd[2])
 {
 	pid_t	pid;
+	extern int g_tmp;
 
 	pid = fork();
 	if (pid < 0)
@@ -61,7 +61,8 @@ static	pid_t	fork_and_exec_child(t_cmd *cmd, t_data *data, int prev_read_end,
 		setup_child_pipes(prev_read_end, pipe_fd, cmd);
 		execute_command_node(cmd, data);
 	}
-	// set_signal_handlers_default(); // Resets SIGINT and SIGQUIT to SIG_DFL
+	g_tmp = 1;
+	set_signal_handlers_prompt();
 	return (pid);
 }
 
@@ -86,7 +87,7 @@ int	execute_pipeline(t_cmd *cmd_list, t_data *data)
 		if (pid < 0)
 			return (EXIT_FAILURE);
 		last_pid = pid;
-		// set_signal_handlers_default();
+		// set_signal_handlers_default(); //!! HERE: remove to not reset t default 
 		parent_pipe_handler(&prev_pipe_read_end, pipe_fd, cmd_list);
 		cmd_list = cmd_list->next;
 	}
