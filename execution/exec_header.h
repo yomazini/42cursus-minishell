@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/13 20:25:09 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/13 21:25:45 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 
 # define TRUE 1
 # define FALSE 0
+# define MAX_HEREDOCS 16
 
 void	update_shell_level(t_data *data);
 int		execute_built_ins(t_cmd *cmd, t_data *data);
