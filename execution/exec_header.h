@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_header.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/11 13:49:18 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/13 14:29:57 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,5 +99,7 @@ void	set_signal_handlers_default(void); // Child resets to default
 // Individual handlers (can be static in the .c file where they are defined)
 void	sigint_handler_prompt(int signum);
 void	sigint_handler_heredoc(int signum);
+
+void cleanup_all_heredoc_fds(t_cmd *cmd_list);
 
 #endif

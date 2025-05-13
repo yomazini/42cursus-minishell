@@ -274,8 +274,9 @@ int	main(int ac, char **av, char **env)
 				// --- End Parent Ignore ---
 
 				execute_commands(command_list, &data);
-
+				cleanup_all_heredoc_fds(command_list);// this is an impotnt stp here //TODO: KEEP it
 				// --- Parent restores prompt signal handlers ---
+				printf("");
 				restore_signal_handlers(&old_parent_sigint, &old_parent_sigquit); // <-- Needs prototype
 				// --- End Restore Handlers ---
 			}
