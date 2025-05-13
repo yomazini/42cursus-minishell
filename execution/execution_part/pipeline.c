@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:01:41 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/13 15:15:04 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/13 20:29:54 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,12 @@ static	void	initialize_pipeline_vars(int *prev_pipe_read_end
 	*pipe0 = -1;
 	*pipe1 = -1;
 }
+
 static	pid_t	fork_and_exec_child(t_cmd *cmd, t_data *data, int prev_read_end,
 										int pipe_fd[2])
 {
-	pid_t	pid;
-	extern int g_tmp;
+	pid_t		pid;
+	extern int	g_tmp;
 
 	pid = fork();
 	if (pid < 0)

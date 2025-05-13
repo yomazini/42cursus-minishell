@@ -169,6 +169,7 @@ int	main(int ac, char **av, char **env)
 				set_parent_wait_signal_handlers(&old_parent_sigint, &old_parent_sigquit); 
 				g_tmp = 0;
 				execute_commands(command_list, &data);
+				cleanup_all_heredoc_fds(command_list);
 				restore_signal_handlers(&old_parent_sigint, &old_parent_sigquit);
 			}
 			else if (g_tmp == 2)

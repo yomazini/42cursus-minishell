@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/11 11:06:51 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/13 16:33:56 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ typedef struct s_token
 {
 	t_token_type	type;
 	char			*value;
+	bool			exp_in_herdoc;
 	struct s_token	*next;
 }	t_token;
 
@@ -155,7 +156,7 @@ void	ft_tenv_clear(t_env **token_list);
 t_cmd	*ft_creat_cmd_table(t_token *token);
 t_cmd	*ft_cmd_new(void);
 void	ft_cmd_add_back(t_cmd **cmd_list, t_cmd *new_cmd);
-t_redir	*ft_redir_new(int type, char *filename);
+t_redir	*ft_redir_new(int type, char *filename_val, bool herdoc);
 void	ft_redir_add_back(t_redir **redir_list, t_redir *new_redir);
 // void	ft_print_cmd_table(t_cmd *head);
 void	ft_cmd_clear(t_cmd **cmd_list);

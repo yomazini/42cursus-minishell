@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/13 16:02:24 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/13 20:25:09 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,36 +75,22 @@ void	execute_child_process(t_cmd *cmd, t_data *data, char *path);
 void	setup_child_pipes(int prev_pipe_read, int pipe_fd[2], t_cmd *cmd);
 int		wait_for_pipeline(int count, pid_t last_pid, t_data *data);
 char	*expand_tilde_path(const char *path_arg, t_env *env_list);
-
-int	 process_heredocs(t_cmd *cmd_list, t_data *data);
-char *expand_heredoc_line(char *line, t_data *data);
-int	handle_heredoc_redir(int heredoc_fd);
-
-
+int		process_heredocs(t_cmd *cmd_list, t_data *data);
+char	*expand_heredoc_line(char *line, t_data *data);
+int		handle_heredoc_redir(int heredoc_fd);
 void	cleanup_shell_resources(t_data *data);
-void restore_signal_handlers(struct sigaction *old_sigint,
-                             struct sigaction *old_sigquit);
-
-// ... other definitions ...
-
-// --- Global Signal Variable (Declared as extern) ---
-extern volatile sig_atomic_t	g_received_signal; // Use this single global
-
-// --- Signal Handling Prototypes ---
+void	restore_signal_handlers(struct sigaction *old_sigint,
+			struct sigaction *old_sigquit);
 void	set_signal_handlers_prompt(void);
 void	set_signal_handlers_heredoc(void);
-void	set_signal_handlers_ignore(void); // Parent ignores while waiting
-void	set_signal_handlers_default(void); // Child resets to default
-
-// Individual handlers (can be static in the .c file where they are defined)
+void	set_signal_handlers_ignore(void);
+void	set_signal_handlers_default(void);
 void	sigint_handler_prompt(int signum);
 void	sigint_handler_heredoc(int signum);
-
-void cleanup_all_heredoc_fds(t_cmd *cmd_list);
-
-int	handle_syntax_error_message(char *message,
-		t_data *data, int err_code);
-int	handle_empty_command_string_error(t_data *data);
+void	cleanup_all_heredoc_fds(t_cmd *cmd_list);
+int		handle_syntax_error_message(char *message,
+			t_data *data, int err_code);
+int		handle_empty_command_string_error(t_data *data);
 void	ft_print_not_found(char *cmd_name, t_data *data);
 
 #endif
