@@ -164,10 +164,11 @@ void	set_signal_handlers_default(void)
 	configure_sigaction(SIGINT, SIG_DFL, 0);
 	configure_sigaction(SIGQUIT, SIG_DFL, 0);
 }
-void	check_heap_leaks(void)
-{
-	system("leaks minishell");  
-}
+
+// void	check_heap_leaks(void)
+// {
+// 	system("leaks minishell");  
+// }
 
 
 int	main(int ac, char **av, char **env)
@@ -178,7 +179,7 @@ int	main(int ac, char **av, char **env)
 	t_cmd	*command_list;
 	struct sigaction	old_parent_sigint;
 	struct sigaction	old_parent_sigquit;
-	atexit(check_heap_leaks);
+	// atexit(check_heap_leaks);
 	(void)ac; (void)av;
 	line = NULL; token_list = NULL; command_list = NULL;
 	data.last_exit_status = EXIT_SUCCESS;

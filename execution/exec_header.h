@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/13 21:25:45 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/15 16:19:14 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,5 +93,18 @@ int		handle_syntax_error_message(char *message,
 			t_data *data, int err_code);
 int		handle_empty_command_string_error(t_data *data);
 void	ft_print_not_found(char *cmd_name, t_data *data);
+
+
+
+// At the top of export_built_in.c, or in exec_header.h if needed elsewhere
+typedef struct s_export_op
+{
+	char	*key;
+	char	*value_to_process; // Can be value for set or value to append
+	char	*original_arg_str; // For error messages
+	int		is_append_mode;
+	t_data	*shell_dt;
+}	t_export_op;
+
 
 #endif

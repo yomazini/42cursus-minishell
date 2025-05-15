@@ -6,217 +6,122 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:06:26 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/14 22:43:04 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/15 16:34:11 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
 
-// static int	validate_and_set_env(char *key,
-// 	char *value, char *arg, t_data *data)
-// {
-// 	if (!ft_is_valid_identifier(key))
-// 	{
-// 		ft_putstr_fd("minishell: export: `", STDERR_FILENO);
-// 		ft_putstr_fd(arg, STDERR_FILENO);
-// 		ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
-// 		return (EXIT_FAILURE);
-// 	}
-// 	if (ft_list_setenv(&data->env_list, key, value) == -1)
-// 	{
-// 		perror("minishell: export: setenv error");
-// 		return (EXIT_FAILURE);
-// 	}
-// 	return (EXIT_SUCCESS);
-// }
-
-// static int	process_export_pair(char *arg, t_data *data)
-// {
-// 	char	*equals_ptr;
-// 	char	*key;
-// 	char	*value;
-// 	int		result;
-
-// 	equals_ptr = ft_strchr(arg, '=');
-// 	key = NULL;
-// 	value = NULL;
-// 	result = EXIT_SUCCESS;
-// 	if (equals_ptr != NULL)
-// 	{
-// 		key = ft_substr(arg, 0, equals_ptr - arg);
-// 		value = ft_strdup(equals_ptr + 1);
-// 		if (!key || !value)
-// 			return (free(key), free(value), EXIT_FAILURE);
-// 	}
-// 	else
-// 	{
-// 		key = ft_strdup(arg);
-// 		if (!key)
-// 			return (perror("minishell: export: malloc error"), EXIT_FAILURE);
-// 		value = NULL;
-// 	}
-// 	result = validate_and_set_env(key, value, arg, data);
-// 	return (free(key), free(value), result);
-// }
-
-// int	ft_export(t_cmd *cmd, t_data *data)
-// {
-// 	int		i;
-// 	int		return_status;
-
-// 	return_status = EXIT_SUCCESS;
-// 	if (cmd->argv[1] == NULL)
-// 	{
-// 		print_export_env(data->env_list);
-// 		data->last_exit_status = EXIT_SUCCESS;
-// 		return (EXIT_SUCCESS);
-// 	}
-// 	i = 1;
-// 	while (cmd->argv[i] != NULL)
-// 	{
-// 		if (process_export_pair(cmd->argv[i], data) == EXIT_FAILURE)
-// 			return_status = EXIT_FAILURE;
-// 		i++;
-// 	}
-// 	data->last_exit_status = return_status;
-// 	return (return_status);
-// }
-
-
-
-static int	validate_and_set_or_append_env(char *key, char *value_to_set_or_append,
-										char *original_arg, t_data *data, int append_mode)
-{
-	char	*current_value;
-	char	*new_value_for_setenv;
-
-	if (!ft_is_valid_identifier(key))
-	{
-		ft_putstr_fd("minishell: export: `", STDERR_FILENO);
-		ft_putstr_fd(original_arg, STDERR_FILENO); // Print original arg for error
-		ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
-		return (EXIT_FAILURE);
-	}
-
-	new_value_for_setenv = NULL;
-	if (append_mode)
-	{
-		current_value = ft_list_getenv(data->env_list, key); // Get current value
-		if (current_value) // If var exists and has a value, append
-		{
-			new_value_for_setenv = ft_strjoin(current_value, value_to_set_or_append);
-		}
-		else // Var doesn't exist or has no value, treat as normal set
-		{
-			new_value_for_setenv = ft_strdup(value_to_set_or_append);
-		}
-		if (!new_value_for_setenv)
-		{
-			perror("minishell: export (append): malloc error");
-			return (EXIT_FAILURE);
-		}
-	}
-	else // Not append mode (normal set or set without value)
-	{
-		if (value_to_set_or_append) // If a value is provided for set
-			new_value_for_setenv = ft_strdup(value_to_set_or_append);
-		// If value_to_set_or_append is NULL (e.g. export VAR), new_value_for_setenv remains NULL
-	}
-
-	// Call ft_list_setenv with the (potentially new or appended) value
-	if (ft_list_setenv(&data->env_list, key, new_value_for_setenv) == -1)
-	{
-		perror("minishell: export: setenv error");
-		free(new_value_for_setenv); // Free if allocated
-		return (EXIT_FAILURE);
-	}
-
-	free(new_value_for_setenv); // Free the strduped/strjoined string for setenv
-	return (EXIT_SUCCESS);
-}
-
-// Modified process_export_pair to detect and handle "+="
-static int	process_export_pair(char *arg, t_data *data)
+static int	extract_key_value_from_arg(char *arg, char **key_ptr,
+										char **value_ptr, int *append_mode_ptr)
 {
 	char	*equals_ptr;
-	char	*key;
-	char	*value_to_assign;
-	int		result;
-	int		append_mode;
 	size_t	key_len;
 
 	equals_ptr = ft_strchr(arg, '=');
-	key = NULL;
-	value_to_assign = NULL;
-	result = EXIT_SUCCESS;
-	append_mode = FALSE;
-
-	if (equals_ptr != NULL) // Argument contains "="
+	if (equals_ptr != NULL)
 	{
 		key_len = equals_ptr - arg;
-		// Check if the character before '=' is '+'
 		if (key_len > 0 && arg[key_len - 1] == '+')
 		{
-			append_mode = TRUE;
-			key = ft_substr(arg, 0, key_len - 1); // Key is before "+="
+			*append_mode_ptr = TRUE;
+			*key_ptr = ft_substr(arg, 0, key_len - 1);
 		}
-		else // Normal assignment "KEY=VALUE"
-		{
-			key = ft_substr(arg, 0, key_len);
-		}
-		value_to_assign = ft_strdup(equals_ptr + 1); // Value is after "="
-		if (!key || !value_to_assign) // Check malloc results
-		{
-			perror("minishell: export: malloc error");
-			result = EXIT_FAILURE;
-		}
+		else
+			*key_ptr = ft_substr(arg, 0, key_len);
+		*value_ptr = ft_strdup(equals_ptr + 1);
+		if (!*key_ptr || !*value_ptr)
+			return (perror("minishell: export: malloc error"), -1);
 	}
-	else // No '=' in argument, e.g., "export VAR"
+	else
 	{
-		key = ft_strdup(arg);
-		if (!key)
-		{
-			perror("minishell: export: malloc error");
-			result = EXIT_FAILURE;
-		}
-		// value_to_assign remains NULL
+		*key_ptr = ft_strdup(arg);
+		if (!*key_ptr)
+			return (perror("minishell: export: malloc error"), -1);
 	}
+	return (EXIT_SUCCESS);
+}
 
-	if (result == EXIT_SUCCESS) // If key/value extraction was okay
+static	void	ft_prt_err(char *name)
+{
+	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
+	ft_putstr_fd(name, STDERR_FILENO);
+	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
+}
+
+static int	validate_and_set_or_append_env(t_export_op *op_data)
+{
+	char	*curr_value;
+	char	*f_vl_setenv;
+
+	if (!ft_is_valid_identifier(op_data->key))
+		return (ft_prt_err(op_data->original_arg_str), EXIT_FAILURE);
+	f_vl_setenv = NULL;
+	if (op_data->is_append_mode && op_data->value_to_process)
 	{
-		result = validate_and_set_or_append_env(key, value_to_assign, arg, data, append_mode);
+		curr_value = ft_list_getenv(op_data->shell_dt->env_list, op_data->key);
+		if (curr_value)
+			f_vl_setenv = ft_strjoin(curr_value, op_data->value_to_process);
+		else
+			f_vl_setenv = ft_strdup(op_data->value_to_process);
+		if (!f_vl_setenv)
+			return (perror("mini: malloc err"), EXIT_FAILURE);
 	}
+	else if (op_data->value_to_process)
+	{
+		f_vl_setenv = ft_strdup(op_data->value_to_process);
+		if (!f_vl_setenv) // Check strdup result
+			return (perror("mini: malloc Err"), EXIT_FAILURE);
+	}
+	if (ft_list_setenv(&op_data->shell_dt->env_list, op_data->key, f_vl_setenv))
+		return (perror("mini: setenv Err"), free(f_vl_setenv), EXIT_FAILURE);
+	return (free(f_vl_setenv), EXIT_SUCCESS);
+}
 
-	free(key);
-	free(value_to_assign); // free(NULL) is safe
+static int	process_export_arg(char *arg_str, t_data *data)
+{
+	t_export_op	op_data;
+	int			result;
+
+	op_data.key = NULL;
+	op_data.value_to_process = NULL;
+	op_data.original_arg_str = arg_str; // Store original for error messages
+	op_data.shell_dt = data;// Pass data pointer
+	op_data.is_append_mode = FALSE;
+	result = extract_key_value_from_arg(arg_str, &op_data.key,
+			&op_data.value_to_process, &op_data.is_append_mode);
+	if (result == -1) // Malloc error during key/value extraction
+	{
+		free(op_data.key); // free(NULL) is safe
+		free(op_data.value_to_process);
+		return (EXIT_FAILURE);
+	}
+	result = validate_and_set_or_append_env(&op_data); // Pass struct pointer
+	// Free the key and value strings extracted by extract_key_value_from_arg
+	free(op_data.key);
+	free(op_data.value_to_process);
 	return (result);
 }
 
-// Main export function (No changes needed here, logic moved to helpers)
 int	ft_export(t_cmd *cmd, t_data *data)
 {
 	int		i;
 	int		return_status;
 
 	return_status = EXIT_SUCCESS;
-	if (cmd->argv[1] == NULL) // No arguments, print exported vars
+	if (cmd->argv[1] == NULL)
 	{
-		// Assuming print_export_env is defined elsewhere and handles status
 		print_export_env(data->env_list);
 		data->last_exit_status = EXIT_SUCCESS;
 		return (EXIT_SUCCESS);
 	}
-
-	// Process arguments
 	i = 1;
 	while (cmd->argv[i] != NULL)
 	{
-		if (process_export_pair(cmd->argv[i], data) == EXIT_FAILURE)
-			return_status = EXIT_FAILURE; // If any arg fails, overall status is failure
+		if (process_export_arg(cmd->argv[i], data) == EXIT_FAILURE)
+			return_status = EXIT_FAILURE;
 		i++;
 	}
 	data->last_exit_status = return_status;
 	return (return_status);
 }
-
-    
