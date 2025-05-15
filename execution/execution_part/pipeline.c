@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:01:41 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/13 20:29:54 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/15 21:01:19 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ int	execute_pipeline(t_cmd *cmd_list, t_data *data)
 		if (pid < 0)
 			return (EXIT_FAILURE);
 		last_pid = pid;
-		// set_signal_handlers_default(); //!! HERE: remove to not reset t default 
 		parent_pipe_handler(&prev_pipe_read_end, pipe_fd, cmd_list);
 		cmd_list = cmd_list->next;
 	}
