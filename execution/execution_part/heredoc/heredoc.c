@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:43:01 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/14 10:26:26 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/15 17:30:19 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ static int	read_input_to_pipe(char *delimiter, bool expand,
 		line = readline("> ");
 		if (g_tmp == 3) { if (line) free(line); return (130); }
 		if (!line) { /* EOF warning */ return (0); } // Bash status 0 for this case
-		if (ft_strncmp(line, delimiter, delim_len + 1) == 0) { free(line); break; }
+		if (ft_strncmp(line, delimiter, delim_len + 1) == 0) 
+		{ free(line); break; }
 		if (expand) {
 			line_to_write = expand_heredoc_line(line, data);
 			free(line);
