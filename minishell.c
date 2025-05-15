@@ -61,7 +61,6 @@ void    ft_print_cmd_table(t_cmd *head)
 }
 
 
-volatile sig_atomic_t	g_received_signal = 0;
 int g_tmp = 0;
 
 void	setup_signal_action(int signum, void (*handler)(int), int flags)
@@ -72,12 +71,6 @@ void	setup_signal_action(int signum, void (*handler)(int), int flags)
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = flags; //?
     sigaction(signum, &sa, NULL);
-}
-
-void	heredoc_sigint_handler(int signum) //! we might nee to change 
-{
-    (void)signum;
-    g_received_signal = SIGINT;
 }
 
 void	sigint_handler_prompt(int signum) // sigint handler for 
