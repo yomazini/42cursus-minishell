@@ -196,11 +196,18 @@ int	main(int ac, char **av, char **env)
 			break ;
 		}
 
-		if (line[0] == '\0') { free(line); continue; }
+		if (line[0] == '\0') 
+		{
+			 free(line);
+			 line = NULL;
+			 continue;
+		 }
 		add_history(line);
 		if (!ft_synax_error_free(line)) 
 		{
-			data.last_exit_status = 258; 
+			data.last_exit_status = 258;
+			free(line); //DONE: FIXED Leak if error syntax
+			line = NULL;
 			continue; 
 		}
 		token_list = ft_tokenize(line);
@@ -208,6 +215,7 @@ int	main(int ac, char **av, char **env)
 		{ 
 			data.last_exit_status = 258;
 			free(line);
+			line = NULL;
 			continue;
 		}
 		ft_expander(&token_list, &data);
@@ -238,6 +246,7 @@ int	main(int ac, char **av, char **env)
 			printf("[Command Table Creation Failed - Check Syntax]\n");
 		}
 		free(line);
+		line = NULL;
 	}
 	ft_tenv_clear(&data.env_list);
 	rl_clear_history();

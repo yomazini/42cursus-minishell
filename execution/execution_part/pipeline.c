@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:01:41 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/15 21:01:19 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/15 22:09:37 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,10 +83,20 @@ int	execute_pipeline(t_cmd *cmd_list, t_data *data)
 	while (cmd_list != NULL)
 	{
 		if (cmd_list->next && pipe(pipe_fd) == -1)
+		{
+			if (prev_pipe_read_end != STDIN_FILENO) 
+				close(prev_pipe_read_end);
 			return (perror("pipe"), EXIT_FAILURE);
+		}
 		pid = fork_and_exec_child(cmd_list, data, prev_pipe_read_end, pipe_fd);
 		if (pid < 0)
-			return (EXIT_FAILURE);
+		{
+    		if (prev_pipe_read_end != STDIN_FILENO)
+				close(prev_pipe_read_end);
+    		if (cmd_list->next)
+				(close(pipe_fd[0]), close(pipe_fd[1]));
+    		return (perror("minishell: fork") ,EXIT_FAILURE);
+		}
 		last_pid = pid;
 		parent_pipe_handler(&prev_pipe_read_end, pipe_fd, cmd_list);
 		cmd_list = cmd_list->next;

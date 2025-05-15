@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:47:59 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/13 20:28:01 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/15 22:09:14 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	redir_error01(char *filename)
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	if (filename)
 		ft_putstr_fd(filename, STDERR_FILENO);
-	ft_putstr_fd(" :", STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
 	ft_putendl_fd(strerror(errno), STDERR_FILENO);
 	return (1);
 }
