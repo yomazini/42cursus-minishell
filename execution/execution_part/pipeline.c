@@ -6,13 +6,13 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:01:41 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/15 23:19:01 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/17 20:41:17 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
 
-static int	count_commands(t_cmd *cmd_list)
+static int	count_commands(t_cmd *cmd_list, t_data *data)
 {
 	int		count;
 	t_cmd	*counter;
@@ -23,6 +23,10 @@ static int	count_commands(t_cmd *cmd_list)
 	{
 		count++;
 		counter = counter->next;
+	}
+	if (count > 1)
+	{
+		data->print_flag = FALSE;
 	}
 	return (count);
 }
@@ -77,7 +81,7 @@ int	execute_pipeline(t_cmd *cmd_list, t_data *data)
 
 	initialize_pipeline_vars(&prev_pipe_read_end,
 		&last_pid, &pipe_fd[0], &pipe_fd[1]);
-	command_count = count_commands(cmd_list);
+	command_count = count_commands(cmd_list, data);
 	if (command_count == 0)
 		return (EXIT_SUCCESS);
 	while (cmd_list != NULL)

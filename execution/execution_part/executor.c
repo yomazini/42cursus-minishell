@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/17 18:37:15 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/17 22:16:16 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,10 @@ int	execute_commands(t_cmd *cmd_list, t_data *data)
 		counter = counter->next;
 	}
 	if (command_count == 1)
+	{
+		data->print_flag = TRUE;
 		return (handle_single_command(cmd_list, data));
+	}
 	else
 	{
 		if (!cmd_list->argv || !cmd_list->argv[0])
@@ -96,10 +99,56 @@ int	execute_external_command(t_cmd *cmd, t_data *data)
 	char	*executable_path;
 	pid_t	child_pid;
 	int		wait_status;
+	int original_errno;
+	// --- Handle '.' and '..' specially ---
+	if (cmd->argv[0] && ft_strncmp(cmd->argv[0], ".", 2) == 0)
+	{
+		ft_putstr_fd("minishell: .: filename argument required\n", STDERR_FILENO);
+		ft_putstr_fd(".: usage: . filename [arguments]\n", STDERR_FILENO); // Mimic bash
+		data->last_exit_status = 2; // Common error code for builtin usage
+		return (2);
+	}
+	if (cmd->argv[0] && ft_strncmp(cmd->argv[0], "..", 3) == 0)
+	{
+		ft_putstr_fd("minishell: ..: command not found\n", STDERR_FILENO);
+		data->last_exit_status = 127;
+		return (127);
+	}
+	// --- End special handling ---
 
+
+	errno = 0; // Clear errno before calling find_command_path
 	executable_path = find_command_path(cmd->argv[0], data->env_list);
+	original_errno = errno; // Save errno immediately after find_command_path
+
 	if (!executable_path)
-		return (ft_print_not_found(cmd->argv[0], data), 127);
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
+		if (original_errno == EISDIR) // Check if find_path failed because it was a directory
+		{
+			ft_putstr_fd(": is a directory\n", STDERR_FILENO);
+			data->last_exit_status = 126;
+			return (126);
+		}
+		else if (original_errno == EACCES) // Check for permission denied on a file path
+		{
+			ft_putstr_fd(": Permission denied\n", STDERR_FILENO);
+			data->last_exit_status = 126;
+			return (126);
+		}
+		else // Default "command not found"
+		{
+			ft_putstr_fd(": command not found\n", STDERR_FILENO);
+			data->last_exit_status = 127;
+			return (127);
+		}
+	}
+
+	// executable_path = find_command_path(cmd->argv[0], data->env_list);
+	// executable_path = find_command_path(cmd->argv[0], data->env_list);
+	// if (!executable_path)
+	// 	return (ft_print_not_found(cmd->argv[0], data), 127);
 	child_pid = fork();
 	if (child_pid < 0)
 	{

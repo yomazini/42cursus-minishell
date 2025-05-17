@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 16:28:42 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/11 19:41:40 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/17 22:44:46 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,18 +30,46 @@ int	is_parent_builtin(t_cmd *cmd)
 	return (FALSE);
 }
 
-static void	ft_check_command_existance(char *path,
-			char *cmd_name, char **envp_array)
+// static void	ft_check_command_existance(char *path,
+// 			char *cmd_name, char **envp_array)
+// {
+// 	if (!path)
+// 	{
+// 		ft_putstr_fd("minishell3: ", STDERR_FILENO);
+// 		ft_putstr_fd(cmd_name, STDERR_FILENO);
+// 		ft_putstr_fd(": command not found\n", STDERR_FILENO);
+// 		free_arr(envp_array);
+// 		exit(127);
+// 	}
+// }
+
+// Updated helper for path checking errors
+// This function will now *exit* the child if the path is invalid.
+static void	handle_path_error_and_exit(char *cmd_name, char **envp_array,
+									int original_errno)
 {
-	if (!path)
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(cmd_name, STDERR_FILENO);
+	if (original_errno == EISDIR) // Set by is_executable if it was a directory
 	{
-		ft_putstr_fd("minishell3: ", STDERR_FILENO);
-		ft_putstr_fd(cmd_name, STDERR_FILENO);
+		ft_putstr_fd(": is a directory\n", STDERR_FILENO);
+		free_arr(envp_array); // Free envp_array if it was allocated
+		exit(126);
+	}
+	else if (original_errno == EACCES) // Set by is_executable for file permission
+	{
+		ft_putstr_fd(": Permission denied\n", STDERR_FILENO);
+		free_arr(envp_array);
+		exit(126);
+	}
+	else // Default "command not found" (ENOENT or other errors from find_path)
+	{
 		ft_putstr_fd(": command not found\n", STDERR_FILENO);
 		free_arr(envp_array);
 		exit(127);
 	}
 }
+
 
 void	execute_command_node(t_cmd *cmd, t_data *data)
 {
@@ -64,8 +92,32 @@ void	execute_command_node(t_cmd *cmd, t_data *data)
 		envp_array = convert_envlist_to_array(data->env_list);
 		if (!envp_array)
 			exit(EXIT_FAILURE);
+			// --- Handle "." and ".." specially as per Bash for direct execution ---
+		if (cmd->argv[0] && ft_strncmp(cmd->argv[0], ".", 2) == 0)
+		{
+			ft_putstr_fd("minishell: .: filename argument required\n", STDERR_FILENO);
+			ft_putstr_fd(".: usage: . filename [arguments]\n", STDERR_FILENO);
+			data->last_exit_status = 2;
+			(free_arr(envp_array), exit(2));
+		}
+		if (cmd->argv[0] && ft_strncmp(cmd->argv[0], "..", 3) == 0)
+		{
+			ft_putstr_fd("minishell: ..: command not found\n", STDERR_FILENO);
+			data->last_exit_status = 127;
+			(free_arr(envp_array), exit(127));
+		}
+		// --- End special handling for . and .. ---
+
+		errno = 0; // Clear errno before calling find_command_path
 		path = find_command_path(cmd->argv[0], data->env_list);
-		ft_check_command_existance(path, cmd->argv[0], envp_array);
+		int find_path_errno = errno; // Capture errno immediately after find_command_path		ft_check_command_existance(path, cmd->argv[0], envp_array);
+			if (!path) // Path not found or not executable or is a directory
+	{
+		// handle_path_error_and_exit will print message and exit child
+		handle_path_error_and_exit(cmd->argv[0], envp_array, find_path_errno);
+		// The line below is never reached as handle_path_error_and_exit exits
+	}
+
 		execve(path, cmd->argv, envp_array);
 		ft_putstr_fd("minishell1: ", STDERR_FILENO);
 		(perror(cmd->argv[0]), free(path), free_arr(envp_array), exit(126));

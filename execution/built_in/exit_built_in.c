@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:06:22 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/13 11:35:56 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/17 21:25:09 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,10 @@ int	ft_exit(t_cmd *cmd, t_data *data)
 {
 	int				argc;
 	unsigned char	exit_status_to_use;
-
-	ft_putstr_fd("exit\n", STDERR_FILENO);
 	argc = 0;
+
+	if (data->print_flag)
+		ft_putstr_fd("exit\n", STDERR_FILENO);	
 	while (cmd->argv[argc])
 		argc++;
 	if (argc == 1)
@@ -85,3 +86,4 @@ int	ft_exit(t_cmd *cmd, t_data *data)
 	}
 	return (EXIT_FAILURE);
 }
+
