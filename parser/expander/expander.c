@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:20:31 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/17 14:30:01 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/17 17:35:40 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,19 @@ void	ft_free_helper(char **vic, size_t i, size_t n_splited)
 	free(vic);
 	return ;	
 }
+bool	ft_isall_spaces(char *string)
+{
+	int i;
+
+	i = 0;
+	while (string[i])
+	{
+		if (!ft_isspace(string[i]))
+			return (false);
+		i++;
+	}
+	return (true);
+}
 void	ft_applay_ifs(t_token **curr_token)
 {
 	size_t	n_splited;
@@ -47,6 +60,13 @@ void	ft_applay_ifs(t_token **curr_token)
 	
 	if (!(*curr_token) || !(*curr_token)->value)
 		return ;
+	if (ft_isall_spaces((*curr_token)->value))
+	{
+		free((*curr_token)->value);
+		(*curr_token)->value = ft_strdup("");
+		return ;
+	}
+	n_splited = 0;
 	split_value = ft_split_string_by_whitespace((*curr_token)->value, &n_splited);
 	if (split_value == NULL)
 		return ;
@@ -91,10 +111,15 @@ void	ft_expander(t_token **token, t_data *data)
 		{
 			ft_expand(&current, data);
 			if (current->type == TOKEN_WORD && data->field_splitting_needed
-				&& current->value && ft_strchr(current->value, ' '))
+				&& current->value)
 			{
 				ft_applay_ifs(&current);
 			}
+			if (data->field_splitting_needed && 
+				(ft_isall_spaces(current->value) || current->value[0] == '\0'))
+				{
+					current->empty_tkn = true;
+				}
 			need_cleanup = false;
 		}
 		if (need_cleanup)

@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:39:55 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/16 16:18:06 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/17 17:33:36 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,6 @@ char	*ft_append_vt(char *new_str, const char *orign, t_data *data, int *i)
 	if (!var_name)
 		return (new_str);
 	var_value = ft_isvariablet_exist(data->env_list, var_name);
-	if (!var_value)
-		return (free(var_name), data->add_spaces = false, new_str);
 	temp = ft_strjoined(new_str, var_value);
 	if (!temp)
 		return (new_str);

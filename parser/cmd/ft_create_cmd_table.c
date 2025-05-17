@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 13:23:07 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/13 16:44:23 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/17 17:32:22 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,20 @@ char	**ft_add_to_argv(char **old_argv, char *word)
 static void	ft_populate_cmd(t_token **curr_token, t_cmd *cmd)
 {
 	t_redir	*new_redir;
+	bool	firs_argv;
 
+	firs_argv = false;
 	while (*curr_token && (*curr_token)->type != TOKEN_PIPE)
 	{
 		if ((*curr_token)->type == TOKEN_WORD)
+		{
+			if (cmd->argv == NULL)
+				firs_argv = true;
 			cmd->argv = ft_add_to_argv(cmd->argv, (*curr_token)->value);
+			if (firs_argv && (*curr_token)->empty_tkn == true)
+				cmd->empty_cmd = true;
+			firs_argv = false;
+		}
 		else if ((*curr_token)->type >= TOKEN_REDIR_IN
 			&& (*curr_token)->type <= TOKEN_REDIR_HEREDOC)
 		{

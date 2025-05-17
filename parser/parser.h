@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/17 16:10:26 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/17 17:42:57 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ typedef struct s_token
 	t_token_type	type;
 	char			*value;
 	bool			exp_in_herdoc;
+	bool			empty_tkn;
 	struct s_token	*next;
 }	t_token;
 
@@ -75,6 +76,7 @@ typedef struct s_cmd
 {
 	char			**argv;
 	struct s_redir	*redir;
+	bool			empty_cmd;
 	struct s_cmd	*next;
 }	t_cmd;
 typedef struct s_data
@@ -84,8 +86,6 @@ typedef struct s_data
 	bool	herdoc;
 	int		peak;
 	bool	field_splitting_needed;
-	bool	empty_arg;
-	bool	add_spaces;
 }	t_data;
 typedef struct s_exp_st
 {
