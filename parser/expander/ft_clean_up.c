@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:26:14 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/13 18:11:13 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/14 14:44:18 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,6 @@ void	ft_clean_up(t_token **token)
 	len = ft_strlen((*token)->value);
 	new_str = malloc(sizeof(char) * (len + 1));
 	if (!new_str)
-		return ;
-	if (len == 2 &&  ft_isquot((*token)->value[1]))
 		return ;
 	else
 		ft_helper_func(new_str, token);

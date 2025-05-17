@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/13 16:33:56 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/16 17:50:37 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <stdbool.h>
-# include <errno.h> //! MBLater
-# include <string.h> //^ for strcmp make your's
+
 
 typedef enum s_token_type
 {
@@ -83,7 +82,7 @@ typedef struct s_data
 	int		last_exit_status;
 	bool	herdoc;
 	int		peak;
-	bool	trim;
+	bool	field_splitting_needed;
 	bool	empty_arg;
 	bool	add_spaces;
 }	t_data;
@@ -140,6 +139,7 @@ int		ft_isdigit(int c);
 char	*ft_append_exit_status(char *new_str, int last_exit_status);
 char	*ft_append_vt(char *new_str, const char *orign, t_data *data, int *i);
 char	*append_single_char(char *new_str, char c);
+char	**ft_split_string_by_whitespace(char *string, size_t *size);
 
 //	expander/env
 t_env	*ft_getenv(char **env);

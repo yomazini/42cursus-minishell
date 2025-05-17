@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:42:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/13 15:21:35 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/17 14:27:54 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,34 +62,23 @@ static bool	ft_process_expansion(t_exp_p *st, const char *org)
 	if (ft_isquot(curr_char_vl) && !*(st->qt_ptr))
 	{
 		*(st->qt_ptr) = curr_char_vl;
-		*(st->ptr) = append_single_char(*(st->ptr), org[(*(st->i_ptr))++]);
+		(*(st->i_ptr))++;
 	}
 	else if (*(st->qt_ptr) && curr_char_vl == *(st->qt_ptr))
 	{
 		*(st->qt_ptr) = '\0';
-		*(st->ptr) = append_single_char(*(st->ptr), org[(*(st->i_ptr))++]);
+		(*(st->i_ptr))++;
 	}
 	else if (curr_char_vl == '$' && org[*(st->i_ptr) + 1]
 		&& st->data->herdoc == false
 		&& (*(st->qt_ptr) == '\"' || !*(st->qt_ptr)))
 	{
 		if (!*(st->qt_ptr))
-		{
-			st->data->trim = true;
-			st->data->empty_arg = true;
-		}
+			st->data->field_splitting_needed = true; // when we have $ and now double qoutes !
 		else
-		{
-			st->data->trim = false;
-			st->data->empty_arg = false;
-		}
+			st->data->field_splitting_needed = false;
 		proc = &org[*(st->i_ptr)];
-		if (ft_need_to_add_spaces(proc, st->data->env_list))
-			*(st->ptr) = append_single_char(*(st->ptr), ' ');
 		*(st->ptr) = ft_expenv(*(st->ptr), proc, st->data, st->i_ptr);
-		if (st->data->add_spaces == true && org[*(st->i_ptr)])
-			*(st->ptr) = append_single_char(*(st->ptr), ' ');
-		st->data->add_spaces = false;
 	}	
 	else
 		*(st->ptr) = append_single_char(*(st->ptr), org[(*(st->i_ptr))++]);
