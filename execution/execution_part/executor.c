@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/13 16:05:18 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/17 18:37:15 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,13 +54,13 @@ static int	handle_single_command(t_cmd *cmd_node, t_data *data)
 	{
 		return (handle_empty_command_string_error(data));
 	}
-	else
+	else if (cmd_node->argv)
 	{
 		data->last_exit_status = 258;
-		ft_putstr_fd("minishell: syntax error \
-			near unexpected token `newline'\n", 2);
+		ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
 		return (data->last_exit_status);
 	}
+	return(data->last_exit_status);
 }
 
 int	execute_commands(t_cmd *cmd_list, t_data *data)
