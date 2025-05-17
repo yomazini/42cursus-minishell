@@ -111,6 +111,8 @@ int	main(int ac, char **av, char **env)
 	update_shell_level(&data);
 	rl_catch_signals = 0;
 	set_signal_handlers_prompt(); // set
+	if (!isatty(0) || !isatty(1))
+		return (0);
 	while (TRUE)
 	{
 		command_list = NULL; token_list = NULL; line = NULL;
