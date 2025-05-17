@@ -151,9 +151,9 @@ int	main(int ac, char **av, char **env)
 		}
 		// ft_print_token_list(token_list);
 		ft_expander(&token_list, &data);
-		ft_print_token_list(token_list);
+		// ft_print_token_list(token_list);
 		command_list = ft_creat_cmd_table(token_list);
-		ft_print_cmd_table(command_list);
+		// ft_print_cmd_table(command_list);
 		ft_token_clear(&token_list);
 		if (command_list)
 		{
