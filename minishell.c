@@ -103,12 +103,6 @@ void	setup_signal_action(int signum, void (*handler)(int), int flags)
     sigaction(signum, &sa, NULL);
 }
 
-void	heredoc_sigint_handler(int signum) //! we might nee to change 
-{
-    (void)signum;
-    g_received_signal = SIGINT;
-}
-
 void	sigint_handler_prompt(int signum) // sigint handler for 
 {
 	extern int g_tmp;
@@ -193,9 +187,10 @@ void	set_signal_handlers_default(void)
 	configure_sigaction(SIGINT, SIG_DFL, 0);
 	configure_sigaction(SIGQUIT, SIG_DFL, 0);
 }
+
 // void	check_heap_leaks(void)
 // {
-// 	system("leaks minishell");  // or ./a.out, depending on how you run it
+// 	system("leaks minishell");  
 // }
 
 
@@ -231,11 +226,18 @@ int	main(int ac, char **av, char **env)
 			break ;
 		}
 
-		if (line[0] == '\0') { free(line); continue; }
+		if (line[0] == '\0') 
+		{
+			 free(line);
+			 line = NULL;
+			 continue;
+		 }
 		add_history(line);
 		if (!ft_synax_error_free(line)) 
 		{
-			data.last_exit_status = 258; 
+			data.last_exit_status = 258;
+			free(line); //DONE: FIXED Leak if error syntax
+			line = NULL;
 			continue; 
 		}
 		token_list = ft_tokenize(line);
@@ -243,6 +245,7 @@ int	main(int ac, char **av, char **env)
 		{ 
 			data.last_exit_status = 258;
 			free(line);
+			line = NULL;
 			continue;
 		}
 		// ft_print_token_list(token_list);
@@ -258,6 +261,7 @@ int	main(int ac, char **av, char **env)
 				set_parent_wait_signal_handlers(&old_parent_sigint, &old_parent_sigquit); 
 				g_tmp = 0;
 				execute_commands(command_list, &data);
+				cleanup_all_heredoc_fds(command_list);
 				restore_signal_handlers(&old_parent_sigint, &old_parent_sigquit);
 			}
 			else if (g_tmp == 2)
@@ -274,8 +278,9 @@ int	main(int ac, char **av, char **env)
 			printf("[Command Table Creation Failed - Check Syntax]\n");
 		}
 		free(line);
+		line = NULL;
 	}
 	ft_tenv_clear(&data.env_list);
 	rl_clear_history();
-	return (data.last_exit_status);
+	return (data. last_exit_status);
 }

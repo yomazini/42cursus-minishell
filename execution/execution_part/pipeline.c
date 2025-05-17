@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:01:41 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/13 15:15:04 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/15 23:19:01 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,12 @@ static	void	initialize_pipeline_vars(int *prev_pipe_read_end
 	*pipe0 = -1;
 	*pipe1 = -1;
 }
+
 static	pid_t	fork_and_exec_child(t_cmd *cmd, t_data *data, int prev_read_end,
 										int pipe_fd[2])
 {
-	pid_t	pid;
-	extern int g_tmp;
+	pid_t		pid;
+	extern int	g_tmp;
 
 	pid = fork();
 	if (pid < 0)
@@ -82,12 +83,21 @@ int	execute_pipeline(t_cmd *cmd_list, t_data *data)
 	while (cmd_list != NULL)
 	{
 		if (cmd_list->next && pipe(pipe_fd) == -1)
+		{
+			if (prev_pipe_read_end != STDIN_FILENO) 
+				close(prev_pipe_read_end);
 			return (perror("pipe"), EXIT_FAILURE);
+		}
 		pid = fork_and_exec_child(cmd_list, data, prev_pipe_read_end, pipe_fd);
 		if (pid < 0)
-			return (EXIT_FAILURE);
+		{
+    		if (prev_pipe_read_end != STDIN_FILENO)
+				close(prev_pipe_read_end);
+    		if (cmd_list->next)
+				(close(pipe_fd[0]), close(pipe_fd[1]));
+    		return (perror("minishell: fork") ,EXIT_FAILURE);
+		}
 		last_pid = pid;
-		// set_signal_handlers_default(); //!! HERE: remove to not reset t default 
 		parent_pipe_handler(&prev_pipe_read_end, pipe_fd, cmd_list);
 		cmd_list = cmd_list->next;
 	}

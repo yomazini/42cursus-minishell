@@ -9,7 +9,7 @@ AR = ar rcs
 RM = rm -f
 
 # --- Flags ---
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g3
+CFLAGS = -Wall -Wextra -Werror #-fsanitize=address -g3
 ifdef SANITIZE
 	CFLAGS += -fsanitize=address
 endif
@@ -37,6 +37,7 @@ SRCS =  built_in/echo_built_in.c \
 		execution_part/env_init.c \
 		built_in/cd_built_in.c \
 		execution_part/execute_builtin.c \
+		execution_part/execute_builtin2.c \
 		execution_part/tools1.c \
 		execution_part/tools2.c \
 		execution_part/redirections.c \
@@ -44,7 +45,6 @@ SRCS =  built_in/echo_built_in.c \
     	built_in/cd_built_in_utils.c \
     	built_in/cd_built_in_utils2.c \
         built_in/export_built_in_utils.c \
-        built_in/export_built_in_utils2.c \
 		execution_part/pipeline.c \
 		execution_part/pipeline_utils.c \
 		execution_part/executor.c \

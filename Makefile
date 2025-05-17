@@ -2,7 +2,7 @@ NAME = minishell
 
 CC = cc
 RM = rm -f
-CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror #-g3 -fsanitize=address
 
 LIBFT_DIR = libft
 PARSER_DIR = parser
@@ -76,6 +76,7 @@ SRCS_EXEC = $(addprefix $(EXEC_DIR)/, \
 		execution_part/env_init.c \
 		built_in/cd_built_in.c \
 		execution_part/execute_builtin.c \
+		execution_part/execute_builtin2.c \
 		execution_part/tools1.c \
 		execution_part/tools2.c \
 		execution_part/redirections.c \
@@ -83,7 +84,6 @@ SRCS_EXEC = $(addprefix $(EXEC_DIR)/, \
 		built_in/cd_built_in_utils.c \
 		built_in/cd_built_in_utils2.c \
 		built_in/export_built_in_utils.c \
-		built_in/export_built_in_utils2.c \
 		execution_part/pipeline.c \
 		execution_part/pipeline_utils.c \
 		execution_part/executor.c \
