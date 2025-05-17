@@ -60,6 +60,9 @@ SRCS_PARSER = $(addprefix $(PARSER_DIR)/, \
 		expander/env/ft_tenv_clear.c \
 		expander/ft_utils_expand.c \
 		expander/ft_split_string_by_whitespace.c \
+		signals/ft_signals.c \
+		signals/ft_utils_signal.c \
+		signals/ft_herdoc_signal.c \
 		cmd/ft_create_cmd_table.c \
 		cmd/ft_cmd_new.c \
 		cmd/ft_cmd_add_back.c \

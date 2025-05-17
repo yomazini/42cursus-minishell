@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/16 17:50:37 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/17 16:10:26 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <stdbool.h>
+# include <signal.h>
 
 
 typedef enum s_token_type
@@ -158,10 +159,22 @@ t_cmd	*ft_cmd_new(void);
 void	ft_cmd_add_back(t_cmd **cmd_list, t_cmd *new_cmd);
 t_redir	*ft_redir_new(int type, char *filename_val, bool herdoc);
 void	ft_redir_add_back(t_redir **redir_list, t_redir *new_redir);
-// void	ft_print_cmd_table(t_cmd *head);
 void	ft_cmd_clear(t_cmd **cmd_list);
 void	ft_redir_clear(t_redir **redir_list);
 size_t	ft_count_cmd(t_token *token);
 size_t	ft_viclen(char **argv);
+
+// signels
+void 	set_parent_wait_signal_handlers(struct sigaction *old_sigint, struct sigaction *old_sigquit);
+void	setup_signal_action(int signum, void (*handler)(int), int flags);
+void	sigint_handler_prompt(int signum);
+void	sigint_handler_heredoc(int signum);
+void	configure_sigaction(int signum, void (*handler)(int), int flags);
+void 	set_signal_handlers_ignore(void);
+void 	set_parent_wait_signal_handlers(struct sigaction *old_sigint, struct sigaction *old_sigquit);
+void 	restore_signal_handlers(struct sigaction *old_sigint, struct sigaction *old_sigquit);
+void	set_signal_handlers_prompt(void);
+void	set_signal_handlers_heredoc(void);
+void	set_signal_handlers_default(void);
 
 #endif
