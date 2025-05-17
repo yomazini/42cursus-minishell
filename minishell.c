@@ -3,6 +3,34 @@
 #include "execution/exec_header.h"
 #include <signal.h>
 
+const char* get_token_type_name(t_token_type type) {
+    switch (type) {
+        case TOKEN_WORD:         return "WORD";
+        case TOKEN_PIPE:         return "PIPE";
+        case TOKEN_REDIR_IN:     return "REDIR_IN";
+        case TOKEN_REDIR_OUT:    return "REDIR_OUT";
+        case TOKEN_REDIR_APPEND: return "REDIR_APPEND";
+        case TOKEN_REDIR_HEREDOC:return "REDIR_HEREDOC";
+        default:                 return "UNKNOWN";
+    }
+}
+void ft_print_token_list(t_token *head)
+{
+    t_token *current = head; 
+    int i = 0;   
+    while (current != NULL)
+    {
+        printf("token[%d]= [%s], type(%s)\n",
+               i,
+               current->value ? current->value : "(null value)",
+               get_token_type_name(current->type));
+        current = current->next;
+        i++;
+    }
+}
+
+
+
 void ft_print(char **argv)
 {
     int i = 0;
@@ -24,6 +52,7 @@ void ft_print(char **argv)
      printf("\n"); // Add newline after printing all args for one command
 }
 
+// Optional: Adjust ft_print_cmd_table slightly for formatting
 void    ft_print_cmd_table(t_cmd *head)
 {
     t_cmd *curr_cmd = head;
@@ -59,8 +88,9 @@ void    ft_print_cmd_table(t_cmd *head)
         cmd_num++;
     }
 }
+//~__________________________________________________
 
-
+volatile sig_atomic_t	g_received_signal = 0;
 int g_tmp = 0;
 
 void	setup_signal_action(int signum, void (*handler)(int), int flags)
@@ -220,9 +250,11 @@ int	main(int ac, char **av, char **env)
 			line = NULL;
 			continue;
 		}
+		// ft_print_token_list(token_list);
 		ft_expander(&token_list, &data);
+		ft_print_token_list(token_list);
 		command_list = ft_creat_cmd_table(token_list);
-		// ft_print_cmd_table(command_list);
+		ft_print_cmd_table(command_list);
 		ft_token_clear(&token_list);
 		if (command_list)
 		{
