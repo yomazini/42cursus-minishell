@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/17 20:39:41 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/18 13:10:17 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ typedef struct s_data
 	bool	herdoc;
 	int		peak;
 	bool	field_splitting_needed;
+	bool	echo_pipe_flag;
 	bool	print_flag;
 }	t_data;
 typedef struct s_exp_st
