@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/17 18:06:13 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/18 12:28:18 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ typedef struct s_data
 	bool	herdoc;
 	int		peak;
 	bool	field_splitting_needed;
+	bool	echo_pipe_flag;
 }	t_data;
 typedef struct s_exp_st
 {
