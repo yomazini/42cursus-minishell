@@ -9,7 +9,7 @@ AR = ar rcs
 RM = rm -f
 
 # --- Flags ---
-CFLAGS = -Wall -Wextra -Werror #-fsanitize=address -g3
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g3
 ifdef SANITIZE
 	CFLAGS += -fsanitize=address
 endif
