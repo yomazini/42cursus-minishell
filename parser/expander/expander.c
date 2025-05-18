@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:20:31 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/18 12:28:00 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/18 14:45:18 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,11 +96,15 @@ void	ft_expander(t_token **token, t_data *data)
 
 	current = *token;
 	data->herdoc = false;
+	data->echo_pipe_flag = false;
 	while (current)
 	{
 		if (current->type == TOKEN_PIPE && 
-			current->next && ft_strcmp(current->next->value, "echo"))
-			data->echo_pipe_flag = true;
+			current->next && ft_strcmp(current->next->value, "echo") == 0)
+			{
+				data->echo_pipe_flag = true;
+				// printf("echo_pipe_flag SET to ==> TRUE\n");
+			}
 		need_cleanup = true;
 		if (current->type == TOKEN_REDIR_HEREDOC
 			&& current->next && current->next->type == TOKEN_WORD)
