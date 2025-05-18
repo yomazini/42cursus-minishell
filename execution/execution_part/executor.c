@@ -6,11 +6,32 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/18 15:42:21 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/18 17:03:10 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
+
+
+// Helper for "command not found" specific to empty string command
+ int	handle_empty_command_string_error1(t_data *data, char *cmd_name_for_error)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	// If cmd_name_for_error is indeed "", ft_putstr_fd will print nothing for it
+	// which is fine. Bash often just says "command not found" without the empty name.
+	// To be precise like bash (bash: : command not found), we print the name if it exists.
+	if (cmd_name_for_error && cmd_name_for_error[0] == '\0') {
+		ft_putstr_fd(": command not found\n", STDERR_FILENO);
+	} else if (cmd_name_for_error) {
+		ft_putstr_fd(cmd_name_for_error, STDERR_FILENO);
+		ft_putstr_fd(": command not found\n", STDERR_FILENO);
+	} else { // Should not happen if called correctly
+		ft_putstr_fd("command not found\n", STDERR_FILENO);
+	}
+	data->last_exit_status = 127;
+	return (127);
+}
+
 
 static int	handle_redirection_only_command(t_cmd *cmd_node, t_data *data)
 {
@@ -26,6 +47,7 @@ static int	handle_redirection_only_command(t_cmd *cmd_node, t_data *data)
 	}
 	if (pid == 0)
 	{
+		set_signal_handlers_default();// Child should get default signal behavior
 		if (apply_redirections(cmd_node) != 0)
 			exit(EXIT_FAILURE);
 		exit(EXIT_SUCCESS);
@@ -63,40 +85,77 @@ static int	handle_redirection_only_command(t_cmd *cmd_node, t_data *data)
 // 	return(data->last_exit_status);
 // }
 
+// static int	handle_single_command(t_cmd *cmd_node, t_data *data)
+// {
+// 	if (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0]) // Has a non-empty command word
+// 	{
+// 		if (is_parent_builtin(cmd_node))
+// 			execute_built_ins(cmd_node, data);
+// 		else
+// 			execute_external_command(cmd_node, data);
+// 		return (data->last_exit_status);
+// 	}
+// 	else if (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0] == '\0') // Command is ""
+// 	{
+// 		// This is the case like "$EMPTY_QUOTED_VAR" which becomes ""
+// 		// Bash attempts to execute "" and fails.
+// 		execute_external_command(cmd_node, data); // Let it fail with "command not found"
+// 		return (data->last_exit_status);
+// 	}
+// 	else if ((!cmd_node->argv || !cmd_node->argv[0]) && cmd_node->redir)
+// 	{
+// 		// Only redirections, no command word
+// 		return (handle_redirection_only_command(cmd_node, data));
+// 	}
+// 	else if (cmd_node->argv && cmd_node->argv[0] && !cmd_node->argv[0][0])
+// 	{
+// 		return (handle_empty_command_string_error(data));
+// 	}
+// 	else if (cmd_node->argv)
+// 	{
+// 		data->last_exit_status = 258;
+// 		ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
+// 		return (data->last_exit_status);
+// 	}
+// 	return(data->last_exit_status);
+// }
+
+// Main logic for handling a single command segment
 static int	handle_single_command(t_cmd *cmd_node, t_data *data)
 {
-	if (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0]) // Has a non-empty command word
+	// Case 1: Command word is present AND non-empty
+	if (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0] != '\0')
 	{
-		if (is_parent_builtin(cmd_node))
+		if (is_parent_builtin(cmd_node)) // cd, export <args>, unset, exit
 			execute_built_ins(cmd_node, data);
-		else
+		else // External command OR child-safe builtin (echo, pwd, env, export no-args)
 			execute_external_command(cmd_node, data);
-		return (data->last_exit_status);
 	}
-	else if (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0] == '\0') // Command is ""
+	// Case 2: Command word is "" (empty string, e.g., from "$EMPTYVAR" > file)
+	else if (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0] == '\0')
 	{
-		// This is the case like "$EMPTY_QUOTED_VAR" which becomes ""
-		// Bash attempts to execute "" and fails.
-		execute_external_command(cmd_node, data); // Let it fail with "command not found"
-		return (data->last_exit_status);
+		// For "" > file, Bash creates the file then says "" command not found.
+		// We can achieve this by trying to execute it, which will handle redirections
+		// in a child and then fail on execve("").
+		execute_external_command(cmd_node, data);
 	}
+	// Case 3: No command word AT ALL (argv is NULL or argv[0] is NULL), but redirections exist
 	else if ((!cmd_node->argv || !cmd_node->argv[0]) && cmd_node->redir)
 	{
-		// Only redirections, no command word
 		return (handle_redirection_only_command(cmd_node, data));
 	}
-	else if (cmd_node->argv && cmd_node->argv[0] && !cmd_node->argv[0][0])
+	// Case 4: Invalid state - no command, no redirections (parser should prevent this)
+	// Or other syntax errors not caught by parser.
+	else
 	{
-		return (handle_empty_command_string_error(data));
-	}
-	else if (cmd_node->argv)
-	{
-		data->last_exit_status = 258;
-		ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
+		data->last_exit_status = 2; // General syntax-like error for malformed cmd_node
+		ft_putstr_fd("minishell: invalid command structure\n", STDERR_FILENO);
 		return (data->last_exit_status);
 	}
-	return(data->last_exit_status);
+	return (data->last_exit_status);
 }
+
+
 
 int	execute_commands(t_cmd *cmd_list, t_data *data)
 {
@@ -135,6 +194,24 @@ int	execute_commands(t_cmd *cmd_list, t_data *data)
 		// 	return (handle_syntax_error_message("syntax error \
 		// 		near unexpected token `|'", data, 258));
 		// }
+		/*
+			WILL BE ADDED FOR TEST
+		*/
+
+			// Check if the first command in a pipeline is valid before starting
+		if (!cmd_list->argv || !cmd_list->argv[0] || cmd_list->argv[0][0] == '\0')
+		{
+			// If first cmd is empty string or NULL, it's a syntax error for pipe
+			// (e.g., "| ls" or "$EMPTYVAR | ls")
+			ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
+			data->last_exit_status = 258; // Bash syntax error for pipe
+			return (data->last_exit_status);
+		}
+
+		
+		/*
+			FINISH THE ADDED
+		*/
 		execute_pipeline(cmd_list, data);
 	}
 	return (data->last_exit_status);
@@ -145,7 +222,30 @@ int	execute_external_command(t_cmd *cmd, t_data *data)
 	char	*executable_path;
 	pid_t	child_pid;
 	int		wait_status;
-	int original_errno;
+	int original_errno_find_path;
+	
+
+	// --- Handle command that is an empty string "" ---
+	if (cmd->argv[0] && cmd->argv[0][0] == '\0')
+	{
+		// For "" > file, bash creates file then errors.
+		// We simulate this by forking, applying redirections, then failing.
+		child_pid = fork();
+		if (child_pid < 0) { perror("minishell: fork"); data->last_exit_status = 1; return 1; }
+		if (child_pid == 0) { // Child
+			set_signal_handlers_default();
+			if (apply_redirections(cmd) != 0) exit(EXIT_FAILURE);
+			handle_empty_command_string_error1(data, cmd->argv[0]); // Prints error
+			exit(127); // "" is command not found
+		}
+		waitpid(child_pid, &wait_status, 0);
+		update_last_exit_status(data, wait_status);
+		return (data->last_exit_status);
+	}
+	// --- End handling empty string command ---
+
+
+
 	// --- Handle '.' and '..' specially ---
 	if (cmd->argv[0] && ft_strncmp(cmd->argv[0], ".", 2) == 0)
 	{
@@ -165,19 +265,19 @@ int	execute_external_command(t_cmd *cmd, t_data *data)
 
 	errno = 0; // Clear errno before calling find_command_path
 	executable_path = find_command_path(cmd->argv[0], data->env_list);
-	original_errno = errno; // Save errno immediately after find_command_path
+	original_errno_find_path = errno; // Save errno immediately after find_command_path
 
 	if (!executable_path)
 	{
 		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
-		if (original_errno == EISDIR) // Check if find_path failed because it was a directory
+		if (original_errno_find_path == EISDIR) // Check if find_path failed because it was a directory
 		{
 			ft_putstr_fd(": is a directory\n", STDERR_FILENO);
 			data->last_exit_status = 126;
 			return (126);
 		}
-		else if (original_errno == EACCES) // Check for permission denied on a file path
+		else if (original_errno_find_path == EACCES) // Check for permission denied on a file path
 		{
 			ft_putstr_fd(": Permission denied\n", STDERR_FILENO);
 			data->last_exit_status = 126;
