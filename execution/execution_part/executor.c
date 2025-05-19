@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/19 23:21:59 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/19 23:32:19 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ static int handle_redir_or_empty_cmd_with_redir(t_cmd *cmd_node, t_data *data, i
 		return (0);
 
 	pid_t pid;
+	int  child_status = 0;
 	pid = fork();
 	if (pid < 0)
 	{
@@ -53,8 +54,9 @@ static int handle_redir_or_empty_cmd_with_redir(t_cmd *cmd_node, t_data *data, i
 		exit(EXIT_SUCCESS); // Only redirections, success
 	}
 	// Parent
-	waitpid(pid, NULL, 0);
-	// update_last_exit_status(data, child_status);
+	waitpid(pid, &child_status, 0);
+	if ((cmd_node && !cmd_node->argv && cmd_node->redir) &&  cmd_node->redir->type == TOKEN_REDIR_IN)
+		update_last_exit_status(data, child_status);
 	return (data->last_exit_status);
 }
 // static int handle_redir_or_empty_cmd(t_cmd *cmd_node, t_data *data)
