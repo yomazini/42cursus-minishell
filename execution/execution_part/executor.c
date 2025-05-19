@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/19 23:32:19 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/19 23:35:02 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static int handle_redir_or_empty_cmd_with_redir(t_cmd *cmd_node, t_data *data, i
 	}
 	// Parent
 	waitpid(pid, &child_status, 0);
-	if ((cmd_node && !cmd_node->argv && cmd_node->redir) &&  cmd_node->redir->type == TOKEN_REDIR_IN)
+	if ((cmd_node && !cmd_node->argv && cmd_node->redir))
 		update_last_exit_status(data, child_status);
 	return (data->last_exit_status);
 }
