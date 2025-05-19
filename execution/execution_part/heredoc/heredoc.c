@@ -6,13 +6,13 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:43:01 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/17 18:04:14 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:54:15 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../exec_header.h"
 
-extern int g_tmp;
+extern int	g_tmp;
 
 static int	handle_signal_or_eof(char *line)
 {

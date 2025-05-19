@@ -12,55 +12,27 @@
 
 #include "../exec_header.h"
 
-// int	is_executable(const char *path)
-// {
-// 	struct stat	statbuf;
-
-// 	if (!path)
-// 		return (0);
-// 	if ((stat(path, &statbuf) == -1))
-// 		return (0);
-// 	if (access(path, X_OK) == 0)
-// 		return (1);
-// 	return (0);
-// }
-
 int	is_executable(const char *path)
 {
 	struct stat	statbuf;
 
 	if (!path)
 	{
-		errno = EINVAL; // Invalid argument
+		errno = EINVAL;
 		return (0);
 	}
-	// 1. Check existence and get file type using stat()
 	if (stat(path, &statbuf) == -1)
-	{
-		// errno is set by stat() (e.g., ENOENT, EACCES on a path component)
 		return (0);
-	}
-
-	// 2. Check if it's a directory
 	if (S_ISDIR(statbuf.st_mode))
 	{
-		errno = EISDIR; // Set errno to "Is a directory"
-		return (0);     // Cannot execute directories as commands
+		errno = EISDIR;
+		return (0);
 	}
-
-	// 3. Check if it's a regular file and has execute permission using access()
 	if (S_ISREG(statbuf.st_mode) && access(path, X_OK) == 0)
-	{
-		return (1); // It's an executable regular file
-	}
+		return (1);
 	else
 	{
-		// If access failed, errno is set by access() (likely EACCES).
-		// If not a regular file (e.g. symlink to non-exec, device),
-		// access(X_OK) might also fail or succeed depending on target.
-		// Ensure EACCES if it's not already a specific permission error.
-		if (errno != EACCES && errno != EPERM)
-			errno = EACCES; // Default to permission error
+		errno = EACCES;
 		return (0);
 	}
 }

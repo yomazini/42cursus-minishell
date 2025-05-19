@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:06:22 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/17 21:25:09 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:53:07 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,10 @@ int	ft_exit(t_cmd *cmd, t_data *data)
 {
 	int				argc;
 	unsigned char	exit_status_to_use;
-	argc = 0;
 
+	argc = 0;
 	if (data->print_flag)
-		ft_putstr_fd("exit\n", STDERR_FILENO);	
+		ft_putstr_fd("exit\n", STDERR_FILENO);
 	while (cmd->argv[argc])
 		argc++;
 	if (argc == 1)
@@ -76,9 +76,7 @@ int	ft_exit(t_cmd *cmd, t_data *data)
 	if (argc >= 2)
 	{
 		if (!ft_valid_number(cmd->argv[1]))
-		{
 			return (ft_handle_exit_numeric_error(cmd, data), 255);
-		}
 		else if (argc > 2)
 			return (ft_handle_exit_too_many_args(data));
 		else
@@ -86,4 +84,3 @@ int	ft_exit(t_cmd *cmd, t_data *data)
 	}
 	return (EXIT_FAILURE);
 }
-
