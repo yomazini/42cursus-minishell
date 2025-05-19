@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:42:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/18 14:45:42 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/19 21:31:19 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static char	*ft_helper_exit_status_func(char *new_str, t_data *data, int *i)
 	}
 	else if (data->echo_pipe_flag)
 	{
-		data->last_exit_status = 125;
+		data->last_exit_status = 0;
 		data->echo_pipe_flag = false; 
 	}
 	new_str = ft_append_exit_status(new_str, data->last_exit_status);

@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/15 21:02:26 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/19 18:48:54 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@
 typedef struct s_export_op
 {
 	char	*key;
-	char	*value_to_process; // Can be value for set or value to append
-	char	*original_arg_str; // For error messages
+	char	*value_to_process;
+	char	*original_arg_str;
 	int		is_append_mode;
 	t_data	*shell_dt;
 }	t_export_op;

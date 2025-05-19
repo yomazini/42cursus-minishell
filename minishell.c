@@ -1,3 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/19 22:04:05 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/19 22:04:17 by ymazini          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+
 #include "includes/minishell.h" 
 #include "parser/parser.h"
 #include "execution/exec_header.h"
@@ -28,8 +41,6 @@ void ft_print_token_list(t_token *head)
         i++;
     }
 }
-
-
 
 void ft_print(char **argv)
 {
@@ -88,8 +99,8 @@ void    ft_print_cmd_table(t_cmd *head)
         cmd_num++;
     }
 }
-//~__________________________________________________
 
+//~__________________________________________________
 
 int g_tmp = 0;
 
