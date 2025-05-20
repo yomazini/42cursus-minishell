@@ -92,6 +92,7 @@ SRCS_EXEC = $(addprefix $(EXEC_DIR)/, \
 		execution_part/pipeline_utils.c \
 		execution_part/executor.c \
 		execution_part/executor_utils.c \
+		execution_part/executor_tools.c \
 		execution_part/tools4.c \
 		execution_part/tools5.c \
 		built_in/pwd_built_in.c \

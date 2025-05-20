@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 22:08:59 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/20 14:12:27 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/20 17:17:47 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,4 +74,22 @@ int	ft_valid_number(char *s)
 		|| (digit_count > 19 && len > 19 && s[0] == '-'))
 		return (0);
 	return (1);
+}
+
+int	is_parent_builtin(t_cmd *cmd)
+{
+	char	*name;
+
+	if (!cmd || !cmd->argv || !cmd->argv[0])
+		return (FALSE);
+	name = cmd->argv[0];
+	if ((ft_strncmp(name, "pwd", 4) == 0)
+		|| (ft_strncmp(name, "echo", 5) == 0)
+		|| (ft_strncmp(name, "env", 4) == 0)
+		|| (ft_strncmp(name, "exit", 5) == 0)
+		|| (ft_strncmp(name, "cd", 3) == 0)
+		|| (ft_strncmp(name, "unset", 6) == 0)
+		|| (ft_strncmp(name, "export", 7) == 0))
+		return (TRUE);
+	return (FALSE);
 }

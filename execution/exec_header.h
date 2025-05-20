@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/20 13:43:58 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/20 17:20:09 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,11 @@ int		write_and_free(int fd, char *line_to_write, char *line, bool expand);
 int		handle_delimiter(char *line, char *delimiter, size_t len);
 void	restore_after_heredoc(int saved_stdin_fd);
 int		process_line(char *line, bool expand, t_data *data,
-			int pipe_write_fd);
+			int pipe_write_fd);	
+int		print_err_exec_cmd(char *cmd, t_data *data);
+int		handle_path_error(char *name, int err, t_data *data);
+int		redir_r_emty_cmd_wi_redi(t_cmd *cmd, t_data *data, int is_empty);
+int		handle_empty_command_string_error1(t_data *data,
+			char *cmd_name_for_error);
 
 #endif
