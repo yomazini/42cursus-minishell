@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/20 17:20:09 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/20 19:07:16 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,12 @@ typedef struct s_export_op
 	int		is_append_mode;
 	t_data	*shell_dt;
 }	t_export_op;
+typedef struct s_pipeline_ctx
+{
+	int		prev_read;
+	pid_t	last_pid;
+	int		pipe_fd[2];
+}	t_pipeline_ctx;
 
 void	update_shell_level(t_data *data);
 int		execute_built_ins(t_cmd *cmd, t_data *data);
@@ -113,5 +119,6 @@ int		handle_path_error(char *name, int err, t_data *data);
 int		redir_r_emty_cmd_wi_redi(t_cmd *cmd, t_data *data, int is_empty);
 int		handle_empty_command_string_error1(t_data *data,
 			char *cmd_name_for_error);
+int		count_commands(t_cmd *cmd_list, t_data *data);
 
 #endif

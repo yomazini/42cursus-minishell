@@ -90,6 +90,7 @@ SRCS_EXEC = $(addprefix $(EXEC_DIR)/, \
 		built_in/export_built_in_utils.c \
 		execution_part/pipeline.c \
 		execution_part/pipeline_utils.c \
+		execution_part/pipeline_utils2.c \
 		execution_part/executor.c \
 		execution_part/executor_utils.c \
 		execution_part/executor_tools.c \

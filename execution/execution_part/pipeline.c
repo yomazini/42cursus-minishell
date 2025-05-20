@@ -6,30 +6,11 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:01:41 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/19 15:06:16 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/20 19:06:02 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
-
-static int	count_commands(t_cmd *cmd_list, t_data *data)
-{
-	int		count;
-	t_cmd	*counter;
-
-	count = 0;
-	counter = cmd_list;
-	while (counter)
-	{
-		count++;
-		counter = counter->next;
-	}
-	if (count > 1)
-	{
-		data->print_flag = FALSE;
-	}
-	return (count);
-}
 
 static void	parent_pipe_handler(int *prev_pipe_read_end, int pipe_fd[2],
 								t_cmd *current_cmd)
@@ -41,15 +22,6 @@ static void	parent_pipe_handler(int *prev_pipe_read_end, int pipe_fd[2],
 		close(pipe_fd[1]);
 		*prev_pipe_read_end = pipe_fd[0];
 	}
-}
-
-static	void	initialize_pipeline_vars(int *prev_pipe_read_end
-									, pid_t *last_pid, int *pipe0, int *pipe1)
-{
-	*prev_pipe_read_end = STDIN_FILENO;
-	*last_pid = -1;
-	*pipe0 = -1;
-	*pipe1 = -1;
 }
 
 static	pid_t	fork_and_exec_child(t_cmd *cmd, t_data *data, int prev_read_end,
@@ -71,41 +43,60 @@ static	pid_t	fork_and_exec_child(t_cmd *cmd, t_data *data, int prev_read_end,
 	return (pid);
 }
 
-int	execute_pipeline(t_cmd *cmd_list, t_data *data)
+static int	handle_pipe_fork_errors(t_cmd *cmd, int prev_fd, int pipe_fd[2])
 {
-	int		pipe_fd[2];
-	int		prev_pipe_read_end;
-	pid_t	pid;
-	pid_t	last_pid;
-	int		command_count;
-
-	initialize_pipeline_vars(&prev_pipe_read_end,
-		&last_pid, &pipe_fd[0], &pipe_fd[1]);
-	command_count = count_commands(cmd_list, data);
-	if (command_count == 0)
-		return (EXIT_SUCCESS);
-	while (cmd_list != NULL)
+	if (prev_fd != STDIN_FILENO)
+		close(prev_fd);
+	if (cmd->next)
 	{
-		if (cmd_list->next && pipe(pipe_fd) == -1)
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+	}
+	perror("minishell: fork");
+	return (EXIT_FAILURE);
+}
+
+static int	pipeline_loop(t_cmd *cmd_list, t_data *data, t_pipeline_ctx *ctx)
+{
+	pid_t	pid;
+
+	while (cmd_list)
+	{
+		if (cmd_list->next && pipe(ctx->pipe_fd) == -1)
 		{
-			if (prev_pipe_read_end != STDIN_FILENO)
-				close(prev_pipe_read_end);
-			return (perror("pipe"), EXIT_FAILURE);
+			if (ctx->prev_read != STDIN_FILENO)
+				close(ctx->prev_read);
+			perror("pipe");
+			return (EXIT_FAILURE);
 		}
-		pid = fork_and_exec_child(cmd_list, data, prev_pipe_read_end, pipe_fd);
+		pid = fork_and_exec_child(cmd_list, data, ctx->prev_read, ctx->pipe_fd);
 		if (pid < 0)
-		{
-			if (prev_pipe_read_end != STDIN_FILENO)
-				close(prev_pipe_read_end);
-			if (cmd_list->next)
-				(close(pipe_fd[0]), close(pipe_fd[1]));
-			return (perror("minishell: fork"), EXIT_FAILURE);
-		}
-		last_pid = pid;
-		parent_pipe_handler(&prev_pipe_read_end, pipe_fd, cmd_list);
+			return (handle_pipe_fork_errors(cmd_list,
+					ctx->prev_read, ctx->pipe_fd));
+		ctx->last_pid = pid;
+		parent_pipe_handler(&ctx->prev_read, ctx->pipe_fd, cmd_list);
 		cmd_list = cmd_list->next;
 	}
-	if (prev_pipe_read_end != STDIN_FILENO)
-		close(prev_pipe_read_end);
-	return (wait_for_pipeline(command_count, last_pid, data));
+	return (EXIT_SUCCESS);
+}
+
+int	execute_pipeline(t_cmd *cmd_list, t_data *data)
+{
+	t_pipeline_ctx	ctx;
+	int				cmd_count;
+	int				rc;
+
+	ctx.prev_read = STDIN_FILENO;
+	ctx.last_pid = -1;
+	ctx.pipe_fd[0] = -1;
+	ctx.pipe_fd[1] = -1;
+	cmd_count = count_commands(cmd_list, data);
+	if (cmd_count == 0)
+		return (EXIT_SUCCESS);
+	rc = pipeline_loop(cmd_list, data, &ctx);
+	if (ctx.prev_read != STDIN_FILENO)
+		close(ctx.prev_read);
+	if (rc != EXIT_SUCCESS)
+		return (rc);
+	return (wait_for_pipeline(cmd_count, ctx.last_pid, data));
 }
