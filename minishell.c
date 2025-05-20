@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 22:04:05 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/19 22:04:17 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/20 22:17:33 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,10 +102,16 @@ void    ft_print_cmd_table(t_cmd *head)
 
 //~__________________________________________________
 
+// void check_heap_leaks()
+// {
+// 	system("leaks minishell");
+// }
+
 int g_tmp = 0;
 
 int	main(int ac, char **av, char **env)
 {
+	
 	t_data	data;
 	char	*line;
 	t_token	*token_list;

@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:43:01 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/20 13:39:39 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/20 22:18:20 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,8 +110,11 @@ int	process_heredocs(t_cmd *cmd_list, t_data *data)
 
 	if (count_total_heredocs(cmd_list) > MAX_HEREDOCS)
 	{
-		ft_putstr_fd("minishell: maximum here-document count exceeded\n",
-			STDERR_FILENO);
+		ft_putstr_fd("minishell: max here-document count exceeded\n", 2);
+		//TODO: check if leaks or not before exit
+			// ft_cmd_clear(&command_list);
+			// ft_tenv_clear(&data.env_list);
+			// rl_clear_history();
 		exit(2);
 	}
 	if (init_heredoc(data, &saved_stdin_fd) != EXIT_SUCCESS)
