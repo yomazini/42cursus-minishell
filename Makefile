@@ -100,6 +100,7 @@ SRCS_EXEC = $(addprefix $(EXEC_DIR)/, \
 		execution_part/heredoc/process_heredoc.c  \
 		execution_part/heredoc/heredoc.c \
 		execution_part/heredoc/heredoc_utils.c \
+		execution_part/heredoc/heredoc_utils2.c \
 		built_in/unset_built_in.c \
 		)
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_builtin2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 15:56:25 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/17 18:38:18 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/20 14:13:16 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ int	handle_syntax_error_message(char *message,
 int	handle_empty_command_string_error(t_data *data)
 {
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
-	// ft_putstr_fd("\"\"", STDERR_FILENO);
 	ft_putstr_fd(": command not found\n", STDERR_FILENO);
 	data->last_exit_status = 127;
 	return (data->last_exit_status);

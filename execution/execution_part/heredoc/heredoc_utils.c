@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:44:52 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/15 17:48:37 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/20 13:10:26 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ static char	*append_variable_value(char *current_expanded, char *line_segment,
 		return (free(current_expanded), NULL);
 	var_value = ft_list_getenv(data->env_list, var_name);
 	free(var_name);
-	if (var_value) // Only append if variable exists
+	if (var_value)
 	{
 		temp_join = ft_strjoin(current_expanded, var_value);
 		free(current_expanded);
@@ -101,18 +101,18 @@ char	*expand_heredoc_line(char *line, t_data *data)
 	{
 		if (line[i] == '$' && line[i + 1])
 		{
-			i++; // Move past '$'
+			i++;
 			if (line[i] == '?' && ++i)
 				expnd_st = append_exit_status(expnd_st, data);
 			else if (ft_chekc(line[i], 1))
 				expnd_st = append_variable_value(expnd_st, line, data, &i);
-			else // Not $? or $VAR, treat '$' as literal
+			else
 				expnd_st = append_char(expnd_st, '$');
 		}
-		else // Regular char or lone '$' at end
+		else
 			expnd_st = append_char(expnd_st, line[i++]);
 		if (!expnd_st)
-			return (NULL); // Malloc error in helper
+			return (NULL);
 	}
 	return (expnd_st);
 }

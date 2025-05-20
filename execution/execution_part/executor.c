@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/19 23:35:02 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/20 14:13:39 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ int handle_empty_command_string_error1(t_data *data, char *cmd_name_for_error)
 	data->last_exit_status = 127;
 	return (127);
 }
+
 static int handle_redir_or_empty_cmd_with_redir(t_cmd *cmd_node, t_data *data, int is_empty_str_cmd)
 {
 	if ((cmd_node && cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0] && cmd_node->argv[0][0] && cmd_node->redir) && ( cmd_node->redir->type == TOKEN_REDIR_IN || cmd_node->redir->type == TOKEN_REDIR_HEREDOC))
@@ -59,42 +60,6 @@ static int handle_redir_or_empty_cmd_with_redir(t_cmd *cmd_node, t_data *data, i
 		update_last_exit_status(data, child_status);
 	return (data->last_exit_status);
 }
-// static int handle_redir_or_empty_cmd(t_cmd *cmd_node, t_data *data)
-// {
-// 	pid_t pid;
-// 	int child_status;
-// 	int cmd_is_empty_str;
-
-// 	cmd_is_empty_str = (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0] == '\0');
-
-// 	pid = fork();
-// 	if (pid < 0)
-// 	{
-// 		perror("minishell: fork");
-// 		return (data->last_exit_status = EXIT_FAILURE, EXIT_FAILURE);
-// 	}
-// 	if (pid == 0) // Child
-// 	{
-// 		set_signal_handlers_default();
-// 		if (apply_redirections(cmd_node) != 0) // Apply redirections
-// 			exit(EXIT_FAILURE);				   // Exit if redirection itself failed
-// 		if (!cmd_node->argv || !cmd_node->argv[0] || cmd_is_empty_str)
-// 		{
-// 			// If no command, or command is "", it's a failure after redirection
-// 			if (cmd_is_empty_str)
-// 				handle_empty_command_string_error1(data, cmd_node->argv[0]); // Prints error
-// 			// else: No command was given, redirections done. Bash exits 0 here.
-// 			// For consistency with how "" > file behaves, we can exit 0 if not empty string.
-// 			exit(cmd_is_empty_str ? 127 : EXIT_SUCCESS);
-// 		}
-// 		// Should not be reached if logic above is correct for these cases
-// 		exit(EXIT_FAILURE); // Fallback
-// 	}
-// 	// Parent
-// 	waitpid(pid, &child_status, 0);
-// 	update_last_exit_status(data, child_status);
-// 	return (data->last_exit_status);
-// }
 
 static int handle_single_command(t_cmd *cmd_node, t_data *data)
 {

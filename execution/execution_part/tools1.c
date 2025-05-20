@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 22:08:59 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/19 15:04:52 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/20 14:12:27 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,21 +39,25 @@ int	ft_is_only_whitespace(char *arg)
 	return (arg[i] == '\0');
 }
 
+static void	ft_assign_2_vld_nmr(int *i, int *dg_co, size_t *len, char **s)
+{
+	*i = 0;
+	*dg_co = 0;
+	*s = ft_strtrim(*s, " ");
+	*len = ft_strlen(*s);
+}
+
 int	ft_valid_number(char *s)
 {
 	int		i;
 	size_t	len;
 	int		digit_count;
 
-	i = 0;
-	digit_count = 0;
-	if (!s || !s[i])
+	if (!s || !s[0])
 		return (0);
-	s = ft_strtrim(s, " ");
-	len = ft_strlen(s);
-	if (s[i] == '-' || s[i] == '+')
+	ft_assign_2_vld_nmr(&i, &digit_count, &len, &s);
+	if ((s[i] == '-' || s[i] == '+') && i++)
 	{
-		i++;
 		if (!s[i])
 			return (0);
 	}
@@ -63,8 +67,7 @@ int	ft_valid_number(char *s)
 	{
 		if (!ft_isdigit(s[i]))
 			return (0);
-		digit_count++;
-		i++;
+		(1 && digit_count++ && i++);
 	}
 	if (digit_count == 0 || (digit_count > 19
 			&& (len > 20 || (len == 20 && s[0] != '-')))

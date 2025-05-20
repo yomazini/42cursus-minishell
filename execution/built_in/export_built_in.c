@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:06:26 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/15 16:34:11 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/20 13:09:35 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static int	validate_and_set_or_append_env(t_export_op *op_data)
 	else if (op_data->value_to_process)
 	{
 		f_vl_setenv = ft_strdup(op_data->value_to_process);
-		if (!f_vl_setenv) // Check strdup result
+		if (!f_vl_setenv)
 			return (perror("mini: malloc Err"), EXIT_FAILURE);
 	}
 	if (ft_list_setenv(&op_data->shell_dt->env_list, op_data->key, f_vl_setenv))
@@ -85,19 +85,18 @@ static int	process_export_arg(char *arg_str, t_data *data)
 
 	op_data.key = NULL;
 	op_data.value_to_process = NULL;
-	op_data.original_arg_str = arg_str; // Store original for error messages
-	op_data.shell_dt = data;// Pass data pointer
+	op_data.original_arg_str = arg_str;
+	op_data.shell_dt = data;
 	op_data.is_append_mode = FALSE;
 	result = extract_key_value_from_arg(arg_str, &op_data.key,
 			&op_data.value_to_process, &op_data.is_append_mode);
-	if (result == -1) // Malloc error during key/value extraction
+	if (result == -1)
 	{
-		free(op_data.key); // free(NULL) is safe
+		free(op_data.key);
 		free(op_data.value_to_process);
 		return (EXIT_FAILURE);
 	}
-	result = validate_and_set_or_append_env(&op_data); // Pass struct pointer
-	// Free the key and value strings extracted by extract_key_value_from_arg
+	result = validate_and_set_or_append_env(&op_data);
 	free(op_data.key);
 	free(op_data.value_to_process);
 	return (result);
