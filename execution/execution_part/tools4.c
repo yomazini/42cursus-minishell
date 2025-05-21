@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 22:09:05 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/04 18:28:45 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/21 20:34:44 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ int	restore_original_fds(int original_stdin, int original_stdout)
 	}
 	if (ret_stdin < 0 || ret_stdout < 0)
 	{
-		perror("minishell: dup2 failed during fd restore");
 		return (-1);
 	}
 	return (0);
