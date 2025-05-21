@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:44:52 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/20 13:10:26 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/21 15:23:33 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,23 @@ static char	*append_char(char *str, char c)
 	char	*new_str;
 
 	if (!str)
-		return (ft_strdup(&c));
+	{
+		new_str = (char *)malloc(2);
+		if (!new_str)
+			return (NULL);
+		new_str[0] = c;
+		new_str[1] = '\0';
+		return (new_str);
+	}
 	len = ft_strlen(str);
 	new_str = (char *)malloc(sizeof(char) * (len + 2));
 	if (!new_str)
-	{
-		free(str);
-		return (NULL);
-	}
+		return (free(str), NULL);
 	ft_strlcpy(new_str, str, len + 1);
 	append[0] = c;
 	append[1] = '\0';
 	ft_strlcat(new_str, append, len + 2);
-	free(str);
-	return (new_str);
+	return (free(str), new_str);
 }
 
 static char	*append_exit_status(char *current_expanded, t_data *data)
