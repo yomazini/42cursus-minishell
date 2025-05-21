@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/20 17:16:27 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/21 20:55:16 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,10 @@ static	int	handle_single_command(t_cmd *cmd_node, t_data *data)
 		else
 		{
 			execute_external_command(cmd_node, data);
-			redir_r_emty_cmd_wi_redi(cmd_node, data, FALSE);
+			// printf("%i\n", data->last_exit_status);
+			if (data->last_exit_status == 127 ||
+				data->last_exit_status == 126 || data->last_exit_status == 2)
+				redir_r_emty_cmd_wi_redi(cmd_node, data, FALSE);
 		}
 	}
 	return (data->last_exit_status);
