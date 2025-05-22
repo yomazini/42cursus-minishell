@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:42:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/19 21:31:19 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/22 17:30:31 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static char	*ft_helper_exit_status_func(char *new_str, t_data *data, int *i)
 	extern int g_tmp;
 	if (g_tmp == 2)
 	{
-		data->last_exit_status = 130;
+		data->last_exit_status = 1;
 		g_tmp = 0;
 	}
 	else if (data->echo_pipe_flag)

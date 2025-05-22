@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 22:04:05 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/22 16:32:01 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/22 17:35:16 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ int	main(int ac, char **av, char **env)
 	{
 		command_list = NULL; token_list = NULL; line = NULL;
 		if (g_tmp == 2 || g_tmp == 3) { // Ctrl+C at prompt OR Ctrl+C during heredoc
-			data.last_exit_status = 130;
+			data.last_exit_status = 1;
 			g_tmp = 0;   
 		}
 		line = readline("\001\033[1;32m\002minishell$ \001\033[0m\002");
@@ -193,7 +193,7 @@ int	main(int ac, char **av, char **env)
 			}
 			else if (g_tmp == 2)
 			{
-				data.last_exit_status = 130;
+				data.last_exit_status = 1;
 				g_tmp = 0;
 				set_signal_handlers_prompt();
 			}

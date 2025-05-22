@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:43:01 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/22 15:01:11 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/22 17:36:27 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ int	process_heredocs(t_cmd *cmd_list, t_data *data)
 	restore_after_heredoc(saved_stdin_fd);
 	if (g_tmp == 3)
 	{
-		data->last_exit_status = 130;
+		data->last_exit_status = 1;
 		return (cleanup_all_heredoc_fds(cmd_list), EXIT_FAILURE);
 	}
 	if (overall_status != EXIT_SUCCESS)
