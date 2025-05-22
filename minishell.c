@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 22:04:05 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/20 22:17:33 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/22 15:02:00 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,10 +102,10 @@ void    ft_print_cmd_table(t_cmd *head)
 
 //~__________________________________________________
 
-// void check_heap_leaks()
-// {
-// 	system("leaks minishell");
-// }
+void check_heap_leaks()
+{
+	system("leaks minishell");
+}
 
 int g_tmp = 0;
 
@@ -174,13 +174,23 @@ int	main(int ac, char **av, char **env)
 		ft_token_clear(&token_list);
 		if (command_list)
 		{
-			if (process_heredocs(command_list, &data) == EXIT_SUCCESS)
+			int herdoc_status = process_heredocs(command_list, &data);
+			if (herdoc_status == EXIT_SUCCESS)
 			{
 				set_parent_wait_signal_handlers(&old_parent_sigint, &old_parent_sigquit); 
 				g_tmp = 0;
 				execute_commands(command_list, &data);
 				cleanup_all_heredoc_fds(command_list);
 				restore_signal_handlers(&old_parent_sigint, &old_parent_sigquit);
+			}
+			else if (herdoc_status == 77)
+			{
+				cleanup_all_heredoc_fds(command_list);
+				ft_cmd_clear(&command_list);
+				ft_tenv_clear(&data.env_list);
+				rl_clear_history();
+				(free(line), line = NULL);
+				exit(2);	
 			}
 			else if (g_tmp == 2)
 			{

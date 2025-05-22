@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/20 22:55:52 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/22 14:28:50 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 # define TRUE 1
 # define FALSE 0
 # define MAX_HEREDOCS 16
+
 typedef struct s_export_op
 {
 	char	*key;

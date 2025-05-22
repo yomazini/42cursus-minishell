@@ -6,19 +6,18 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:43:01 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/20 22:18:20 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/22 15:01:11 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../exec_header.h"
 
-extern int	g_tmp;
-
 int	read_input_to_pipe(char *delimiter, bool expand,
 								t_data *data, int pipe_write_fd)
 {
-	char	*line;
-	size_t	delim_len;
+	char		*line;
+	size_t		delim_len;
+	extern int	g_tmp;
 
 	delim_len = ft_strlen(delimiter);
 	while (TRUE)
@@ -44,6 +43,8 @@ int	read_input_to_pipe(char *delimiter, bool expand,
 
 static	int	init_heredoc(t_data *data, int *saved_stdin_fd)
 {
+	extern int	g_tmp;
+
 	*saved_stdin_fd = dup(STDIN_FILENO);
 	if (*saved_stdin_fd < 0)
 	{
@@ -59,7 +60,8 @@ static	int	init_heredoc(t_data *data, int *saved_stdin_fd)
 
 static int	handle_one_heredoc(t_redir *r, t_data *data, int *pipe_fds)
 {
-	int	status;
+	int			status;
+	extern int	g_tmp;
 
 	if (pipe(pipe_fds) < 0)
 	{
@@ -80,9 +82,10 @@ static int	handle_one_heredoc(t_redir *r, t_data *data, int *pipe_fds)
 
 static int	loop_heredocs(t_cmd *cmd, t_data *data)
 {
-	t_redir	*redir;
-	int		pipe_fds[2];
-	int		ret;
+	t_redir		*redir;
+	int			pipe_fds[2];
+	int			ret;
+	extern int	g_tmp;
 
 	while (cmd && g_tmp != 3)
 	{
@@ -105,17 +108,15 @@ static int	loop_heredocs(t_cmd *cmd, t_data *data)
 
 int	process_heredocs(t_cmd *cmd_list, t_data *data)
 {
-	int	saved_stdin_fd;
-	int	overall_status;
+	int			saved_stdin_fd;
+	int			overall_status;
+	extern int	g_tmp;
 
 	if (count_total_heredocs(cmd_list) > MAX_HEREDOCS)
 	{
 		ft_putstr_fd("minishell: max here-document count exceeded\n", 2);
-		//TODO: check if leaks or not before exit
-			// ft_cmd_clear(&command_list);
-			// ft_tenv_clear(&data.env_list);
-			// rl_clear_history();
-		exit(2);
+		data->last_exit_status = 2;
+		return (77);
 	}
 	if (init_heredoc(data, &saved_stdin_fd) != EXIT_SUCCESS)
 		return (EXIT_FAILURE);
@@ -124,8 +125,7 @@ int	process_heredocs(t_cmd *cmd_list, t_data *data)
 	if (g_tmp == 3)
 	{
 		data->last_exit_status = 130;
-		cleanup_all_heredoc_fds(cmd_list);
-		return (EXIT_FAILURE);
+		return (cleanup_all_heredoc_fds(cmd_list), EXIT_FAILURE);
 	}
 	if (overall_status != EXIT_SUCCESS)
 	{
