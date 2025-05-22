@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 18:05:52 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/04 18:06:17 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/22 16:31:06 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int	wait_for_pipeline(int count, pid_t last_pid, t_data *data)
 	pid_t	finished_pid;
 	int		children_waited_for;
 	int		last_status;
+	bool 	flag = false;
 
 	children_waited_for = -1;
 	last_status = EXIT_SUCCESS;
@@ -49,11 +50,16 @@ int	wait_for_pipeline(int count, pid_t last_pid, t_data *data)
 			last_status = EXIT_FAILURE;
 			break ;
 		}
+		 if (WIFSIGNALED(wait_status) && WTERMSIG(wait_status) == SIGINT)
+            flag = true;
 		if (finished_pid == last_pid)
 		{
 			update_last_exit_status(data, wait_status);
 			last_status = data->last_exit_status;
 		}
 	}
+	if (flag && data->last_exit_status != 130) 
+        write(STDOUT_FILENO, "\n", 1);
+	flag = false;
 	return (last_status);
 }

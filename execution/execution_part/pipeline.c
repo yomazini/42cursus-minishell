@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:01:41 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/20 19:06:02 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/22 16:30:29 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,6 @@ static	pid_t	fork_and_exec_child(t_cmd *cmd, t_data *data, int prev_read_end,
 		setup_child_pipes(prev_read_end, pipe_fd, cmd);
 		execute_command_node(cmd, data);
 	}
-	g_tmp = 1;
-	set_signal_handlers_prompt();
 	return (pid);
 }
 

@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 16:14:23 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/17 16:17:23 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/22 16:29:59 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,19 +27,11 @@ void	sigint_handler_prompt(int signum)
 	extern int g_tmp;
 
 	(void)signum;
-	if (g_tmp == 1)
-	{
-		g_tmp = 0;
-		// write(STDOUT_FILENO, "\n", 1);
-	}
-	else
-	{
-		write(STDOUT_FILENO, "\n", 1);
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-		g_tmp = 2;
-	}	
+	write(STDOUT_FILENO, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+	g_tmp = 2;	
 }
 
 

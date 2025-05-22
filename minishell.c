@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 22:04:05 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/22 15:02:00 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/22 16:32:01 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,7 +178,6 @@ int	main(int ac, char **av, char **env)
 			if (herdoc_status == EXIT_SUCCESS)
 			{
 				set_parent_wait_signal_handlers(&old_parent_sigint, &old_parent_sigquit); 
-				g_tmp = 0;
 				execute_commands(command_list, &data);
 				cleanup_all_heredoc_fds(command_list);
 				restore_signal_handlers(&old_parent_sigint, &old_parent_sigquit);
