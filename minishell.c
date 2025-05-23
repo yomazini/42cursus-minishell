@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 22:04:05 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/23 18:11:05 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/23 21:00:21 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,11 @@ bool	handle_input_prompt(t_data *data, t_vars *vars)
 	return (true);
 }
 
+// void check_leaks()
+// {
+// 	system("leaks minishell");
+// }
+
 int	main(int ac, char **av, char **env)
 {
 	t_data	data;
@@ -103,6 +108,7 @@ int	main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)av;
+	// atexit(check_leaks);
 	if (!main_init_shell(&data, &sh_vars, env))
 		return (0);
 	while (true)

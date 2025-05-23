@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/01 14:39:25 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/23 15:48:28 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/23 20:38:19 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	handle_empty_command_string_error(t_data *data)
 	return (data->last_exit_status);
 }
 
-static int	str_is_positive_numeric(const char *str)
+static int	str_is_positive_numeric(char *str)
 {
 	int	i;
 
@@ -33,10 +33,10 @@ static int	str_is_positive_numeric(const char *str)
 	while (str[i])
 	{
 		if (!ft_isdigit(str[i]))
-			return (0);
+			return (free(str), 0);
 		i++;
 	}
-	return (1);
+	return (free(str), 1);
 }
 
 void	ft_print_n_reset(int lvl, int *new_lvl)
