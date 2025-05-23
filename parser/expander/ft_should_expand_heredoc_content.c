@@ -1,28 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_herdoc_signal.c                                 :+:      :+:    :+:   */
+/*   ft_should_expand_heredoc_content.c                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/17 16:17:27 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/23 16:30:04 by eel-garo         ###   ########.fr       */
+/*   Created: 2025/05/22 20:41:13 by eel-garo          #+#    #+#             */
+/*   Updated: 2025/05/22 21:24:32 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../parser.h"
 
-void	sigint_handler_heredoc(int signum)
+bool	ft_should_expand_heredoc_content(const char *raw_delimiter)
 {
-	extern int	g_global;
+	size_t	len;
 
-	(void)signum;
-	g_global = 3;
-	close(STDIN_FILENO);
-}
-
-void	set_signal_handlers_heredoc(void)
-{
-	configure_sigaction(SIGINT, sigint_handler_heredoc, 0);
-	configure_sigaction(SIGQUIT, SIG_IGN, 0);
+	if (!raw_delimiter)
+		return (false);
+	len = ft_strlen(raw_delimiter);
+	if (len >= 2)
+	{
+		if (ft_isquot(raw_delimiter[0]) || ft_isquot(raw_delimiter[len - 1]))
+			return (false);
+	}
+	return (true);
 }

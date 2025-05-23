@@ -3,211 +3,123 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 22:04:05 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/22 17:35:16 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/23 17:36:35 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "includes/minishell.h" 
-#include "parser/parser.h"
-#include "execution/exec_header.h"
-#include <signal.h>
 
-const char* get_token_type_name(t_token_type type) {
-    switch (type) {
-        case TOKEN_WORD:         return "WORD";
-        case TOKEN_PIPE:         return "PIPE";
-        case TOKEN_REDIR_IN:     return "REDIR_IN";
-        case TOKEN_REDIR_OUT:    return "REDIR_OUT";
-        case TOKEN_REDIR_APPEND: return "REDIR_APPEND";
-        case TOKEN_REDIR_HEREDOC:return "REDIR_HEREDOC";
-        default:                 return "UNKNOWN";
-    }
-}
-void ft_print_token_list(t_token *head)
+int	g_global = 0;
+
+bool	parse_and_expand(t_data *data, t_vars *vars)
 {
-    t_token *current = head; 
-    int i = 0;   
-    while (current != NULL)
-    {
-        printf("token[%d]= [%s], type(%s)\n",
-               i,
-               current->value ? current->value : "(null value)",
-               get_token_type_name(current->type));
-        current = current->next;
-        i++;
-    }
+	if (!ft_synax_error_free(vars->line))
+	{
+		data->last_exit_status = 258;
+		return (false);
+	}
+	vars->tkn_list = ft_tokenize(vars->line);
+	if (!vars->tkn_list)
+	{
+		data->last_exit_status = 258;
+		return (false);
+	}
+	ft_expander(&vars->tkn_list, data);
+	return (true);
 }
 
-void ft_print(char **argv)
+static bool	ft_handle_heredoc_and_excution(t_data *data, t_vars *vars)
 {
-    int i = 0;
+	int	herdoc_status;
 
-    // *** ADD THIS CHECK ***
-    if (argv == NULL)
-    {
-        printf("[ (no arguments) ]\n"); // Or just print nothing
-        return;
-    }
-    // *** END CHECK ***
-
-    // Original loop is fine if argv is not NULL
-    while (argv[i] != NULL)
-    {
-        printf("[%s] ", argv[i]); // Maybe remove trailing comma/newline here
-        i++;
-    }
-     printf("\n"); // Add newline after printing all args for one command
+	herdoc_status = process_heredocs(vars->cmd_list, data);
+	if (herdoc_status == EXIT_SUCCESS)
+	{
+		set_parent_wait_signal_handlers(&vars->old_sigint, &vars->old_sigquit);
+		execute_commands(vars->cmd_list, data);
+		cleanup_all_heredoc_fds(vars->cmd_list);
+		restore_signal_handlers(&vars->old_sigint, &vars->old_sigquit);
+		return (true);
+	}
+	else if (herdoc_status == 77)
+	{
+		cleanup_all_heredoc_fds(vars->cmd_list);
+		data->last_exit_status = 2;
+	}
+	else if (g_global == 2)
+	{
+		data->last_exit_status = 1;
+		g_global = 0;
+		set_signal_handlers_prompt();
+	}
+	return (false);
 }
 
-// Optional: Adjust ft_print_cmd_table slightly for formatting
-void    ft_print_cmd_table(t_cmd *head)
+static void	creat_excute_cleanup(t_data *data, t_vars *vars)
 {
-    t_cmd *curr_cmd = head;
-    t_redir *curr_redir;
-    int cmd_num = 0;
-
-    while (curr_cmd)
-    {
-        printf("--- Command %d ---\n", cmd_num);
-        printf("  Args: "); // Label for arguments
-        ft_print(curr_cmd->argv); // ft_print now handles NULL and adds newline
-
-        if (curr_cmd->redir)
-        {
-             printf("  Redirs:\n"); // Label for redirections
-            curr_redir = curr_cmd->redir;
-            while (curr_redir)
-            {
-                // Use the helper function from before for readable types
-                // const char *type_str = ft_redir_type_to_str(curr_redir->type);
-                // printf("    type: %s ", type_str);
-                printf("    type: %d ", curr_redir->type); // Original version
-                printf("bool: %d ", curr_redir->expand_heredoc);
-                printf("filename: %s " , curr_redir->filename ? curr_redir->filename : "(null)");
-                printf("fd: %d\n", curr_redir->heredoc_fd);
-                curr_redir = curr_redir->next;
-            }
-        } else {
-             printf("  Redirs: (None)\n");
-        }
-        printf("------------------\n");
-        curr_cmd = curr_cmd->next;
-        cmd_num++;
-    }
+	vars->cmd_list = ft_creat_cmd_table(vars->tkn_list);
+	ft_token_clear(&vars->tkn_list);
+	if (vars->cmd_list)
+	{
+		ft_handle_heredoc_and_excution(data, vars);
+		ft_cmd_clear(&vars->cmd_list);
+	}
+	else
+		data->last_exit_status = 2;
 }
 
-//~__________________________________________________
-
-void check_heap_leaks()
+bool	handle_input_prompt(t_data *data, t_vars *vars)
 {
-	system("leaks minishell");
-}
+	extern int	g_global;
 
-int g_tmp = 0;
+	if (g_global == 2 || g_global == 3)
+	{
+		data->last_exit_status = 1;
+		g_global = 0;
+	}
+	vars->line = readline("\001\033[1;32m\002minishell$ \001\033[0m\002");
+	if (!vars->line)
+	{
+		ft_putstr_fd("exit\n", STDOUT_FILENO);
+		return (false);
+	}
+	if (vars->line[0] == '\0')
+	{
+		free(vars->line);
+		vars->line = NULL;
+		return (true);
+	}
+	add_history(vars->line);
+	return (true);
+}
 
 int	main(int ac, char **av, char **env)
 {
-	
 	t_data	data;
-	char	*line;
-	t_token	*token_list;
-	t_cmd	*command_list;
-	struct sigaction	old_parent_sigint;
-	struct sigaction	old_parent_sigquit;
-	// atexit(check_heap_leaks);
-	(void)ac; (void)av;
-	line = NULL; token_list = NULL; command_list = NULL;
-	data.last_exit_status = EXIT_SUCCESS;
-	data.env_list = ft_getenv(env);
-	if (!data.env_list && env && env[0])
-		ft_putstr_fd("minishell: Warning: env list init failed.\n", 2);
-	update_shell_level(&data);
-	rl_catch_signals = 0;
-	set_signal_handlers_prompt(); // set
-	if (!isatty(0) || !isatty(1))
-		return (0);
-	while (TRUE)
-	{
-		command_list = NULL; token_list = NULL; line = NULL;
-		if (g_tmp == 2 || g_tmp == 3) { // Ctrl+C at prompt OR Ctrl+C during heredoc
-			data.last_exit_status = 1;
-			g_tmp = 0;   
-		}
-		line = readline("\001\033[1;32m\002minishell$ \001\033[0m\002");
-		if (!line)
-		{
-			ft_putstr_fd("exit\n", STDOUT_FILENO);
-			break ;
-		}
+	t_vars	sh_vars;
 
-		if (line[0] == '\0') 
-		{
-			 free(line);
-			 line = NULL;
-			 continue;
-		 }
-		add_history(line);
-		if (!ft_synax_error_free(line)) 
-		{
-			data.last_exit_status = 258;
-			free(line); //DONE: FIXED Leak if error syntax
-			line = NULL;
-			continue; 
-		}
-		token_list = ft_tokenize(line);
-		if (!token_list)
-		{ 
-			data.last_exit_status = 258;
-			free(line);
-			line = NULL;
-			continue;
-		}
-		// ft_print_token_list(token_list);
-		ft_expander(&token_list, &data);
-		// ft_print_token_list(token_list);
-		command_list = ft_creat_cmd_table(token_list);
-		// ft_print_cmd_table(command_list);
-		ft_token_clear(&token_list);
-		if (command_list)
-		{
-			int herdoc_status = process_heredocs(command_list, &data);
-			if (herdoc_status == EXIT_SUCCESS)
-			{
-				set_parent_wait_signal_handlers(&old_parent_sigint, &old_parent_sigquit); 
-				execute_commands(command_list, &data);
-				cleanup_all_heredoc_fds(command_list);
-				restore_signal_handlers(&old_parent_sigint, &old_parent_sigquit);
-			}
-			else if (herdoc_status == 77)
-			{
-				cleanup_all_heredoc_fds(command_list);
-				ft_cmd_clear(&command_list);
-				ft_tenv_clear(&data.env_list);
-				rl_clear_history();
-				(free(line), line = NULL);
-				exit(2);	
-			}
-			else if (g_tmp == 2)
-			{
-				data.last_exit_status = 1;
-				g_tmp = 0;
-				set_signal_handlers_prompt();
-			}
-			ft_cmd_clear(&command_list);
-		}
-		else
-		{
-			data.last_exit_status = 2;
-			printf("[Command Table Creation Failed - Check Syntax]\n");
-		}
-		free(line);
-		line = NULL;
+	(void)ac;
+	(void)av;
+	if (!main_init_shell(&data, &sh_vars, env))
+		return (0);
+	while (true)
+	{
+		sh_vars.line = NULL;
+		sh_vars.tkn_list = NULL;
+		sh_vars.cmd_list = NULL;
+		if (!handle_input_prompt(&data, &sh_vars))
+			break ;
+		if (sh_vars.line == NULL)
+			continue ;
+		if (parse_and_expand(&data, &sh_vars))
+			creat_excute_cleanup(&data, &sh_vars);
+		if (sh_vars.line)
+			free(sh_vars.line);
 	}
 	ft_tenv_clear(&data.env_list);
 	rl_clear_history();
-	return (data. last_exit_status);
+	return (data.last_exit_status);
 }

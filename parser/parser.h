@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/18 13:10:17 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/23 16:58:45 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 # include <readline/history.h>
 # include <stdbool.h>
 # include <signal.h>
-
 
 typedef enum s_token_type
 {
@@ -96,6 +95,17 @@ typedef struct s_exp_st
 	t_data	*data;
 }	t_exp_p;
 
+typedef struct s_shell_vars
+{
+	char				*line;
+	t_token				*tkn_list;
+	t_cmd				*cmd_list;
+	struct sigaction	old_sigint;
+	struct sigaction	old_sigquit;
+}	t_vars;
+
+bool	main_init_shell(t_data *data, t_vars *vars, char **env);
+
 //libft
 int		ft_isspace(int c);
 int		ft_isquot(int c);
@@ -125,11 +135,12 @@ int		ft_synax_error_free(const char *line);
 
 // expander Part
 void	ft_expander(t_token **token, t_data *data);
+void	ft_expand(t_token **token, t_data *data);
+char	*ft_build_expanded_string(const char *orign, t_data *data);
 char	*ft_strjoined(char const *string, char const *str);
 int		ft_strcmp(const char *alpha, const char *bita);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 void	ft_clean_up(t_token **token);
-int 	ft_need_to_add_spaces(const char *proc, t_env *env);
 int		ft_isexpandable(t_token *current);
 int		ft_isbign_variable(char c);
 int		ft_ispt_variable(char c);
@@ -153,6 +164,9 @@ void	ft_tenv_add_back(t_env **env_list, t_env *new_node);
 t_env	*ft_tenv_last(t_env *env);
 void	ft_tenv_delone(t_env *node);
 void	ft_tenv_clear(t_env **token_list);
+void	ft_applay_ifs(t_token **curr_tkn_ptr);
+bool	ft_isall_spaces(char *string);
+bool	ft_should_expand_heredoc_content(const char *raw_delimiter);
 
 // cmd_table
 t_cmd	*ft_creat_cmd_table(t_token *token);
@@ -166,14 +180,17 @@ size_t	ft_count_cmd(t_token *token);
 size_t	ft_viclen(char **argv);
 
 // signels
-void 	set_parent_wait_signal_handlers(struct sigaction *old_sigint, struct sigaction *old_sigquit);
+void	set_parent_wait_signal_handlers(struct sigaction *old_sigint,
+			struct sigaction *old_sigquit);
 void	setup_signal_action(int signum, void (*handler)(int), int flags);
 void	sigint_handler_prompt(int signum);
 void	sigint_handler_heredoc(int signum);
 void	configure_sigaction(int signum, void (*handler)(int), int flags);
-void 	set_signal_handlers_ignore(void);
-void 	set_parent_wait_signal_handlers(struct sigaction *old_sigint, struct sigaction *old_sigquit);
-void 	restore_signal_handlers(struct sigaction *old_sigint, struct sigaction *old_sigquit);
+void	set_signal_handlers_ignore(void);
+void	set_parent_wait_signal_handlers(struct sigaction *old_sigint,
+			struct sigaction *old_sigquit);
+void	restore_signal_handlers(struct sigaction *old_sigint,
+			struct sigaction *old_sigquit);
 void	set_signal_handlers_prompt(void);
 void	set_signal_handlers_heredoc(void);
 void	set_signal_handlers_default(void);

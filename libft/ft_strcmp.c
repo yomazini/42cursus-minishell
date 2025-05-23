@@ -1,28 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_herdoc_signal.c                                 :+:      :+:    :+:   */
+/*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/17 16:17:27 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/23 16:30:04 by eel-garo         ###   ########.fr       */
+/*   Created: 2025/05/07 13:05:45 by eel-garo          #+#    #+#             */
+/*   Updated: 2025/05/23 17:08:25 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../parser.h"
+#include "libft.h"
 
-void	sigint_handler_heredoc(int signum)
+int	ft_strcmp(const char *alpha, const char *bita)
 {
-	extern int	g_global;
+	size_t	i;
 
-	(void)signum;
-	g_global = 3;
-	close(STDIN_FILENO);
-}
-
-void	set_signal_handlers_heredoc(void)
-{
-	configure_sigaction(SIGINT, sigint_handler_heredoc, 0);
-	configure_sigaction(SIGQUIT, SIG_IGN, 0);
+	i = 0;
+	while (alpha[i] != '\0' && bita[i] != '\0' && alpha[i] == bita[i])
+		i++;
+	if (alpha[i] == bita[i])
+	{
+		return (0);
+	}
+	else
+	{
+		return (1);
+	}
 }

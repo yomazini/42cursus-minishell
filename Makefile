@@ -2,7 +2,7 @@ NAME = minishell
 
 CC = cc
 RM = rm -f
-CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g3
 
 LIBFT_DIR = libft
 PARSER_DIR = parser
@@ -27,15 +27,15 @@ LIBFT_SRC = $(addprefix $(LIBFT_DIR)/, \
 		ft_bzero.c ft_memset.c ft_memcpy.c ft_memchr.c ft_memcmp.c ft_memmove.c \
 		ft_atoi.c ft_calloc.c ft_strdup.c \
 		ft_substr.c ft_strjoin.c ft_strtrim.c ft_split.c ft_putchar_fd.c ft_putstr_fd.c ft_putendl_fd.c ft_putnbr_fd.c \
-		ft_strmapi.c ft_striteri.c ft_itoa.c \
+		ft_strmapi.c ft_striteri.c ft_itoa.c ft_strcmp.c ft_strncpy.c\
 		)
 
 SRCS_PARSER = $(addprefix $(PARSER_DIR)/, \
+		ft_initialisation.c \
 		tokenize/tokenizer.c \
 		tokenize/ft_split_tokens.c \
 		tokenize/ft_utils_split.c \
 		tokenize/ft_isspace.c \
-		tokenize/ft_strncpy.c \
 		tokenize/ft_isquot.c \
 		tokenize/ft_token_new.c \
 		tokenize/ft_token_add_back.c \
@@ -44,9 +44,7 @@ SRCS_PARSER = $(addprefix $(PARSER_DIR)/, \
 		tokenize/ft_synax_error_free.c \
 		tokenize/ft_utils_error.c \
 		expander/expander.c \
-		expander/ft_strcmp.c \
 		expander/ft_strjoined.c \
-		expander/ft_substr.c \
 		expander/ft_clean_up.c \
 		expander/ft_expand_tools.c \
 		expander/ft_build_variable_name.c \
@@ -59,7 +57,11 @@ SRCS_PARSER = $(addprefix $(PARSER_DIR)/, \
 		expander/env/ft_tenv_delone.c \
 		expander/env/ft_tenv_clear.c \
 		expander/ft_utils_expand.c \
+		expander/ft_applay_ifs.c \
+		expander/ft_isall_spaces.c \
 		expander/ft_split_string_by_whitespace.c \
+		expander/ft_should_expand_heredoc_content.c \
+		expander/ft_expnad.c \
 		signals/ft_signals.c \
 		signals/ft_utils_signal.c \
 		signals/ft_herdoc_signal.c \
@@ -74,36 +76,36 @@ SRCS_PARSER = $(addprefix $(PARSER_DIR)/, \
 		)
 
 SRCS_EXEC = $(addprefix $(EXEC_DIR)/, \
-		built_in/echo_built_in.c \
-		built_in/env_built_in.c \
-		execution_part/find_path.c \
-		execution_part/env_init.c \
-		built_in/cd_built_in.c \
-		execution_part/execute_builtin.c \
-		execution_part/tools1.c \
-		execution_part/tools2.c \
-		execution_part/redirections.c \
-		execution_part/tools3.c \
-		built_in/cd_built_in_utils.c \
-		built_in/cd_built_in_utils2.c \
-		built_in/export_built_in_utils.c \
-		execution_part/pipeline.c \
-		execution_part/pipeline_utils.c \
-		execution_part/pipeline_utils2.c \
-		execution_part/executor.c \
-		execution_part/executor_utils.c \
-		execution_part/executor_tools.c \
-		execution_part/tools4.c \
-		execution_part/tools5.c \
-		built_in/pwd_built_in.c \
-		built_in/exit_built_in.c \
-		built_in/export_built_in.c \
-		execution_part/heredoc/process_heredoc.c  \
-		execution_part/heredoc/heredoc.c \
-		execution_part/heredoc/heredoc_utils.c \
-		execution_part/heredoc/heredoc_utils2.c \
-		built_in/unset_built_in.c \
-		)
+        built_in/echo_built_in.c \
+        built_in/env_built_in.c \
+        execution_part/find_path.c \
+        execution_part/env_init.c \
+        built_in/cd_built_in.c \
+        execution_part/execute_builtin.c \
+        execution_part/tools1.c \
+        execution_part/tools2.c \
+        execution_part/redirections.c \
+        execution_part/tools3.c \
+        built_in/cd_built_in_utils.c \
+        built_in/cd_built_in_utils2.c \
+        built_in/export_built_in_utils.c \
+        execution_part/pipeline.c \
+        execution_part/pipeline_utils.c \
+        execution_part/pipeline_utils2.c \
+        execution_part/executor.c \
+        execution_part/executor_utils.c \
+        execution_part/executor_tools.c \
+        execution_part/tools4.c \
+        execution_part/tools5.c \
+        built_in/pwd_built_in.c \
+        built_in/exit_built_in.c \
+        built_in/export_built_in.c \
+        execution_part/heredoc/process_heredoc.c  \
+        execution_part/heredoc/heredoc.c \
+        execution_part/heredoc/heredoc_utils.c \
+        execution_part/heredoc/heredoc_utils2.c \
+        built_in/unset_built_in.c \
+        )
 
 MAIN_OBJ = $(MAIN_SRC:.c=.o)
 LIBFT_OBJS = $(LIBFT_SRC:.c=.o)

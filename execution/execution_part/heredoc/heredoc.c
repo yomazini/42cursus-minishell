@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:43:01 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/22 17:36:27 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/23 17:31:12 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,15 @@ int	read_input_to_pipe(char *delimiter, bool expand,
 {
 	char		*line;
 	size_t		delim_len;
-	extern int	g_tmp;
+	extern int	g_global;
 
 	delim_len = ft_strlen(delimiter);
 	while (TRUE)
 	{
-		if (g_tmp == 3)
+		if (g_global == 3)
 			return (130);
 		line = readline("> ");
-		if (g_tmp == 3)
+		if (g_global == 3)
 		{
 			if (line)
 				(free(line), line = NULL);
@@ -43,7 +43,7 @@ int	read_input_to_pipe(char *delimiter, bool expand,
 
 static	int	init_heredoc(t_data *data, int *saved_stdin_fd)
 {
-	extern int	g_tmp;
+	extern int	g_global;
 
 	*saved_stdin_fd = dup(STDIN_FILENO);
 	if (*saved_stdin_fd < 0)
@@ -53,7 +53,7 @@ static	int	init_heredoc(t_data *data, int *saved_stdin_fd)
 		data->last_exit_status = EXIT_FAILURE;
 		return (EXIT_FAILURE);
 	}
-	g_tmp = 0;
+	g_global = 0;
 	set_signal_handlers_heredoc();
 	return (EXIT_SUCCESS);
 }
@@ -61,7 +61,7 @@ static	int	init_heredoc(t_data *data, int *saved_stdin_fd)
 static int	handle_one_heredoc(t_redir *r, t_data *data, int *pipe_fds)
 {
 	int			status;
-	extern int	g_tmp;
+	extern int	g_global;
 
 	if (pipe(pipe_fds) < 0)
 	{
@@ -71,7 +71,7 @@ static int	handle_one_heredoc(t_redir *r, t_data *data, int *pipe_fds)
 	status = read_input_to_pipe(r->filename, r->expand_heredoc,
 			data, pipe_fds[1]);
 	close(pipe_fds[1]);
-	if (g_tmp == 3 || status == 130 || status < 0)
+	if (g_global == 3 || status == 130 || status < 0)
 	{
 		close(pipe_fds[0]);
 		return (EXIT_FAILURE);
@@ -85,12 +85,12 @@ static int	loop_heredocs(t_cmd *cmd, t_data *data)
 	t_redir		*redir;
 	int			pipe_fds[2];
 	int			ret;
-	extern int	g_tmp;
+	extern int	g_global;
 
-	while (cmd && g_tmp != 3)
+	while (cmd && g_global != 3)
 	{
 		redir = cmd->redir;
-		while (redir && g_tmp != 3)
+		while (redir && g_global != 3)
 		{
 			if (redir->type == TOKEN_REDIR_HEREDOC
 				&& redir->heredoc_fd < 0)
@@ -110,7 +110,7 @@ int	process_heredocs(t_cmd *cmd_list, t_data *data)
 {
 	int			saved_stdin_fd;
 	int			overall_status;
-	extern int	g_tmp;
+	extern int	g_global;
 
 	if (count_total_heredocs(cmd_list) > MAX_HEREDOCS)
 	{
@@ -122,7 +122,7 @@ int	process_heredocs(t_cmd *cmd_list, t_data *data)
 		return (EXIT_FAILURE);
 	overall_status = loop_heredocs(cmd_list, data);
 	restore_after_heredoc(saved_stdin_fd);
-	if (g_tmp == 3)
+	if (g_global == 3)
 	{
 		data->last_exit_status = 1;
 		return (cleanup_all_heredoc_fds(cmd_list), EXIT_FAILURE);

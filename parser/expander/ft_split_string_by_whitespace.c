@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 16:44:32 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/17 09:44:00 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/22 21:25:11 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ static char	**ft_free(char **string, int size)
 	free(string);
 	return (NULL);
 }
+
 static int	count_worlds_by_whitespace(const char *s)
 {
 	int	count;
@@ -42,7 +43,7 @@ static int	count_worlds_by_whitespace(const char *s)
 			in_word = 0;
 		i++;
 	}
-	return (count);	
+	return (count);
 }
 
 static char	*get_next_world(const char *s, size_t *start_index)
@@ -67,6 +68,7 @@ static char	*get_next_world(const char *s, size_t *start_index)
 	*start_index = end_word;
 	return (word);
 }
+
 char	**ft_split_string_by_whitespace(char *string, size_t *size)
 {
 	char	**res_str;
@@ -84,7 +86,7 @@ char	**ft_split_string_by_whitespace(char *string, size_t *size)
 		return (NULL);
 	i = 0;
 	curr_index = 0;
-	while(i < n_word)
+	while (i < n_word)
 	{
 		res_str[i] = get_next_world(string, &curr_index);
 		if (!res_str[i])

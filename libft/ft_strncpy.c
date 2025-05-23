@@ -6,11 +6,11 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:17:54 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/04/16 15:57:01 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/23 17:14:19 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../parser.h"
+#include "libft.h"
 
 char	*ft_strncpy(char *dst, const char *src, size_t n)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_exec_exp.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:42:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/22 17:30:31 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/23 16:30:04 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,25 +15,25 @@
 
 static char	*ft_helper_exit_status_func(char *new_str, t_data *data, int *i)
 {
-	extern int g_tmp;
-	if (g_tmp == 2)
+	extern int	g_global;
+
+	if (g_global == 2)
 	{
-		data->last_exit_status = 1;
-		g_tmp = 0;
+		data->last_exit_status = 130;
+		g_global = 0;
 	}
 	else if (data->echo_pipe_flag)
 	{
 		data->last_exit_status = 0;
-		data->echo_pipe_flag = false; 
+		data->echo_pipe_flag = false;
 	}
 	new_str = ft_append_exit_status(new_str, data->last_exit_status);
 	*i += 2;
 	return (new_str);
 }
 
-char	*ft_expenv(char *new_str, const char *orign, t_data *data, int *i)
+static char	*ft_expenv(char *new_str, const char *orign, t_data *data, int *i)
 {
-
 	data->peak = ft_peakahead(orign[1]);
 	if (data->peak == -1)
 	{
@@ -54,13 +54,24 @@ char	*ft_expenv(char *new_str, const char *orign, t_data *data, int *i)
 	{
 		new_str = append_single_char(new_str, orign[0]);
 		(*i)++;
-	}	
+	}
 	return (new_str);
+}
+
+static void	ft_handle_doller_expantion(t_exp_p *st, const char *org_str)
+{
+	const char	*proc;
+
+	if (!*(st->qt_ptr))
+		st->data->field_splitting_needed = true;
+	else
+		st->data->field_splitting_needed = false;
+	proc = &org_str[*(st->i_ptr)];
+	*(st->ptr) = ft_expenv(*(st->ptr), proc, st->data, st->i_ptr);
 }
 
 static bool	ft_process_expansion(t_exp_p *st, const char *org)
 {
-	const char	*proc;
 	char		curr_char_vl;
 
 	curr_char_vl = org[*(st->i_ptr)];
@@ -78,13 +89,8 @@ static bool	ft_process_expansion(t_exp_p *st, const char *org)
 		&& st->data->herdoc == false
 		&& (*(st->qt_ptr) == '\"' || !*(st->qt_ptr)))
 	{
-		if (!*(st->qt_ptr))
-			st->data->field_splitting_needed = true; // when we have $ and now double qoutes !
-		else
-			st->data->field_splitting_needed = false;
-		proc = &org[*(st->i_ptr)];
-		*(st->ptr) = ft_expenv(*(st->ptr), proc, st->data, st->i_ptr);
-	}	
+		ft_handle_doller_expantion(st, org);
+	}
 	else
 		*(st->ptr) = append_single_char(*(st->ptr), org[(*(st->i_ptr))++]);
 	return (*(st->ptr) != NULL);
@@ -117,29 +123,4 @@ char	*ft_build_expanded_string(const char *orign, t_data *data)
 			return (NULL);
 	}
 	return (new_str);
-}
-
-void	ft_expand(t_token **token, t_data *data)
-{
-	char	*orig_value;
-	char	*exp_value;
-
-	if (!token || !*token || !(*token)->value)
-		return ;
-	orig_value = (*token)->value;
-	exp_value = ft_build_expanded_string(orig_value, data);
-	if (!exp_value)
-	{
-		exp_value = ft_strdup("");
-		if (!exp_value)
-		{
-			free(orig_value);
-			(*token)->value = NULL;
-			return ;
-		}
-	}
-	if (data->herdoc == true)
-		data->herdoc = false;
-	free(orig_value);
-	(*token)->value = exp_value;
 }

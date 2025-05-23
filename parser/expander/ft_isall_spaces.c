@@ -1,30 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strcmp.c                                        :+:      :+:    :+:   */
+/*   ft_isall_spaces.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/07 13:05:45 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/07 13:06:01 by eel-garo         ###   ########.fr       */
+/*   Created: 2025/05/22 20:32:35 by eel-garo          #+#    #+#             */
+/*   Updated: 2025/05/22 21:23:46 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../parser.h"
 
-int	ft_strcmp(const char *alpha, const char *bita)
+bool	ft_isall_spaces(char *string)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
-	while (alpha[i] != '\0' && bita[i] != '\0' && alpha[i] == bita[i])
+	while (string[i])
+	{
+		if (!ft_isspace(string[i]))
+			return (false);
 		i++;
-	if (alpha[i] == bita[i])
-	{
-		return (0);
 	}
-	else
-	{
-		return (1);
-	}
+	return (true);
 }

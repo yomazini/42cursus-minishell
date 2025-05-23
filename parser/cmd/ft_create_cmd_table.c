@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 13:23:07 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/17 18:20:56 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/22 19:26:11 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,44 +40,61 @@ char	**ft_add_to_argv(char **old_argv, char *word)
 	return (new_argv);
 }
 
-static void	ft_populate_cmd(t_token **curr_token, t_cmd *cmd)
+static int	ft_process_cmd(t_token **tkn_ptr, t_cmd *cmd)
 {
 	t_redir	*new_redir;
 
+	if ((*tkn_ptr)->type == TOKEN_WORD)
+	{
+		if ((*tkn_ptr)->empty_tkn == true)
+		{
+			*tkn_ptr = (*tkn_ptr)->next;
+			return (1);
+		}
+		cmd->argv = ft_add_to_argv(cmd->argv, (*tkn_ptr)->value);
+		*tkn_ptr = (*tkn_ptr)->next;
+	}
+	else if ((*tkn_ptr)->type >= TOKEN_REDIR_IN
+		&& (*tkn_ptr)->type <= TOKEN_REDIR_HEREDOC)
+	{
+		if (!(*tkn_ptr)->next)
+			return (0);
+		new_redir = ft_redir_new((*tkn_ptr)->type,
+				(*tkn_ptr)->next->value, (*tkn_ptr)->next->exp_in_herdoc);
+		ft_redir_add_back(&cmd->redir, new_redir);
+		*tkn_ptr = (*tkn_ptr)->next->next;
+	}
+	else
+		*tkn_ptr = (*tkn_ptr)->next;
+	return (1);
+}
+
+static void	ft_populate_cmd(t_token **curr_token, t_cmd *cmd)
+{
 	while (*curr_token && (*curr_token)->type != TOKEN_PIPE)
 	{
-		if ((*curr_token)->type == TOKEN_WORD)
-		{
-			if ((*curr_token) && (*curr_token)->empty_tkn == true)
-			{
-				*curr_token = (*curr_token)->next;
-				continue ;
-			}
-			else
-				cmd->argv = ft_add_to_argv(cmd->argv, (*curr_token)->value);
-		}
-		else if ((*curr_token)->type >= TOKEN_REDIR_IN
-			&& (*curr_token)->type <= TOKEN_REDIR_HEREDOC)
-		{
-			if (!(*curr_token)->next)
-				break ;
-			new_redir = ft_redir_new((*curr_token)->type,
-					(*curr_token)->next->value, 
-					(*curr_token)->next->exp_in_herdoc);
-			ft_redir_add_back(&cmd->redir, new_redir);
-			*curr_token = (*curr_token)->next;
-		}
-		if ((*curr_token))
-			*curr_token = (*curr_token)->next;
-		else
+		if (!ft_process_cmd(curr_token, cmd))
 			break ;
 	}
+}
+
+static int	ft_create_cmd_seg(t_cmd **head, t_token **curr_token_ptr)
+{
+	t_cmd	*new_cmd;
+
+	new_cmd = ft_cmd_new();
+	if (!new_cmd)
+		return (ft_cmd_clear(head), 0);
+	ft_populate_cmd(curr_token_ptr, new_cmd);
+	ft_cmd_add_back(head, new_cmd);
+	if (*curr_token_ptr && (*curr_token_ptr)->type == TOKEN_PIPE)
+		*curr_token_ptr = (*curr_token_ptr)->next;
+	return (1);
 }
 
 t_cmd	*ft_creat_cmd_table(t_token *token)
 {
 	t_cmd	*head;
-	t_cmd	*new_cmd;
 	t_token	*curr_token;
 	size_t	n_cmd;
 	size_t	i;
@@ -88,13 +105,8 @@ t_cmd	*ft_creat_cmd_table(t_token *token)
 	curr_token = token;
 	while (i < n_cmd && curr_token)
 	{
-		new_cmd = ft_cmd_new();
-		if (!new_cmd)
-			return (ft_cmd_clear(&head), NULL);
-		ft_populate_cmd(&curr_token, new_cmd);
-		ft_cmd_add_back(&head, new_cmd);
-		if (curr_token && curr_token->type == TOKEN_PIPE)
-			curr_token = curr_token->next;
+		if (!ft_create_cmd_seg(&head, &curr_token))
+			return (NULL);
 		i++;
 	}
 	return (head);
