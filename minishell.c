@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 22:04:05 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/23 17:36:35 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/23 18:11:05 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ bool	parse_and_expand(t_data *data, t_vars *vars)
 	vars->tkn_list = ft_tokenize(vars->line);
 	if (!vars->tkn_list)
 	{
-		data->last_exit_status = 258;
+		data->last_exit_status = 0;
 		return (false);
 	}
 	ft_expander(&vars->tkn_list, data);
