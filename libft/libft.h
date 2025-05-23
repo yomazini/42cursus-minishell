@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 14:46:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/23 17:13:52 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/23 17:43:28 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,5 @@ void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
 int		ft_strcmp(const char *alpha, const char *bita);
 char	*ft_strncpy(char *dst, const char *src, size_t n);
-
-
 
 #endif
