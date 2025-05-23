@@ -16,11 +16,6 @@ int	is_executable(const char *path)
 {
 	struct stat	statbuf;
 
-	if (!path)
-	{
-		errno = EINVAL;
-		return (0);
-	}
 	if (stat(path, &statbuf) == -1)
 		return (0);
 	if (S_ISDIR(statbuf.st_mode))
@@ -28,7 +23,7 @@ int	is_executable(const char *path)
 		errno = EISDIR;
 		return (0);
 	}
-	if (S_ISREG(statbuf.st_mode) && access(path, X_OK) == 0)
+	if (access(path, X_OK) == 0)
 		return (1);
 	else
 	{
