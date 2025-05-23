@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/22 14:28:50 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/23 15:25:45 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,6 @@ void	set_signal_handlers_default(void);
 void	sigint_handler_prompt(int signum);
 void	sigint_handler_heredoc(int signum);
 void	cleanup_all_heredoc_fds(t_cmd *cmd_list);
-int		handle_syntax_error_message(char *message,
-			t_data *data, int err_code);
 int		handle_empty_command_string_error(t_data *data);
 void	ft_print_not_found(char *cmd_name, t_data *data);
 int		count_total_heredocs(t_cmd *cmd_list);
