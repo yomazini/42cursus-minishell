@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/22 14:29:04 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/23 16:42:13 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,15 @@
 
 static	int	handle_single_command(t_cmd *cmd_node, t_data *data)
 {
+	data->last_exit_status = 0;
 	if (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0] == '\0')
 	{
 		data->last_exit_status = 127;
 		return (redir_r_emty_cmd_wi_redi(cmd_node, data, TRUE));
 	}
 	else if ((!cmd_node->argv || !cmd_node->argv[0]) && cmd_node->redir)
-		return (redir_r_emty_cmd_wi_redi(cmd_node, data, FALSE));
+		return (redir_r_emty_cmd_wi_redi(cmd_node, data, FALSE),
+			data->last_exit_status = 0);
 	else if (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0])
 	{
 		if (is_parent_builtin(cmd_node))
