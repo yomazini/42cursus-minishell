@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/01 14:39:25 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/23 15:28:59 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/23 15:48:28 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@ static int	str_is_positive_numeric(const char *str)
 	if (!str || !str[0])
 		return (0);
 	i = 0;
+	str = ft_strtrim(str, " ");
+	if (str[i] == '+')
+		i++;
 	while (str[i])
 	{
 		if (!ft_isdigit(str[i]))
