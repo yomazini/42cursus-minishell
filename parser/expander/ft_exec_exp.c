@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:42:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 15:06:18 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/24 16:37:16 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static char	*ft_helper_exit_status_func(char *new_str, t_data *data, int *i)
 
 	if (g_global == 2)
 	{
-		data->last_exit_status = 130;
+		data->last_exit_status = 1;
 		g_global = 0;
 	}
 	else if (data->echo_pipe_flag)
