@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 22:04:05 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/24 15:58:54 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/24 19:17:24 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,9 +101,7 @@ int	main(int ac, char **av, char **env)
 	t_data	data;
 	t_vars	sh_vars;
 
-	(void)ac;
-	(void)av;
-	(void)env;
+	(void)ac, (void)av;
 	if (!main_init_shell(&data, &sh_vars, env))
 		return (ft_tenv_clear(&data.env_list), 1);
 	while (true)
@@ -120,6 +118,8 @@ int	main(int ac, char **av, char **env)
 		if (sh_vars.line)
 			free(sh_vars.line);
 	}
+	if (sh_vars.line)
+		free(sh_vars.line);
 	ft_tenv_clear(&data.env_list);
 	rl_clear_history();
 	return (data.last_exit_status);
