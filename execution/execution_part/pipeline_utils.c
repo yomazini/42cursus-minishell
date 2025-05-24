@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 18:05:52 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/22 18:24:25 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/23 23:04:14 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static int	handle_wait_errno(t_data *data)
 {
 	if (errno == ECHILD)
 		return (0);
+	perror("minishell: waitpid error");
 	data->last_exit_status = EXIT_FAILURE;
 	return (EXIT_FAILURE);
 }
