@@ -1,20 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_memset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/23 16:59:39 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 16:30:24 by eel-garo         ###   ########.fr       */
+/*   Created: 2024/10/28 19:47:35 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/24 16:28:47 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "utils.h"
 
-# include "parser.h"
-# include "exec_header.h"
-# include "../utils/utils.h"
+void	*ft_memset(void *b, int c, size_t len)
+{
+	size_t			i;
+	unsigned char	*ptr;
 
-#endif
+	i = 0;
+	if (len == 0)
+		return (b);
+	ptr = (unsigned char *)b;
+	while (i < len)
+	{
+		ptr[i] = (unsigned char)c;
+		i++;
+	}
+	return (b);
+}

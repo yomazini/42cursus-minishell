@@ -1,20 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_isascii.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/23 16:59:39 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 16:30:24 by eel-garo         ###   ########.fr       */
+/*   Created: 2024/10/28 16:54:48 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/24 16:28:47 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "utils.h"
 
-# include "parser.h"
-# include "exec_header.h"
-# include "../utils/utils.h"
-
-#endif
+int	ft_isascii(int c)
+{
+	return (c >= 0 && c <= 127);
+}

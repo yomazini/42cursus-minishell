@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_header.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/23 15:28:30 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/24 16:30:14 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # include <sys/wait.h>
 # include <fcntl.h>
 # include <limits.h>
-# include "../libft/libft.h"
+# include "../utils/utils.h"
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <stdbool.h>

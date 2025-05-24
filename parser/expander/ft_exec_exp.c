@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:42:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 14:39:05 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/24 15:06:18 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,25 +35,27 @@ static char	*ft_helper_exit_status_func(char *new_str, t_data *data, int *i)
 static char	*ft_expenv(char *new_str, const char *orign, t_data *data, int *i)
 {
 	data->peak = ft_peakahead(orign[1]);
-	if (data->peak == -1)
+	if (new_str && data->peak == -1)
 	{
 		new_str = append_single_char(new_str, orign[0]);
-		(*i)++;
+		if (new_str)
+			(*i)++;
 	}
-	else if (data->peak == 1 || data->peak == 2)
+	else if (new_str && (data->peak == 1 || data->peak == 2))
 	{
 		new_str = ft_append_variable(new_str, orign, data, i);
 		if (!new_str)
 			return (NULL);
 	}
-	else if (data->peak == 3)
+	else if (new_str && data->peak == 3)
 		new_str = ft_helper_exit_status_func(new_str, data, i);
 	else if (data->peak == 4)
 		*i += 2;
 	else
 	{
 		new_str = append_single_char(new_str, orign[0]);
-		(*i)++;
+		if (new_str)
+			(*i)++;
 	}
 	return (new_str);
 }

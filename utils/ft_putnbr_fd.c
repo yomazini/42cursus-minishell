@@ -1,20 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/23 16:59:39 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 16:30:24 by eel-garo         ###   ########.fr       */
+/*   Created: 2024/11/04 17:48:23 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/24 16:28:47 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "utils.h"
 
-# include "parser.h"
-# include "exec_header.h"
-# include "../utils/utils.h"
+void	ft_putnbr_fd(int n, int fd)
+{
+	int		i;
+	long	nmr;
+	char	str[12];
 
-#endif
+	if (fd < 0)
+		return ;
+	nmr = n;
+	i = 0;
+	if (nmr == 0)
+	{
+		ft_putchar_fd('0', fd);
+		return ;
+	}
+	if (nmr < 0)
+	{
+		nmr = -nmr;
+		ft_putchar_fd('-', fd);
+	}
+	while (nmr)
+	{
+		str[i++] = nmr % 10 + '0';
+		nmr /= 10;
+	}
+	while (i-- > 0)
+		ft_putchar_fd(str[i], fd);
+}

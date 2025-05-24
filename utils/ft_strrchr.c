@@ -1,20 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_strrchr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/23 16:59:39 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 16:30:24 by eel-garo         ###   ########.fr       */
+/*   Created: 2024/10/30 20:15:53 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/24 16:28:47 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "utils.h"
 
-# include "parser.h"
-# include "exec_header.h"
-# include "../utils/utils.h"
+char	*ft_strrchr(const char *s, int c)
+{
+	char	chr;
+	int		s_lastindex;
 
-#endif
+	s_lastindex = ft_strlen(s);
+	chr = (char)c;
+	if (s[s_lastindex] == chr)
+		return ((char *)&s[s_lastindex]);
+	s_lastindex -= 1;
+	while (0 <= s_lastindex)
+	{
+		if (s[s_lastindex] == chr)
+			return ((char *)&s[s_lastindex]);
+		s_lastindex--;
+	}
+	return (NULL);
+}

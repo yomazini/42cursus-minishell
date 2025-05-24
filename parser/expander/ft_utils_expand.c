@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:39:55 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 14:41:27 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/24 15:57:00 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,15 @@ char	*append_single_char(char *new_str, char c)
 	signel_char_string[0] = c;
 	signel_char_string[1] = '\0';
 	temp = ft_strjoined(new_str, signel_char_string);
+	if (!temp)
+		return (free(new_str), new_str = NULL, NULL);
 	free(new_str);
 	new_str = temp;
 	return (new_str);
 }
 
-char	*ft_append_variable(char *new_str, const char *orign, t_data *data, int *i)
+char	*ft_append_variable(char *new_str, const char *orign,
+			t_data *data, int *i)
 {
 	char	*var_name;
 	char	*var_value;
@@ -33,11 +36,13 @@ char	*ft_append_variable(char *new_str, const char *orign, t_data *data, int *i)
 
 	var_name = ft_build_variable_name(orign, data->peak, i);
 	if (!var_name)
-		return (new_str);
+		return (free(new_str), NULL);
 	var_value = ft_isvariablet_exist(data->env_list, var_name);
 	temp = ft_strjoined(new_str, var_value);
 	if (!temp)
-		return (free(var_name), free(var_value), new_str);
+		return (free(var_name), var_name = NULL,
+			free(var_value), var_value = NULL,
+			free(new_str), new_str = NULL, NULL);
 	free(new_str);
 	new_str = temp;
 	free(var_name);
@@ -53,10 +58,18 @@ char	*ft_append_exit_status(char *new_str, int last_exit_status)
 	char	*temp;
 
 	str = ft_itoa(last_exit_status);
+	if (!str)
+		return (free(new_str), NULL);
 	len = ft_strlen(str);
 	value = malloc(sizeof(char) * (len + 1));
+	if (!value)
+		return (free(new_str), free(str), NULL);
 	ft_strncpy(value, str, (len + 1));
 	temp = ft_strjoined(new_str, value);
+	if (!temp)
+		return (free(new_str), free(str), free(value), NULL);
+	free(str);
+	free(value);
 	free(new_str);
 	new_str = temp;
 	return (new_str);

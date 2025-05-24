@@ -1,20 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/23 16:59:39 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 16:30:24 by eel-garo         ###   ########.fr       */
+/*   Created: 2024/10/29 20:39:54 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/24 16:28:47 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "utils.h"
 
-# include "parser.h"
-# include "exec_header.h"
-# include "../utils/utils.h"
+void	*ft_memmove(void *dst, const void *src, size_t len)
+{
+	unsigned char		*d;
+	const unsigned char	*s;
+	size_t				i;
 
-#endif
+	d = (unsigned char *)dst;
+	s = (const unsigned char *)src;
+	i = 0;
+	if (!len)
+		return (dst);
+	if (!d && !s)
+		return (NULL);
+	if (d > s)
+	{
+		while (len-- > 0)
+			d[len] = s[len];
+	}
+	else
+	{
+		ft_memcpy(dst, src, len);
+	}
+	return (dst);
+}
