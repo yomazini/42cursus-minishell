@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:42:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/23 16:30:04 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/24 14:39:05 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static char	*ft_expenv(char *new_str, const char *orign, t_data *data, int *i)
 	}
 	else if (data->peak == 1 || data->peak == 2)
 	{
-		new_str = ft_append_vt(new_str, orign, data, i);
+		new_str = ft_append_variable(new_str, orign, data, i);
 		if (!new_str)
 			return (NULL);
 	}

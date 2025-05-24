@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 10:29:59 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/24 14:23:06 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,8 +105,6 @@ typedef struct s_shell_vars
 }	t_vars;
 
 bool	main_init_shell(t_data *data, t_vars *vars, char **env);
-
-
 int		ft_isspace(int c);
 int		ft_isquot(int c);
 char	*ft_strncpy(char *dest, const char *src, size_t dstsize);
@@ -141,7 +139,7 @@ char	*ft_isvariablet_exist(t_env *env_list, char *variable_name);
 void	ft_expand(t_token **token_ptr, t_data *data);
 int		ft_isdigit(int c);
 char	*ft_append_exit_status(char *new_str, int last_exit_status);
-char	*ft_append_vt(char *new_str, const char *orign, t_data *data, int *i);
+char	*ft_append_variable(char *new_str, const char *orign, t_data *data, int *i);
 char	*append_single_char(char *new_str, char c);
 char	**ft_split_string_by_whitespace(char *string, size_t *size);
 t_env	*ft_getenv(char **env);

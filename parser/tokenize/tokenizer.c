@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tokenize.c                                      :+:      :+:    :+:   */
+/*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:19:16 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/04/16 18:13:36 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/24 14:04:06 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ t_token	*ft_tokenize(char *line)
 {
 	char			**tkn_array;
 	t_token			*head;
+	int				k;
 
 	tkn_array = NULL;
 	head = NULL;
@@ -100,8 +101,16 @@ t_token	*ft_tokenize(char *line)
 	if (!tkn_array)
 		return (NULL);
 	head = ft_build_token_list(tkn_array);
+	k = 0;
+	while (tkn_array[k])
+	{
+		free(tkn_array[k]);
+		k++;
+	}
 	free(tkn_array);
 	tkn_array = NULL;
+	if (!head)
+		return (NULL);
 	if (ft_synatx_error(head))
 		return (ft_token_clear(&head), NULL);
 	return (head);
