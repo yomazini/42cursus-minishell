@@ -63,7 +63,7 @@ static char	*check_path_entry(const char *dir, const char *command_name)
 		return (NULL);
 	}
 	full_path = ft_strjoin(temp_slash, command_name);
-	free(temp_slash);
+	((free(temp_slash), temp_slash = NULL));
 	if (!full_path)
 	{
 		perror("minishell: ft_strjoin failed");
@@ -71,7 +71,7 @@ static char	*check_path_entry(const char *dir, const char *command_name)
 	}
 	if (is_executable(full_path))
 		return (full_path);
-	free(full_path);
+	(free(full_path), full_path = NULL);
 	return (NULL);
 }
 

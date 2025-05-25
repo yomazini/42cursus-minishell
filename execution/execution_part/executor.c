@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/23 16:42:13 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/25 14:49:20 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ int	execute_external_command(t_cmd *cmd, t_data *data)
 		return (handle_path_error(cmd->argv[0], err, data));
 	pid = fork();
 	assign_fork(pid, path, data, cmd);
-	free(path);
+	(free(path), path = NULL);
 	waitpid(pid, &status_dual_job, 0);
 	update_last_exit_status(data, status_dual_job);
 	return (data->last_exit_status);

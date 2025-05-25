@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:01:41 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/23 17:57:53 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/25 16:04:20 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,9 @@ int	execute_pipeline(t_cmd *cmd_list, t_data *data)
 	if (ctx.prev_read != STDIN_FILENO)
 		close(ctx.prev_read);
 	if (rc != EXIT_SUCCESS)
+	{
+		data->last_exit_status = rc;
 		return (rc);
+	}
 	return (wait_for_pipeline(cmd_count, ctx.last_pid, data));
 }
