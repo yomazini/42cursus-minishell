@@ -1,28 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_token_new.c                                     :+:      :+:    :+:   */
+/*   ft_strmapi.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/16 15:18:51 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 14:01:18 by eel-garo         ###   ########.fr       */
+/*   Created: 2024/11/02 22:22:02 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/24 16:28:47 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../parser.h"
+#include "utils.h"
 
-t_token	*ft_token_new(char *value, t_token_type type)
+char	*ft_strmapi(char const *s, char (*f)(unsigned int, char))
 {
-	t_token	*new_node;
+	unsigned int	i;
+	char			*result;
+	size_t			len;
 
-	new_node = malloc(sizeof(t_token));
-	if (!new_node)
+	i = 0;
+	if (!s || !f)
 		return (NULL);
-	new_node->value = ft_strdup(value);
-	if (!new_node->value && value)
-		return (free(new_node), NULL);
-	new_node->type = type;
-	new_node->next = NULL;
-	return (new_node);
+	len = ft_strlen(s);
+	result = malloc(len + 1);
+	if (!result)
+		return (NULL);
+	while (len--)
+	{
+		result[i] = (*f)(i, s[i]);
+		i++;
+	}
+	result[i] = '\0';
+	return (result);
 }

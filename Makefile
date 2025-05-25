@@ -4,7 +4,7 @@ CC = cc
 RM = rm -f
 CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g3
 
-LIBFT_DIR = libft
+LIBFT_DIR = utils
 PARSER_DIR = parser
 EXEC_DIR = execution
 INCLUDES_DIR = includes
@@ -115,7 +115,7 @@ EXEC_OBJS = $(SRCS_EXEC:.c=.o)
 ALL_OBJS = $(MAIN_OBJ) $(LIBFT_OBJS) $(PARSER_OBJS) $(EXEC_OBJS)
 
 HEADER_MAIN_APP = $(INCLUDES_DIR)/minishell.h
-HEADER_LIBFT = $(LIBFT_DIR)/libft.h
+HEADER_LIBFT = $(LIBFT_DIR)/utils.h
 HEADER_PARSER = $(PARSER_DIR)/parser.h
 HEADER_EXEC = $(EXEC_DIR)/exec_header.h
 

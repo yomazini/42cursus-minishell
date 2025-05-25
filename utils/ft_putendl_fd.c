@@ -1,28 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_token_new.c                                     :+:      :+:    :+:   */
+/*   ft_putendl_fd.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/16 15:18:51 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 14:01:18 by eel-garo         ###   ########.fr       */
+/*   Created: 2024/11/04 17:42:08 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/24 16:28:47 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../parser.h"
+#include "utils.h"
 
-t_token	*ft_token_new(char *value, t_token_type type)
+void	ft_putendl_fd(char *s, int fd)
 {
-	t_token	*new_node;
-
-	new_node = malloc(sizeof(t_token));
-	if (!new_node)
-		return (NULL);
-	new_node->value = ft_strdup(value);
-	if (!new_node->value && value)
-		return (free(new_node), NULL);
-	new_node->type = type;
-	new_node->next = NULL;
-	return (new_node);
+	ft_putstr_fd(s, fd);
+	ft_putchar_fd('\n', fd);
 }

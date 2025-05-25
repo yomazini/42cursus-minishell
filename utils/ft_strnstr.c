@@ -1,28 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_token_new.c                                     :+:      :+:    :+:   */
+/*   ft_strnstr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/16 15:18:51 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 14:01:18 by eel-garo         ###   ########.fr       */
+/*   Created: 2024/10/30 20:36:15 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/24 16:28:47 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../parser.h"
+#include "utils.h"
 
-t_token	*ft_token_new(char *value, t_token_type type)
+char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
 {
-	t_token	*new_node;
+	size_t	i;
+	size_t	j;
 
-	new_node = malloc(sizeof(t_token));
-	if (!new_node)
+	i = 0;
+	if (needle[i] == '\0' ||!needle)
+		return ((char *) haystack);
+	if (!len && !haystack)
 		return (NULL);
-	new_node->value = ft_strdup(value);
-	if (!new_node->value && value)
-		return (free(new_node), NULL);
-	new_node->type = type;
-	new_node->next = NULL;
-	return (new_node);
+	while ((haystack[i] != '\0') && i < len)
+	{
+		j = 0;
+		while (haystack[i + j] == needle[j] && (i + j) < len)
+		{
+			if (needle[j + 1] == '\0')
+				return ((char *)haystack + i);
+			j++;
+		}
+		i++;
+	}
+	return (NULL);
 }

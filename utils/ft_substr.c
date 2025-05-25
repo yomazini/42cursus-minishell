@@ -1,28 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_token_new.c                                     :+:      :+:    :+:   */
+/*   ft_substr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/16 15:18:51 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 14:01:18 by eel-garo         ###   ########.fr       */
+/*   Created: 2024/10/31 17:43:11 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/24 16:28:47 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../parser.h"
+#include "utils.h"
 
-t_token	*ft_token_new(char *value, t_token_type type)
+char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
-	t_token	*new_node;
+	size_t	i;
+	size_t	j;
+	char	*ptr;
+	size_t	slen;
 
-	new_node = malloc(sizeof(t_token));
-	if (!new_node)
+	if (!s)
 		return (NULL);
-	new_node->value = ft_strdup(value);
-	if (!new_node->value && value)
-		return (free(new_node), NULL);
-	new_node->type = type;
-	new_node->next = NULL;
-	return (new_node);
+	slen = ft_strlen(s);
+	if (start >= slen)
+		return (ft_strdup(""));
+	if (len > slen - start)
+		len = slen - start;
+	ptr = (char *)malloc(len + 1);
+	if (!ptr)
+		return (NULL);
+	i = start;
+	j = 0;
+	while (s[i] && j < len)
+		ptr[j++] = s[i++];
+	ptr[j] = '\0';
+	return (ptr);
 }

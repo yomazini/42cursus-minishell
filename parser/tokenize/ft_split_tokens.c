@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:17:32 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/07 16:38:28 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/24 14:15:58 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static size_t	ft_get_token_len(const char *line, int *k)
 	return (*k - start);
 }
 
-static size_t	ft_count_tokens_revised(const char *line)
+static size_t	ft_count_tokens(const char *line)
 {
 	int		k;
 	size_t	cnt_tokens;
@@ -77,7 +77,7 @@ char	*ft_alloc_token(int token_len, int start_index, const char *line)
 	return (token_str);
 }
 
-static char	**filltkn_array_revised(char **token_array, const char *line)
+static char	**filltkn_array(char **token_array, const char *line)
 {
 	int		i;
 	int		k;
@@ -113,11 +113,11 @@ char	**ft_split_tokens(const char *line)
 
 	if (!line)
 		return (NULL);
-	cnt = ft_count_tokens_revised(line);
+	cnt = ft_count_tokens(line);
 	tkn_array = malloc(sizeof(char *) * (cnt + 1));
 	if (!tkn_array)
 		return (NULL);
-	if (!filltkn_array_revised(tkn_array, line))
+	if (!filltkn_array(tkn_array, line))
 		return (NULL);
 	return (tkn_array);
 }

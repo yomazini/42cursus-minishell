@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:38:12 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/22 21:21:14 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/24 15:51:08 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ void	ft_applay_ifs(t_token **curr_tkn_ptr)
 {
 	size_t	n_splited;
 	char	**split_res;
+	size_t	i;
 
 	if (ft_pre_split(curr_tkn_ptr))
 		return ;
@@ -86,5 +87,12 @@ void	ft_applay_ifs(t_token **curr_tkn_ptr)
 	if (!split_res)
 		return ;
 	ft_applay(curr_tkn_ptr, split_res, n_splited);
+	i = 1;
+	while (i < n_splited && split_res[i])
+	{
+		free(split_res[i]);
+		split_res[i] = NULL;
+		i++;
+	}
 	free(split_res);
 }

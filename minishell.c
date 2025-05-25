@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 22:04:05 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/25 17:32:49 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/25 17:44:02 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ int	main(int ac, char **av, char **env)
 	(void)ac;
 	(void)av;
 	if (!main_init_shell(&data, &sh_vars, env))
-		return (0);
+		return (ft_tenv_clear(&data.env_list), 1);
 	while (true)
 	{
 		sh_vars.line = NULL;
@@ -119,6 +119,8 @@ int	main(int ac, char **av, char **env)
 		if (sh_vars.line)
 			(free(sh_vars.line), sh_vars.line = NULL);
 	}
+	if (sh_vars.line)
+		free(sh_vars.line);
 	ft_tenv_clear(&data.env_list);
 	rl_clear_history();
 	return (data.last_exit_status);

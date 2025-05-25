@@ -1,28 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_token_new.c                                     :+:      :+:    :+:   */
+/*   ft_memchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/16 15:18:51 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 14:01:18 by eel-garo         ###   ########.fr       */
+/*   Created: 2024/10/30 16:05:20 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/24 16:28:47 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../parser.h"
+#include "utils.h"
 
-t_token	*ft_token_new(char *value, t_token_type type)
+void	*ft_memchr(const void *s, int c, size_t n)
 {
-	t_token	*new_node;
+	unsigned char	*src;
+	unsigned char	chr;
+	size_t			i;
 
-	new_node = malloc(sizeof(t_token));
-	if (!new_node)
-		return (NULL);
-	new_node->value = ft_strdup(value);
-	if (!new_node->value && value)
-		return (free(new_node), NULL);
-	new_node->type = type;
-	new_node->next = NULL;
-	return (new_node);
+	src = (unsigned char *)s;
+	chr = (unsigned char)c;
+	i = 0;
+	while (i < n)
+	{
+		if (src[i] == chr)
+			return ((void *) &src[i]);
+		i++;
+	}
+	return (NULL);
 }

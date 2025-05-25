@@ -1,28 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_token_new.c                                     :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/16 15:18:51 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 14:01:18 by eel-garo         ###   ########.fr       */
+/*   Created: 2024/11/04 17:48:23 by ymazini           #+#    #+#             */
+/*   Updated: 2025/05/24 16:28:47 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../parser.h"
+#include "utils.h"
 
-t_token	*ft_token_new(char *value, t_token_type type)
+void	ft_putnbr_fd(int n, int fd)
 {
-	t_token	*new_node;
+	int		i;
+	long	nmr;
+	char	str[12];
 
-	new_node = malloc(sizeof(t_token));
-	if (!new_node)
-		return (NULL);
-	new_node->value = ft_strdup(value);
-	if (!new_node->value && value)
-		return (free(new_node), NULL);
-	new_node->type = type;
-	new_node->next = NULL;
-	return (new_node);
+	if (fd < 0)
+		return ;
+	nmr = n;
+	i = 0;
+	if (nmr == 0)
+	{
+		ft_putchar_fd('0', fd);
+		return ;
+	}
+	if (nmr < 0)
+	{
+		nmr = -nmr;
+		ft_putchar_fd('-', fd);
+	}
+	while (nmr)
+	{
+		str[i++] = nmr % 10 + '0';
+		nmr /= 10;
+	}
+	while (i-- > 0)
+		ft_putchar_fd(str[i], fd);
 }
