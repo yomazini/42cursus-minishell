@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 20:44:52 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/21 15:23:33 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/25 16:16:14 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static char	*append_char(char *str, char c)
 	append[0] = c;
 	append[1] = '\0';
 	ft_strlcat(new_str, append, len + 2);
-	return (free(str), new_str);
+	return (free(str), str = NULL, new_str);
 }
 
 static char	*append_exit_status(char *current_expanded, t_data *data)
@@ -55,6 +55,7 @@ static char	*append_exit_status(char *current_expanded, t_data *data)
 	if (!status_str)
 	{
 		free(current_expanded);
+		current_expanded = NULL;
 		return (NULL);
 	}
 	temp_join = ft_strjoin(current_expanded, status_str);

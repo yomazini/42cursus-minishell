@@ -37,7 +37,7 @@ static char	*create_env_string(t_env *node)
 	if (!temp_join)
 		return (NULL);
 	full_entry = ft_strjoin(temp_join, node->value);
-	free(temp_join);
+	(free(temp_join), temp_join = NULL);
 	return (full_entry);
 }
 

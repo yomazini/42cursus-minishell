@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 16:28:42 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/20 17:17:14 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/25 17:32:31 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,20 +43,17 @@ void	execute_child_process(t_cmd *cmd, t_data *data, char *path)
 
 	if (apply_redirections(cmd) != 0)
 	{
-		free(path);
 		exit(EXIT_FAILURE);
 	}
 	envp_array = convert_envlist_to_array(data->env_list);
 	if (!envp_array)
 	{
 		ft_putstr_fd("minishell: child: env setup failed\n", STDERR_FILENO);
-		free(path);
 		exit(EXIT_FAILURE);
 	}
 	execve(path, cmd->argv, envp_array);
 	ft_putstr_fd("minishell2: ", STDERR_FILENO);
 	perror(cmd->argv[0]);
-	free(path);
 	free_arr(envp_array);
 	exit(126);
 }
@@ -88,8 +85,9 @@ static void	run_external(t_cmd *cmd, t_data *data)
 	execve(path, cmd->argv, envp);
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	perror(cmd->argv[0]);
-	free(path);
+	(free(path), path = NULL);
 	free_arr(envp);
+	envp = NULL;
 	exit(126);
 }
 

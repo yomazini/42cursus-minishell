@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 22:04:05 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/23 21:00:21 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/25 17:32:49 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,11 +96,6 @@ bool	handle_input_prompt(t_data *data, t_vars *vars)
 	return (true);
 }
 
-// void check_leaks()
-// {
-// 	system("leaks minishell");
-// }
-
 int	main(int ac, char **av, char **env)
 {
 	t_data	data;
@@ -108,7 +103,6 @@ int	main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)av;
-	// atexit(check_leaks);
 	if (!main_init_shell(&data, &sh_vars, env))
 		return (0);
 	while (true)
@@ -123,7 +117,7 @@ int	main(int ac, char **av, char **env)
 		if (parse_and_expand(&data, &sh_vars))
 			creat_excute_cleanup(&data, &sh_vars);
 		if (sh_vars.line)
-			free(sh_vars.line);
+			(free(sh_vars.line), sh_vars.line = NULL);
 	}
 	ft_tenv_clear(&data.env_list);
 	rl_clear_history();

@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/25 14:49:20 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/25 17:40:40 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,6 @@ static	void	assign_fork(pid_t pid, char *path, t_data *data, t_cmd *cmd)
 	if (pid < 0)
 	{
 		perror("minishell: fork");
-		free(path);
-		path = NULL;
 		data->last_exit_status = 1;
 		return ;
 	}

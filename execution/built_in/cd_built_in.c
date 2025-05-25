@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:06:14 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/05 12:08:09 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/25 16:14:35 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,6 @@ int	ft_cd(t_cmd *cmd, t_data *data)
 	if (!final_target_path)
 		return (EXIT_FAILURE);
 	result = process_dir_change(final_target_path, data, print_path_flag);
-	free(allocated_path);
+	(free(allocated_path), allocated_path = NULL);
 	return (result);
 }

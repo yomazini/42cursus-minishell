@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 14:21:27 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/04 21:14:12 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/25 16:13:55 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,11 @@ int	process_dir_change(char *target, t_data *data, int print_path_flag)
 		ft_putendl_fd(target, STDOUT_FILENO);
 	if (update_pwd_env_vars(data, current_pwd) == -1)
 	{
-		free(current_pwd);
+		(free(current_pwd), current_pwd = NULL);
 		data->last_exit_status = EXIT_FAILURE;
 		return (EXIT_FAILURE);
 	}
-	free(current_pwd);
+	(free(current_pwd), current_pwd = NULL);
 	data->last_exit_status = EXIT_SUCCESS;
 	return (EXIT_SUCCESS);
 }
@@ -46,7 +46,7 @@ int	cd_error(char *path, t_data *data, char *old_pwd_to_free)
 	ft_putstr_fd(path, STDERR_FILENO);
 	ft_putstr_fd(": ", STDERR_FILENO);
 	ft_putendl_fd(strerror(errno), STDERR_FILENO);
-	free(old_pwd_to_free);
+	(free(old_pwd_to_free), old_pwd_to_free = NULL);
 	data->last_exit_status = EXIT_FAILURE;
 	return (EXIT_FAILURE);
 }
