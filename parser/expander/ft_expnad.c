@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 21:35:14 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/22 21:40:46 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/25 13:58:47 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,6 @@ void	ft_expand(t_token **token, t_data *data)
 			return ;
 		}
 	}
-	if (data->herdoc == true)
-		data->herdoc = false;
 	free(orig_value);
 	(*token)->value = exp_value;
 }

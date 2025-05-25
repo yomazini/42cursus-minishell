@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 15:16:43 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 15:55:32 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/25 16:40:00 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ typedef struct s_data
 	bool	field_splitting_needed;
 	bool	echo_pipe_flag;
 	bool	print_flag;
+	bool	no_split;
 }	t_data;
 typedef struct s_exp_st
 {
