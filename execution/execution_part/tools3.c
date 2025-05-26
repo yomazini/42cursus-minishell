@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 22:09:03 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/09 16:48:03 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/26 18:35:51 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,4 +47,11 @@ int	ft_is_valid_identifier(const char *name)
 		i++;
 	}
 	return (1);
+}
+
+void	ft_prt_err(char *name)
+{
+	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
+	ft_putstr_fd(name, STDERR_FILENO);
+	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
 }

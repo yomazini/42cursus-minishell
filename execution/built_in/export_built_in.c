@@ -6,76 +6,60 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:06:26 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/20 13:09:35 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/26 18:41:11 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
 
-static int	extract_key_value_from_arg(char *arg, char **key_ptr,
-										char **value_ptr, int *append_mode_ptr)
+static int	set_or_append_value(t_export_op *op)
 {
-	char	*equals_ptr;
-	size_t	key_len;
+	char	*current_value_in_env;
+	char	*newval;
 
-	equals_ptr = ft_strchr(arg, '=');
-	if (equals_ptr != NULL)
+	if (op->is_append_mode)
 	{
-		key_len = equals_ptr - arg;
-		if (key_len > 0 && arg[key_len - 1] == '+')
-		{
-			*append_mode_ptr = TRUE;
-			*key_ptr = ft_substr(arg, 0, key_len - 1);
-		}
+		current_value_in_env = ft_list_getenv(op->shell_dt->env_list, op->key);
+		if (current_value_in_env)
+			newval = ft_strjoin(current_value_in_env, op->value_to_process);
 		else
-			*key_ptr = ft_substr(arg, 0, key_len);
-		*value_ptr = ft_strdup(equals_ptr + 1);
-		if (!*key_ptr || !*value_ptr)
-			return (perror("minishell: export: malloc error"), -1);
+			newval = ft_strdup(op->value_to_process);
 	}
 	else
+		newval = ft_strdup(op->value_to_process);
+	if (!newval)
+		return (perror("minishell: export: malloc"), EXIT_FAILURE);
+	if (ft_list_setenv(&op->shell_dt->env_list, op->key, newval) == -1)
 	{
-		*key_ptr = ft_strdup(arg);
-		if (!*key_ptr)
-			return (perror("minishell: export: malloc error"), -1);
+		free(newval);
+		return (perror("minishell: export pbl"), EXIT_FAILURE);
 	}
+	free(newval);
 	return (EXIT_SUCCESS);
 }
 
-static	void	ft_prt_err(char *name)
+static int	set_no_value(t_export_op *op)
 {
-	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
-	ft_putstr_fd(name, STDERR_FILENO);
-	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
+	char	*cur;
+
+	cur = ft_list_getenv(op->shell_dt->env_list, op->key);
+	if (cur)
+		return (EXIT_SUCCESS);
+	if (ft_list_setenv(&op->shell_dt->env_list, op->key, NULL) == -1)
+		return (perror("minishell: export:"), EXIT_FAILURE);
+	return (EXIT_SUCCESS);
 }
 
-static int	validate_and_set_or_append_env(t_export_op *op_data)
+static	int	validate_and_set_or_append_env(t_export_op *op_data)
 {
-	char	*curr_value;
-	char	*f_vl_setenv;
-
 	if (!ft_is_valid_identifier(op_data->key))
-		return (ft_prt_err(op_data->original_arg_str), EXIT_FAILURE);
-	f_vl_setenv = NULL;
-	if (op_data->is_append_mode && op_data->value_to_process)
 	{
-		curr_value = ft_list_getenv(op_data->shell_dt->env_list, op_data->key);
-		if (curr_value)
-			f_vl_setenv = ft_strjoin(curr_value, op_data->value_to_process);
-		else
-			f_vl_setenv = ft_strdup(op_data->value_to_process);
-		if (!f_vl_setenv)
-			return (perror("mini: malloc err"), EXIT_FAILURE);
+		ft_prt_err(op_data->original_arg_str);
+		return (EXIT_FAILURE);
 	}
-	else if (op_data->value_to_process)
-	{
-		f_vl_setenv = ft_strdup(op_data->value_to_process);
-		if (!f_vl_setenv)
-			return (perror("mini: malloc Err"), EXIT_FAILURE);
-	}
-	if (ft_list_setenv(&op_data->shell_dt->env_list, op_data->key, f_vl_setenv))
-		return (perror("mini: setenv Err"), free(f_vl_setenv), EXIT_FAILURE);
-	return (free(f_vl_setenv), EXIT_SUCCESS);
+	if (op_data->value_to_process)
+		return (set_or_append_value(op_data));
+	return (set_no_value(op_data));
 }
 
 static int	process_export_arg(char *arg_str, t_data *data)

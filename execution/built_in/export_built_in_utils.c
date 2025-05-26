@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 14:21:36 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/15 13:28:55 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/26 18:35:03 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,36 @@ static void	ft_assign_var(int *count, int *i)
 {
 	*count = 0;
 	*i = -1;
+}
+
+int	extract_key_value_from_arg(char *arg, char **key_ptr,
+										char **value_ptr, int *append_mode_ptr)
+{
+	char	*equals_ptr;
+	size_t	key_len;
+
+	equals_ptr = ft_strchr(arg, '=');
+	if (equals_ptr != NULL)
+	{
+		key_len = equals_ptr - arg;
+		if (key_len > 0 && arg[key_len - 1] == '+')
+		{
+			*append_mode_ptr = TRUE;
+			*key_ptr = ft_substr(arg, 0, key_len - 1);
+		}
+		else
+			*key_ptr = ft_substr(arg, 0, key_len);
+		*value_ptr = ft_strdup(equals_ptr + 1);
+		if (!*key_ptr || !*value_ptr)
+			return (perror("minishell: export: malloc error"), -1);
+	}
+	else
+	{
+		*key_ptr = ft_strdup(arg);
+		if (!*key_ptr)
+			return (perror("minishell: export: malloc error"), -1);
+	}
+	return (EXIT_SUCCESS);
 }
 
 void	ft_sort_array(char **array)

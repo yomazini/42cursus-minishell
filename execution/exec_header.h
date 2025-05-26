@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_header.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 20:26:54 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/24 16:30:14 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/26 18:43:26 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,5 +117,8 @@ int		redir_r_emty_cmd_wi_redi(t_cmd *cmd, t_data *data, int is_empty);
 int		handle_empty_command_string_error1(t_data *data,
 			char *cmd_name_for_error);
 int		count_commands(t_cmd *cmd_list, t_data *data);
+int		extract_key_value_from_arg(char *arg, char **key_ptr,
+			char **value_ptr, int *append_mode_ptr);
+void	ft_prt_err(char *name);
 
 #endif
