@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 13:23:07 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/22 19:26:11 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/26 15:23:06 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static int	ft_process_cmd(t_token **tkn_ptr, t_cmd *cmd)
 
 	if ((*tkn_ptr)->type == TOKEN_WORD)
 	{
-		if ((*tkn_ptr)->empty_tkn == true)
+		if ((*tkn_ptr)->empty_tkn == true && !(*tkn_ptr)->value[0])
 		{
 			*tkn_ptr = (*tkn_ptr)->next;
 			return (1);

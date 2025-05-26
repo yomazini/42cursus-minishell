@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:20:31 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/25 19:49:33 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/26 15:28:34 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,14 +52,17 @@ static void	ft_process_expandable_token(t_token **curr, t_data *data)
 	}
 }
 
-static void	ft_c(t_token *current, t_data *data)
+static void	ft_c(t_token *current, t_data *data, t_token *prev)
 {
 	data->no_split = false;
 	if (current && current->value)
 	{
 		if (ft_strnstr(current->value, "=$", ft_strlen(current->value))
-			&& current->value[0] != '$')
+			&& current->value[0] != '$' 
+			&& prev && prev->value && ft_strcmp(prev->value, "export") == 0)
+		{
 			data->no_split = true;
+		}
 	}
 }
 void	ft_expander(t_token **token_head, t_data *data)
@@ -75,7 +78,7 @@ void	ft_expander(t_token **token_head, t_data *data)
 		if (!prev || prev->type != TOKEN_REDIR_HEREDOC)
 			data->herdoc = false;
 		ft_check_pipe_echo(curr, data);
-		ft_c(curr, data);
+		ft_c(curr, data, prev);
 		if (curr->type == TOKEN_REDIR_HEREDOC
 			&& curr->next && curr->next->type == TOKEN_WORD)
 			ft_handle_herdoc_expantion_flags(curr, data);

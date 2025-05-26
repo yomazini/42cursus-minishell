@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:38:12 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/24 15:51:08 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/26 14:56:46 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ static int	ft_insert(t_token **tkn_ptr, char **split_res,
 			}
 			return (0);
 		}
+		// printf("token[%zu]->%s from %zu\n", i, new_node->value, n_spl);
 		new_node->next = (*tkn_ptr)->next;
 		(*tkn_ptr)->next = new_node;
 		*tkn_ptr = new_node;
@@ -86,6 +87,11 @@ void	ft_applay_ifs(t_token **curr_tkn_ptr)
 			&n_splited);
 	if (!split_res)
 		return ;
+	// printf("%zu\n", n_splited);
+	// for (int i = 0; split_res[i]; i++){
+	// 	printf("[%d]-->%s\n", i, split_res[i]);
+	// }
+	// printf("\n");
 	ft_applay(curr_tkn_ptr, split_res, n_splited);
 	i = 1;
 	while (i < n_splited && split_res[i])
