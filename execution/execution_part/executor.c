@@ -6,7 +6,7 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/25 17:40:40 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/25 21:07:05 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,12 @@ static	int	handle_single_command(t_cmd *cmd_node, t_data *data)
 		data->last_exit_status = 127;
 		return (redir_r_emty_cmd_wi_redi(cmd_node, data, TRUE));
 	}
-	else if ((!cmd_node->argv || !cmd_node->argv[0]) && cmd_node->redir)
+	// TODO: this is must be deleted if mehdi does 
+	// ==> protect {one cmd && redir ( out 'appnd or truncat' || in ) && no pipe && no heredoc must delete the below}  
+	else if ((!cmd_node->argv || !cmd_node->argv[0]) && cmd_node->redir && !cmd_node->redir->filename[0])
+		return (redir_r_emty_cmd_wi_redi(cmd_node, data, FALSE),
+			data->last_exit_status = 1);
+	else if ((!cmd_node->argv || !cmd_node->argv[0]) && cmd_node->redir && cmd_node->redir->filename)
 		return (redir_r_emty_cmd_wi_redi(cmd_node, data, FALSE),
 			data->last_exit_status = 0);
 	else if (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0])
