@@ -6,11 +6,26 @@
 /*   By: ymazini <ymazini@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:30:20 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/25 21:07:05 by ymazini          ###   ########.fr       */
+/*   Updated: 2025/05/28 01:52:34 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../exec_header.h"
+
+static int	handle_non_empty_command(t_cmd *cmd_node, t_data *data)
+{
+	if (is_parent_builtin(cmd_node))
+		execute_built_ins(cmd_node, data);
+	else
+	{
+		execute_external_command(cmd_node, data);
+		if (data->last_exit_status == 127
+			|| data->last_exit_status == 126
+			|| data->last_exit_status == 2)
+			redir_r_emty_cmd_wi_redi(cmd_node, data, FALSE);
+	}
+	return (data->last_exit_status);
+}
 
 static	int	handle_single_command(t_cmd *cmd_node, t_data *data)
 {
@@ -20,26 +35,16 @@ static	int	handle_single_command(t_cmd *cmd_node, t_data *data)
 		data->last_exit_status = 127;
 		return (redir_r_emty_cmd_wi_redi(cmd_node, data, TRUE));
 	}
-	// TODO: this is must be deleted if mehdi does 
-	// ==> protect {one cmd && redir ( out 'appnd or truncat' || in ) && no pipe && no heredoc must delete the below}  
-	else if ((!cmd_node->argv || !cmd_node->argv[0]) && cmd_node->redir && !cmd_node->redir->filename[0])
+	else if ((!cmd_node->argv || !cmd_node->argv[0]) && cmd_node->redir
+		&& !cmd_node->redir->filename[0])
 		return (redir_r_emty_cmd_wi_redi(cmd_node, data, FALSE),
 			data->last_exit_status = 1);
-	else if ((!cmd_node->argv || !cmd_node->argv[0]) && cmd_node->redir && cmd_node->redir->filename)
+	else if ((!cmd_node->argv || !cmd_node->argv[0]) && cmd_node->redir
+		&& cmd_node->redir->filename)
 		return (redir_r_emty_cmd_wi_redi(cmd_node, data, FALSE),
 			data->last_exit_status = 0);
 	else if (cmd_node->argv && cmd_node->argv[0] && cmd_node->argv[0][0])
-	{
-		if (is_parent_builtin(cmd_node))
-			execute_built_ins(cmd_node, data);
-		else
-		{
-			execute_external_command(cmd_node, data);
-			if (data->last_exit_status == 127
-				|| data->last_exit_status == 126 || data->last_exit_status == 2)
-				redir_r_emty_cmd_wi_redi(cmd_node, data, FALSE);
-		}
-	}
+		return (handle_non_empty_command(cmd_node, data));
 	return (data->last_exit_status);
 }
 
