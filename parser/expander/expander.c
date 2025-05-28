@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 11:20:31 by eel-garo          #+#    #+#             */
-/*   Updated: 2025/05/26 15:28:34 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/05/28 15:06:22 by eel-garo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,13 +58,14 @@ static void	ft_c(t_token *current, t_data *data, t_token *prev)
 	if (current && current->value)
 	{
 		if (ft_strnstr(current->value, "=$", ft_strlen(current->value))
-			&& current->value[0] != '$' 
+			&& current->value[0] != '$'
 			&& prev && prev->value && ft_strcmp(prev->value, "export") == 0)
 		{
 			data->no_split = true;
 		}
 	}
 }
+
 void	ft_expander(t_token **token_head, t_data *data)
 {
 	t_token	*curr;
