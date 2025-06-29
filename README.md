@@ -8,17 +8,17 @@
 
 ## 👥 Project Team
 
-### Parser
-- **El Mehdi El Garouaz** - Parsing Engine & Tokenization
-  - 🎓 42 Intra: [eel-garo](https://profile.intra.42.fr/users/eel-garo)
-  - 🐙 GitHub: [MEHDIJAD](https://github.com/MEHDIJAD/)
-  - 💼 LinkedIn: [Connect with me](https://www.linkedin.com/in/el-mehdi-el-garouaz-a028aa287/)
-
 ### Executor
 - **Youssef Mazini** - Execution Architecture & Implementation
   - 🎓 42 Intra: [ymazini](https://profile.intra.42.fr/users/ymazini)
   - 🐙 GitHub: [yomazini](https://github.com/yomazini)
   - 💼 LinkedIn: [Connect with me](https://www.linkedin.com/in/youssef-mazini/)
+  
+### Parser
+- **El Mehdi El Garouaz** - Parsing Engine & Tokenization
+  - 🎓 42 Intra: [eel-garo](https://profile.intra.42.fr/users/eel-garo)
+  - 🐙 GitHub: [MEHDIJAD](https://github.com/MEHDIJAD/)
+  - 💼 LinkedIn: [Connect with me](https://www.linkedin.com/in/el-mehdi-el-garouaz-a028aa287/)
 
 
 ---
