@@ -5,23 +5,6 @@ RM = rm -f
 CFLAGS = -Wall -Wextra -Werror
 
 
-
-define MINISHELL_BANNER
-	@echo "$(ORANGE)"
-	@echo "███╗   ███╗██╗███╗   ██╗██╗███████╗██╗  ██╗███████╗██╗     ██╗     "
-	@echo "████╗ ████║██║████╗  ██║██║██╔════╝██║  ██║██╔════╝██║     ██║     "
-	@echo "██╔████╔██║██║██╔██╗ ██║██║███████╗███████║█████╗  ██║     ██║     "
-	@echo "██║╚██╔╝██║██║██║╚██╗██║██║╚════██║██╔══██║██╔══╝  ██║     ██║     "
-	@echo "██║ ╚═╝ ██║██║██║ ╚████║██║███████║██║  ██║███████╗███████╗███████╗"
-	@echo "╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝"
-	@echo "$(RESET)"
-endef
-
-ORANGE = \033[1;38;5;208m
-RESET = \033[0m
-
-
-
 LIBFT_DIR = utils
 PARSER_DIR = parser
 EXEC_DIR = execution
@@ -143,7 +126,6 @@ LIBS_TO_LINK = -lreadline
 all: $(NAME)
 
 $(NAME): $(ALL_OBJS)
-	$(MINISHELL_BANNER)
 	@echo "Linking $(NAME)..."
 	@$(CC) $(CFLAGS) $(ALL_OBJS) $(LDFLAGS) $(LIBS_TO_LINK) -o $(NAME)
 	@echo "$(NAME) successfully created."
