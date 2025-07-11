@@ -6,7 +6,7 @@
 /*   By: eel-garo <eel-garo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 22:04:05 by ymazini           #+#    #+#             */
-/*   Updated: 2025/05/28 15:05:55 by eel-garo         ###   ########.fr       */
+/*   Updated: 2025/07/11 23:20:25 by ymazini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void print_minishell_banner(void)
     printf("                    │     Welcome to our MiniShell!       │\n");
     printf("                    │                                     │\n");
     printf("                    │    Created by: ymazini & eel-garo   │\n");
-    printf("                    │         42 School Project           │\n");
+    printf("                    │    1337/42 School Project           │\n");
     printf("                    └─────────────────────────────────────┘\n");
     printf("\033[0m");
     
