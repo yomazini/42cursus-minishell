@@ -12,6 +12,35 @@
 
 #include "includes/minishell.h" 
 
+
+#include "includes/minishell.h"
+
+void print_minishell_banner(void)
+{
+    printf("\033[1;36m"); 
+    printf("███╗   ███╗██╗███╗   ██╗██╗███████╗██╗  ██╗███████╗██╗     ██╗     \n");
+    printf("████╗ ████║██║████╗  ██║██║██╔════╝██║  ██║██╔════╝██║     ██║     \n");
+    printf("██╔████╔██║██║██╔██╗ ██║██║███████╗███████║█████╗  ██║     ██║     \n");
+    printf("██║╚██╔╝██║██║██║╚██╗██║██║╚════██║██╔══██║██╔══╝  ██║     ██║     \n");
+    printf("██║ ╚═╝ ██║██║██║ ╚████║██║███████║██║  ██║███████╗███████╗███████╗\n");
+    printf("╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝\n");
+    printf("\033[0m");
+    
+    printf("\033[1;33m"); 
+    printf("                    ┌─────────────────────────────────────┐\n");
+    printf("                    │     Welcome to our MiniShell!       │\n");
+    printf("                    │                                     │\n");
+    printf("                    │    Created by: ymazini & eel-garo   │\n");
+    printf("                    │         42 School Project           │\n");
+    printf("                    └─────────────────────────────────────┘\n");
+    printf("\033[0m");
+    
+    printf("\033[1;32m");
+    printf("\033[0m\n");
+}
+
+
+
 int	g_global = 0;
 
 bool	parse_and_expand(t_data *data, t_vars *vars)
@@ -101,7 +130,9 @@ int	main(int ac, char **av, char **env)
 	t_data	data;
 	t_vars	sh_vars;
 
+
 	(void)ac, (void)av;
+	print_minishell_banner();
 	if (!main_init_shell(&data, &sh_vars, env))
 		return (ft_tenv_clear(&data.env_list), 1);
 	while (true)
