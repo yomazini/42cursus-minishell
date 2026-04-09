@@ -12,45 +12,45 @@
 
 #include "../exec_header.h"
 
-int	save_original_fds(int *original_stdin, int *original_stdout)
+int save_original_fds(int *original_stdin, int *original_stdout)
 {
-	*original_stdin = dup(STDIN_FILENO);
-	if (*original_stdin < 0)
-	{
-		perror("minishell: dup failed for stdin");
-		return (-1);
-	}
-	*original_stdout = dup(STDOUT_FILENO);
-	if (*original_stdout < 0)
-	{
-		perror("minishell: dup failed for stdout");
-		close(*original_stdin);
-		*original_stdin = -1;
-		return (-1);
-	}
-	return (0);
+    *original_stdin = dup(STDIN_FILENO);
+    if (*original_stdin < 0)
+    {
+        perror("minishell: dup failed for stdin");
+        return (-1);
+    }
+    *original_stdout = dup(STDOUT_FILENO);
+    if (*original_stdout < 0)
+    {
+        perror("minishell: dup failed for stdout");
+        close(*original_stdin);
+        *original_stdin = -1;
+        return (-1);
+    }
+    return (0);
 }
 
-int	restore_original_fds(int original_stdin, int original_stdout)
+int restore_original_fds(int original_stdin, int original_stdout)
 {
-	int	ret_stdin;
-	int	ret_stdout;
+    int ret_stdin;
+    int ret_stdout;
 
-	ret_stdin = 0;
-	ret_stdout = 0;
-	if (original_stdin >= 0)
-	{
-		ret_stdin = dup2(original_stdin, STDIN_FILENO);
-		close(original_stdin);
-	}
-	if (original_stdout >= 0)
-	{
-		ret_stdout = dup2(original_stdout, STDOUT_FILENO);
-		close(original_stdout);
-	}
-	if (ret_stdin < 0 || ret_stdout < 0)
-	{
-		return (-1);
-	}
-	return (0);
+    ret_stdin  = 0;
+    ret_stdout = 0;
+    if (original_stdin >= 0)
+    {
+        ret_stdin = dup2(original_stdin, STDIN_FILENO);
+        close(original_stdin);
+    }
+    if (original_stdout >= 0)
+    {
+        ret_stdout = dup2(original_stdout, STDOUT_FILENO);
+        close(original_stdout);
+    }
+    if (ret_stdin < 0 || ret_stdout < 0)
+    {
+        return (-1);
+    }
+    return (0);
 }

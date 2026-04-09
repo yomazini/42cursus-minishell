@@ -12,125 +12,126 @@
 
 #include "../../exec_header.h"
 
-int	read_input_to_pipe(char *delimiter, bool expand,
-								t_data *data, int pipe_write_fd)
+int read_input_to_pipe(char   *delimiter,
+                       bool    expand,
+                       t_data *data,
+                       int     pipe_write_fd)
 {
-	char		*line;
-	size_t		delim_len;
-	extern int	g_global;
+    char      *line;
+    size_t     delim_len;
+    extern int g_global;
 
-	delim_len = ft_strlen(delimiter);
-	while (TRUE)
-	{
-		if (g_global == 3)
-			return (130);
-		line = readline("> ");
-		if (g_global == 3)
-		{
-			if (line)
-				(free(line), line = NULL);
-			return (130);
-		}
-		if (!line)
-			return (0);
-		if (handle_delimiter(line, delimiter, delim_len))
-			break ;
-		if (process_line(line, expand, data, pipe_write_fd) < 0)
-			return (-1);
-	}
-	return (0);
+    delim_len = ft_strlen(delimiter);
+    while (TRUE)
+    {
+        if (g_global == 3)
+            return (130);
+        line = readline("> ");
+        if (g_global == 3)
+        {
+            if (line)
+                (free(line), line = NULL);
+            return (130);
+        }
+        if (!line)
+            return (0);
+        if (handle_delimiter(line, delimiter, delim_len))
+            break;
+        if (process_line(line, expand, data, pipe_write_fd) < 0)
+            return (-1);
+    }
+    return (0);
 }
 
-static	int	init_heredoc(t_data *data, int *saved_stdin_fd)
+static int init_heredoc(t_data *data, int *saved_stdin_fd)
 {
-	extern int	g_global;
+    extern int g_global;
 
-	*saved_stdin_fd = dup(STDIN_FILENO);
-	if (*saved_stdin_fd < 0)
-	{
-		perror("minishell: dup (saving stdin for heredoc)");
-		set_signal_handlers_prompt();
-		data->last_exit_status = EXIT_FAILURE;
-		return (EXIT_FAILURE);
-	}
-	g_global = 0;
-	set_signal_handlers_heredoc();
-	return (EXIT_SUCCESS);
+    *saved_stdin_fd = dup(STDIN_FILENO);
+    if (*saved_stdin_fd < 0)
+    {
+        perror("minishell: dup (saving stdin for heredoc)");
+        set_signal_handlers_prompt();
+        data->last_exit_status = EXIT_FAILURE;
+        return (EXIT_FAILURE);
+    }
+    g_global = 0;
+    set_signal_handlers_heredoc();
+    return (EXIT_SUCCESS);
 }
 
-static int	handle_one_heredoc(t_redir *r, t_data *data, int *pipe_fds)
+static int handle_one_heredoc(t_redir *r, t_data *data, int *pipe_fds)
 {
-	int			status;
-	extern int	g_global;
+    int        status;
+    extern int g_global;
 
-	if (pipe(pipe_fds) < 0)
-	{
-		perror("minishell: heredoc pipe");
-		return (EXIT_FAILURE);
-	}
-	status = read_input_to_pipe(r->filename, r->expand_heredoc,
-			data, pipe_fds[1]);
-	close(pipe_fds[1]);
-	if (g_global == 3 || status == 130 || status < 0)
-	{
-		close(pipe_fds[0]);
-		return (EXIT_FAILURE);
-	}
-	r->heredoc_fd = pipe_fds[0];
-	return (EXIT_SUCCESS);
+    if (pipe(pipe_fds) < 0)
+    {
+        perror("minishell: heredoc pipe");
+        return (EXIT_FAILURE);
+    }
+    status =
+        read_input_to_pipe(r->filename, r->expand_heredoc, data, pipe_fds[1]);
+    close(pipe_fds[1]);
+    if (g_global == 3 || status == 130 || status < 0)
+    {
+        close(pipe_fds[0]);
+        return (EXIT_FAILURE);
+    }
+    r->heredoc_fd = pipe_fds[0];
+    return (EXIT_SUCCESS);
 }
 
-static int	loop_heredocs(t_cmd *cmd, t_data *data)
+static int loop_heredocs(t_cmd *cmd, t_data *data)
 {
-	t_redir		*redir;
-	int			pipe_fds[2];
-	int			ret;
-	extern int	g_global;
+    t_redir   *redir;
+    int        pipe_fds[2];
+    int        ret;
+    extern int g_global;
 
-	while (cmd && g_global != 3)
-	{
-		redir = cmd->redir;
-		while (redir && g_global != 3)
-		{
-			if (redir->type == TOKEN_REDIR_HEREDOC
-				&& redir->heredoc_fd < 0)
-			{
-				ret = handle_one_heredoc(redir, data, pipe_fds);
-				if (ret != EXIT_SUCCESS)
-					return (ret);
-			}
-			redir = redir->next;
-		}
-		cmd = cmd->next;
-	}
-	return (EXIT_SUCCESS);
+    while (cmd && g_global != 3)
+    {
+        redir = cmd->redir;
+        while (redir && g_global != 3)
+        {
+            if (redir->type == TOKEN_REDIR_HEREDOC && redir->heredoc_fd < 0)
+            {
+                ret = handle_one_heredoc(redir, data, pipe_fds);
+                if (ret != EXIT_SUCCESS)
+                    return (ret);
+            }
+            redir = redir->next;
+        }
+        cmd = cmd->next;
+    }
+    return (EXIT_SUCCESS);
 }
 
-int	process_heredocs(t_cmd *cmd_list, t_data *data)
+int process_heredocs(t_cmd *cmd_list, t_data *data)
 {
-	int			saved_stdin_fd;
-	int			overall_status;
-	extern int	g_global;
+    int        saved_stdin_fd;
+    int        overall_status;
+    extern int g_global;
 
-	if (count_total_heredocs(cmd_list) > MAX_HEREDOCS)
-	{
-		ft_putstr_fd("minishell: max here-document count exceeded\n", 2);
-		data->last_exit_status = 2;
-		return (77);
-	}
-	if (init_heredoc(data, &saved_stdin_fd) != EXIT_SUCCESS)
-		return (EXIT_FAILURE);
-	overall_status = loop_heredocs(cmd_list, data);
-	restore_after_heredoc(saved_stdin_fd);
-	if (g_global == 3)
-	{
-		data->last_exit_status = 1;
-		return (cleanup_all_heredoc_fds(cmd_list), EXIT_FAILURE);
-	}
-	if (overall_status != EXIT_SUCCESS)
-	{
-		data->last_exit_status = EXIT_FAILURE;
-		cleanup_all_heredoc_fds(cmd_list);
-	}
-	return (overall_status);
+    if (count_total_heredocs(cmd_list) > MAX_HEREDOCS)
+    {
+        ft_putstr_fd("minishell: max here-document count exceeded\n", 2);
+        data->last_exit_status = 2;
+        return (77);
+    }
+    if (init_heredoc(data, &saved_stdin_fd) != EXIT_SUCCESS)
+        return (EXIT_FAILURE);
+    overall_status = loop_heredocs(cmd_list, data);
+    restore_after_heredoc(saved_stdin_fd);
+    if (g_global == 3)
+    {
+        data->last_exit_status = 1;
+        return (cleanup_all_heredoc_fds(cmd_list), EXIT_FAILURE);
+    }
+    if (overall_status != EXIT_SUCCESS)
+    {
+        data->last_exit_status = EXIT_FAILURE;
+        cleanup_all_heredoc_fds(cmd_list);
+    }
+    return (overall_status);
 }

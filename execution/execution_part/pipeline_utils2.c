@@ -12,21 +12,21 @@
 
 #include "../exec_header.h"
 
-int	count_commands(t_cmd *cmd_list, t_data *data)
+int count_commands(t_cmd *cmd_list, t_data *data)
 {
-	int		count;
-	t_cmd	*counter;
+    int    count;
+    t_cmd *counter;
 
-	count = 0;
-	counter = cmd_list;
-	while (counter)
-	{
-		count++;
-		counter = counter->next;
-	}
-	if (count > 1)
-	{
-		data->print_flag = FALSE;
-	}
-	return (count);
+    count   = 0;
+    counter = cmd_list;
+    while (counter)
+    {
+        count++;
+        counter = counter->next;
+    }
+    if (count > 1)
+    {
+        data->print_flag = FALSE;
+    }
+    return (count);
 }

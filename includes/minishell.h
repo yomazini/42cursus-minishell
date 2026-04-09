@@ -11,10 +11,10 @@
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
-# define MINISHELL_H
+#define MINISHELL_H
 
-# include "parser.h"
-# include "exec_header.h"
-# include "../utils/utils.h"
+#include "../utils/utils.h"
+#include "exec_header.h"
+#include "parser.h"
 
 #endif
